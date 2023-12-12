@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>NFV Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/nfv/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/nfv/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Tue, 14 May 2019 23:16:04 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>NFV Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/nfv/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Tungsten Fabric and Akraino for SDN/NFV for 5G and edge Use Cases</title>
+		<link>https://tungsten.io/tungsten-fabric-and-akraino-for-sdn-nfv-for-5g-and-edge-use-cases/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Tue, 14 May 2019 23:07:03 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[NFV]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Use Case]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8130</guid>
+
+					<description><![CDATA[By Sukhdev Kapur The rollout of 5G is a technological disruption for telecom and technology business players. This requires management of real time data flows, with central control, between various...]]></description>
+										<content:encoded><![CDATA[<h4>By Sukhdev Kapur</h4>
+<p>The rollout of <a href="https://en.wikipedia.org/wiki/5G">5G</a> is a technological disruption for telecom and technology business players. This requires management of real time data flows, with central control, between various <a href="https://en.wikipedia.org/wiki/Edge_device">edge</a> and core deployments. In order to minimize the latency, 5G and IoT deployments require compute power to move toward the edge, closer to the end-users and devices that produce or consume the real time data.</p>
+<p><a href="https://en.wikipedia.org/wiki/Software-defined_networking">SDN</a> controllers are proven to manage such workloads in telco as well as enterprise deployments. In this article, we discuss the SDN stack <a href="https://tungsten.io">Tungsten Fabric</a> and how it can be used for 5G networks and an edge cloud that is based upon <a href="https://www.lfedge.org/projects/akraino/">Akraino Edge Stack</a>.</p>
+<p><a href="https://tungsten.io/">Tungsten Fabric</a> (AKA &#8216;TF&#8217;) is an open source SDN project in the <a href="https://www.lfnetworking.org">LF Networking</a> initiative. TF provides a single point of control, visibility, and management for networking &amp; security for different types of data center deployments or clouds. It has taken SDN technology to next level by:</p>
+<ul>
+<li>Providing consistent network functionality and enforcing security policies for different types of workloads (virtual machines, containers, bare metal) orchestrated with different available orchestrators (OpenStack, Kubernetes, VMware , etc)</li>
+<li>Providing production grade networking &amp; security stack for Data Center and Public Clouds (AWS, Azure, GCP) &amp; Edge cloud deployments</li>
+</ul>
+<p>Tungsten Fabric evolved as a network software stack for providing an SDN solution for Telco Cloud and <a href="https://en.wikipedia.org/wiki/Network_function_virtualization">NFV</a> use cases.</p>
+<h3>Tungsten Fabric Integration with Akraino Edge Cloud</h3>
+<p>TF, by integrating with <a href="https://www.lfedge.org/projects/akraino/">Akraino Edge Stack</a>, can act as unified SDN controller to enhance many features for 5G core and edge nodes, including:</p>
+<ul>
+<li>Enabling distributed edge computing using TF remote compute architecture</li>
+<li>A common SDN controller for different workloads in network cloud i.e. CNF, <a href="https://en.wikipedia.org/wiki/Network_function_virtualization">VNF</a>, PNFs (Containerized, Virtual, and Physical Network Functions)</li>
+<li>Service chaining at different types of edge sites or clouds (public or private)</li>
+<li>Common security policy enforcement for all nodes</li>
+<li>Advanced networking performance features: <a href="https://en.wikipedia.org/wiki/Single-root_input/output_virtualization">SR/IOV</a>, <a href="https://www.dpdk.org">DPDK</a>, BGP-VPN, IPSec/TLS Support, etc.</li>
+</ul>
+<p><img fetchpriority="high" decoding="async" class="alignnone size-full wp-image-8131" src="https://tungsten.io/wp-content/uploads/sites/73/2019/05/Tungsten-Fabric-SDN.png" alt="" width="776" height="465" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/05/Tungsten-Fabric-SDN.png 776w, https://tungsten.io/wp-content/uploads/sites/73/2019/05/Tungsten-Fabric-SDN-300x180.png 300w" sizes="(max-width: 776px) 100vw, 776px" /></p>
+<h3>Tungsten Fabric powered Akraino Blueprints</h3>
+<p>These Akraino blueprints address different edge use cases:</p>
+<ul>
+<li>Network Cloud &#8211; <a href="https://wiki.akraino.org/display/AK/Akraino+Network+Cloud+and+TF+Integration">Telco edge cloud use case</a></li>
+<li>Kubernetes Native Infrastructure for Edge &#8211; <a href="https://wiki.akraino.org/display/AK/Provider+Access+Edge+%28PAE%29+Blueprint">Provider access use case</a></li>
+<li>Integrated Edge Cloud &#8211; <a href="https://wiki.akraino.org/pages/viewpage.action?pageId=11993339">AI/ML and AR/VR applications at Edge</a></li>
+</ul>
+<h3>Learn more at Cloud Native Network Services Day @ KubeCon + CloudNativeCon EU 2019</h3>
+<p>Intrigued? I&#8217;ll be doing a deep dive on this subject at the <a href="https://www.linuxfoundation.org/calendar/kubecon-cloudnativecon-europe/">Cloud Native Network Services Day</a> at KubeCon EU on May 20th. If you&#8217;re going to be in Barcelona for the conference, come by and learn more.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Tungsten Fabric as SDN for Akraino Based Network Edges</title>
+		<link>https://tungsten.io/tungsten-fabric-as-sdn-for-akraino-based-network-edges/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Mon, 04 Mar 2019 03:55:04 +0000</pubDate>
+				<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[NFV]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8100</guid>
+
+					<description><![CDATA[Originally published on CalSoft Posted on&#160;February 28, 2019&#160;by&#160;Sagar Nangare SDN is a crucial technology in a roadmap for a dynamic and intelligent network, be it enterprise level connecting several devices...]]></description>
+										<content:encoded><![CDATA[
+<p><a href="https://blog.calsoftinc.com/2019/02/tungsten-fabric-sdn-akraino-based-network-edges.html" target="_blank" rel="noreferrer noopener" aria-label="Originally published on CalSoft (opens in a new tab)">Originally published on CalSoft</a></p>
+
+
+
+<p>Posted on&nbsp;<a href="https://blog.calsoftinc.com/2019/02/tungsten-fabric-sdn-akraino-based-network-edges.html">February 28, 2019</a>&nbsp;by&nbsp;<a href="https://blog.calsoftinc.com/author/sagar-nangare">Sagar Nangare</a></p>
+
+
+
+<p>SDN is a crucial technology in a roadmap for a dynamic and intelligent network, be it enterprise level connecting several devices on-premises or branches across the wide area (SD-WAN). With the power of SDN technology, telecom operators are taking it to achieve central control over the network and compute nodes.</p>
+
+
+
+<p>As the 5G going mainstream disruption for telecom as well as technology business players, there is a growing need to handle data flows within the network in real time along with smartly minimizing bandwidth usage plus latency. The emergence of SDN and NFV technologies had majorly set up a foundation to build a network having expected requirements for end users along with a dynamic and central control for service providers or enterprises.</p>
+
+
+
+<p>In this article, let us discuss about SDN stack,&nbsp;<a href="https://tungsten.io/start/" target="_blank" rel="noreferrer noopener">Tungsten Fabric</a>&nbsp;and how it can be used for 5G-network edge cloud that is based on&nbsp;<a href="https://www.lfedge.org/projects/akraino/">Akraino Edge Stack</a>.</p>
+
+
+
+<p><a href="https://tungsten.io/">Tungsten Fabric</a>&nbsp;is an open source SDN initiative from Juniper and merged into Linux Foundation as a community project. TF provides a single point of control, visibility, and management for networking &amp; security for different types of data center deployments or clouds. It has taken SDN technology to next level by</p>
+
+
+
+<ul><li>Providing consistent network functionality and enforcing security policies for different types of workloads (virtual machines, containers, bare metal) orchestrated with different available orchestrators (OpenStack, Kubernetes, VMware , etc)</li><li>Providing production grade networking &amp; security stack for Data Center and Public Clouds (AWS, Azure, GCP) &amp; Edge cloud deployments</li></ul>
+
+
+
+<p>Tungsten Fabric evolved as a network software stack for providing an SDN solution for Telco Cloud and NFV use cases<del>.</del></p>
+
+
+
+<p>To understand the application of TF for telco cloud, let us discuss about the PoC&nbsp;<a href="https://wiki.akraino.org/display/AK/Akraino+Network+Cloud+and+TF+Integration">proposed</a>&nbsp;by Juniper’s Sukhdev Kapur to Linux Foundation’s Akraino community (an open source software stack for network edges). This proof of concept is approved by the Akraino.</p>
+
+
+
+<p><strong>Tungsten Fabric Integration with Akraino based Network Edge Cloud</strong></p>
+
+
+
+<p>TF, by integrating with Akraino Edge Stack, can act as unified SDN controller to enhance many features for 5G core and edge nodes, including</p>
+
+
+
+<ul><li>Enabling distributed edge computing using TF remote compute architecture,</li><li>A common SDN controller for different workloads in network cloud i.e. CNF, VNF, PNFs</li><li>Service chaining at different types of edge sites or clouds (public or private)</li><li>Common security policy enforcement for all nodes</li><li>Advanced networking performance features: SR/IOV, DPDK, BGP-VPN, IPSec/TLS Support, etc</li></ul>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://blog.calsoftinc.com/wp-content/uploads/2019/02/Akraino-Network-Cloud-TF-Integration-Blueprint.png" alt="" class="wp-image-4810" /><figcaption>Figure – Akraino Network Cloud &amp; TF Integration (Blueprint)</figcaption></figure>
+
+
+
+<p><em>Image source:&nbsp;<a href="https://wiki.akraino.org/display/AK/Network+Cloud+Family+-+Reference+Architecture">Akraino Reference architecture</a></em></p>
+
+
+
+<p>You can see from above image, like other open source projects, TF place at edge platform software component, enhancing with new feature set to act as unified SDN controller for any type of workload &amp; compute orchestration.</p>
+
+
+
+<p><strong>Deployment</strong></p>
+
+
+
+<p>Tungsten fabric is composed of components like controller and vRouter; plus additional components for analytics and third party integration. In this PoC, TF integrates with Kubernetes (CNI) and OpenStack (Neutron) as SDN plugin to enable rich networking capabilities and lifecycle management of VMs and containers where TF components or control functions deployed.</p>
+
+
+
+<p>The configuration declared at the central data center is enforced on edge nodes to set up consistent network and security policies. The deployment and life cycle management of Tungsten Fabric can be done with tools like Ansible or Helm. These configuration files are termed as playbooks if Ansible is used or charts in case of Helm. These tools provides benefits of automation and management of components, further reducing operational costs for edge deployments.</p>
+
+
+
+<p>Tungsten fabric along with Helm offers a seamless solution where TF services are deployed in containers using a microservices architecture to enable advantages like self-healing, updates, CI/CD, etc. Helm uses Kubernetes to declare charts for subsequent microservices, allowing greater automation in managing TF services. In this case, Kubernetes become a single orchestrator to manage lifecycle of all control operations. Such integrated solution evolved as Tungsten Fabric Helm (TF Helm).</p>
+
+
+
+<p>OpenStacks’s Airship (Armada) is an umbrella project with which TF integrates for installation using helm charts and set up interaction with edge nodes using CNI and Neutron.</p>
+
+
+
+<p>The basic idea behind this PoC is to define an architecture for a distributed Edge Cloud keeping operational and deployment cost low. Another objective is to build a network where failure of any edge node application should not hamper availability and functionality of edge network to avoid traffic loss. To implement such architecture, a solution proposed in this PoC exercise utilizes the same TF based on a single SDN cluster that spans across all the edge nodes. A central SDN cluster located at main data center will have TF installed with Kubernetes and OpenStack orchestrators along with TF control components. Dedicated control functions, which handles compute and networking operations for all edge nodes, are located at the central data center, and connected to vRouter (TF component) set at the edge nodes using set of gateways. The dedicated control function is logically present at the Primary POP to control vRouters of the edge nodes located on the remote POPS. MP-BGP protocol is used between SDN Gateways and control functions, and XMPP is used for communication between vRouters and dedicated control functions.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://blog.calsoftinc.com/wp-content/uploads/2019/02/Interconnection-between-component-of-data-center-with-edge-POPs.png" alt="" class="wp-image-4811" /><figcaption>Figure – Interconnection between component of data center with edge POPs</figcaption></figure>
+
+
+
+<p>To have an end-to-end data transmission, an overlay network is established between edge nodes and central data centers in which MPLS over IP (MPLSoXoIP) is used. Communication between gateways can optionally use IPsec encryption to protect network data.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://blog.calsoftinc.com/wp-content/uploads/2019/02/2.png" alt="" class="wp-image-4812" /><figcaption>Figure – Secure data and network with overlay network</figcaption></figure>
+
+
+
+<p><strong>Summary</strong></p>
+
+
+
+<p>TF has emerged as a leading SDN solution with every release. Deployment of TF using helm charts and orchestration of every type of workloads from a diverse set of clouds has increased the potential of TF for Telco use case. Akraino Edge Stack is pre-integrated with a set of projects, which promotes various orchestrations and performance benefits. Integration of TF with Akraino edge stack enable enhanced features and utilizes remote compute architecture of TF. A solution can orchestrate all types of workloads like PNFs, VNFs and CNF, implement service chaining at edge sites, workload and data transfer security, automating deployment of control functions and workloads, and more.</p>
+
+
+
+<p><strong><em>Republished with Permission from Republished with permission from </em></strong><a rel="noreferrer noopener" href="https://blog.calsoftinc.com/2019/02/tungsten-fabric-sdn-akraino-based-network-edges.html" target="_blank"><strong><em>CalSoft.</em></strong></a></p>
+
+
+
+<p><strong><em>About the author</em></strong></p>
+
+
+
+<p><em>Sagar Nangare is technology blogger, currently serving&nbsp;<a href="https://urldefense.proofpoint.com/v2/url?u=https-3A__calsoftinc.com_&amp;d=DwMFaQ&amp;c=HAkYuh63rsuhr6Scbfh0UjBXeMK-ndb3voDTXcWzoCI&amp;r=Y9QaEJ2cs4La8kQDqQ-N2rBJnxrPyFqAIO8efLhSqZ0&amp;m=8ToqEPYme7wCk2CZy01mmL8Y5T9FiF4E0mhEwhaU27c&amp;s=KqnJF-1Qbjb1_jI40uohUwGCiT8mFL0WZo-StdvVmVA&amp;e=" target="_blank" rel="noreferrer noopener">Calsoft Inc.</a>&nbsp;as a digital strategist.</em></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Intelligent NFV performance with OpenContrail</title>
+		<link>https://tungsten.io/intelligent-nfv-performance-with-opencontrail/</link>
+		
+		<dc:creator><![CDATA[Sergey Matov]]></dc:creator>
+		<pubDate>Tue, 04 Apr 2017 23:38:03 +0000</pubDate>
+				<category><![CDATA[NFV]]></category>
+		<category><![CDATA[Service Provider]]></category>
+		<category><![CDATA[SmartNIC]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7431</guid>
+
+					<description><![CDATA[The private cloud market has changed in the past year, and our customers are no longer interested in just getting an amazing tool for installing OpenStack; instead, they are looking...]]></description>
+										<content:encoded><![CDATA[<p>The private cloud market has changed in the past year, and our customers are no longer interested in just getting an amazing tool for installing OpenStack; instead, they are looking more at use cases. Because we see a lot of interest in NFV cloud use cases, Mirantis includes OpenContrail as the default SDN for its new Mirantis Cloud Platform. In fact, NFV has become a mantra for most service providers, and because Mirantis is a key player in this market, we work on a lot of testing and performance validation.</p>
+<p>The most common value for performance comparison between solutions is bandwidth, which shows how much capacity a network connection has for supporting data transfer, as measured in bits per second. In this domain, the OpenContrail vRouter can reach near line speed (<a href="http://www.opencontrail.org/evaluating-opencontrail-virtual-router-performance/">about 90%, in fact</a>). However, performance also depends on other factors, such as latency, or packets-per-second (pps), which are as important as bandwidth. Packets per second rate is a key factor for VNF (firewalls, routers, etc.) instances running on top of NFV clouds. In this article, we’ll compare PPS rate for different OpenContrail setups so you can decide what will work best for your specific use case.</p>
+<p>The simplest way to test PPS rate is to run a VM to VM test. We will provide a short overview of OpenContrail low-level techniques for NFV infrastructure, and perform a comparative analysis of different approaches using simple PPS benchmarking. To make testing fair, we will use only a 10GbE physical interface, and will limit resource consumption for data plane acceleration technologies, making the environment identical for all approaches.</p>
+<h2>OpenContrail vRouter modes</h2>
+<p>For different use cases, Mirantis supports several ways of running the OpenContrail vRouter as part of Mirantis Cloud Platform 1.0 (MCP). Let’s look at each of them before we go ahead and take measurements.</p>
+<h3><b>Kernel vRouter</b></h3>
+<p>OpenContrail has a module called vRouter that performs data forwarding in the kernel. The vRouter module is an alternative to Linux bridge or Open vSwitch (OVS) in the kernel, and one of its functionalities is encapsulating packets sent to the overlay network and decapsulating packets received from the overlay network. A simplified schematic of VM to VM connectivity for 2 compute nodes can be found in Figure 1:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2017/04/intelligent-nfv-performance-with-opencontrail-image00.png"><img decoding="async" class="size-full wp-image-7432 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2017/04/intelligent-nfv-performance-with-opencontrail-image00.png" alt="" width="600" height="371" data-id="7432" /></a></p>
+<p><b>Figure 1: A simplified schematic of VM to VM connectivity for 2 compute nodes</b></p>
+<p>The problem with a kernel module is that packets-per-second is limited by various factors, such as memory copies, the number of VM exits, and the overhead of processing interrupts. Therefore vRouter can be integrated with the Intel DPDK to optimize PPS performance.</p>
+<h3><b>DPDK vRouter</b></h3>
+<p>Intel DPDK is an open source set of libraries and drivers that perform fast packet processing by enabling drivers to obtain direct control of the NIC address space and map packets directly into an application. The polling model of NIC drivers helps to avoid the overhead of interrupts from the NIC. To integrate with DPDK, the vRouter can now run in a user process instead of a kernel module. This process links with the DPDK libraries and communicates with the vrouter host agent, which runs as a separate process. The schematic for a simplified overview of vRouter-DPDK based nodes is shown in Figure 2:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2017/04/intelligent-nfv-performance-with-opencontrail-image01.png"><img decoding="async" class="aligncenter wp-image-7433" src="http://www.opencontrail.org/wp-content/uploads/2017/04/intelligent-nfv-performance-with-opencontrail-image01.png" alt="" width="780" height="600" data-id="7433" /></a></p>
+<p><b>Figure 2: The schematic for a simplified overview of vRouter-DPDK based nodes</b></p>
+<p>vRouter-DPDK uses user-space packet processing and CPU affinity to dedicate poll mode drivers being served by a particular CPU. This approach enables packets to be processed in user-space during the complete life time – from physical NIC to vhost-user port.</p>
+<h3><b>Netronome Agilio Solution</b></h3>
+<p>Software and hardware components distributed by Netronome provide an OpenContrail-based platform to perform high-speed packet processing. It’s a scalable, easy to operate solution that includes all server-side networking features, such as overlay networking based on MPLS over UDP/GRE and VXLAN. The Agilio SmartNIC solution supports DPDK, SR-IOV and Express Virtio (XVIO) for data plane acceleration while running the OpenContrail control plane. Wide integration with OpenStack enables you to run VMs with Virtio devices or SR-IOV Passthrough vNICs, as in Figure 3:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2017/04/intelligent-nfv-performance-with-opencontrail-image02.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-7434" src="http://www.opencontrail.org/wp-content/uploads/2017/04/intelligent-nfv-performance-with-opencontrail-image02.png" alt="" width="838" height="600" data-id="7434" /></a></p>
+<p><b>Figure 3:  OpenContrail network schematic based on Netronome Agilio SmartNICs and software</b></p>
+<p>A key feature of the Netronome Agilio solution is deep integration with OpenContrail and offloading of lookups and actions for vRouter tables.</p>
+<p>Compute nodes based on Agilio SmartNICs and software can work in an OpenStack cluster based on OpenContrail without changes to orchestration. That means it’s scale-independent and can be plugged into existing OpenContrail environments with zero downtime.</p>
+<p>Mirantis Cloud Platform can be used as an easy and fast delivery tool to set up Netronome Agilio-based compute nodes and provide orchestration and analysis of the cluster environment. Using Agilio and MCP, it is easily to setup a high-performance cluster with a ready-to-use NFV infrastructure.</p>
+<h2>Testing scenario</h2>
+<p>To make the test fair and clear, we will use an OpenStack cluster with two compute nodes. Each node will have a 10GbE NIC for the tenant network.</p>
+<p>As we mentioned before, the simplest way to test the PPS rate is to run a VM to VM test. Each VM will have 2 Virtio interfaces to receive and transmit packets, 4 vCPU cores, 4096 MB of RAM and will run Pktgen-DPDK inside to generate and receive a high rate of traffic. For each VM a single Virtio interface will be used for generation, and another interface will be used for receiving incoming traffic from the other VM.</p>
+<p>To make an analytic comparison of all technologies, we will not use more than 2 cores for the data plane acceleration engines. The results of the RX PPS rate for all VMs will be considered as a result for the VM to VM test.</p>
+<p>First of all, we will try to measure kernel vRouter VM to VM performance. Nodes will be connected with Intel 82599 NICs. The following results were achieved for a UDP traffic performance test:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2017/04/intelligent-nfv-performance-with-opencontrail-image03.png"><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-7435" src="http://www.opencontrail.org/wp-content/uploads/2017/04/intelligent-nfv-performance-with-opencontrail-image03.png" alt="" width="600" height="371" data-id="7435" /></a></p>
+<p>As you can see, the kernel vRouter is not suitable for providing a high packet per second rate, mostly because the interrupt-based model can’t handle a high rate of packets per second. With 64 byte packets we can only achieve 3% of line rate.</p>
+<p>For the DPDK-based vRouter, we achieved the following results:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2017/04/intelligent-nfv-performance-with-opencontrail-image04.png"><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-7436" src="http://www.opencontrail.org/wp-content/uploads/2017/04/intelligent-nfv-performance-with-opencontrail-image04.png" alt="" width="600" height="371" data-id="7436" /></a></p>
+<p>Based on these results, the DPDK based solution is better at handling high-rated traffic based on small UDP packets.</p>
+<p>Lastly, we tested the Netronome Agilio SmartNIC-based compute nodes:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2017/04/intelligent-nfv-performance-with-opencontrail-image05.png"><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-7437" src="http://www.opencontrail.org/wp-content/uploads/2017/04/intelligent-nfv-performance-with-opencontrail-image05.png" alt="" width="600" height="371" data-id="7437" /></a></p>
+<p>With only 2 forwarder cores, we are able to achieve line-rate speed on Netronome Agilio CX 10GbE SmartNICs on all size of packets.</p>
+<p>You can also see a demonstration of the Netronome Agilio Solution <a href="https://www.youtube.com/watch?v=wZ8t63UyWw8">here</a>.</p>
+<p>Since we have achieved line-rate speed on the 10GbE interface using Netronome Agilio SmartNICs we wanted to have the maximum possible PPS rate based on 2 CPUs. To determine the maximum performance result for this deployment, we will upgrade existing nodes with Netronome Agilio CX 40GbE SmartNIC and repeat the maximum PPS scenario one more time. We will use direct wire connection between 40GbE ports and will set up 64-bytes UDP traffic. Even with hard resources limitations, we achieved:</p>
+<table style="height: 79px;" border="1" width="645" cellpadding="5">
+<tbody>
+<tr>
+<td></td>
+<td>Rate</td>
+<td>Packet size, Bytes</td>
+</tr>
+<tr>
+<td>Netronome Agilio Agilio CX 40GbE SmartNIC</td>
+<td>19.9 Mpps</td>
+<td>64</td>
+</tr>
+</tbody>
+</table>
+<h2>What we learned</h2>
+<p>Taking all of the results together, we can see a pattern:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2017/04/intelligent-nfv-performance-with-opencontrail-image06.png"><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-7438" src="http://www.opencontrail.org/wp-content/uploads/2017/04/intelligent-nfv-performance-with-opencontrail-image06.png" alt="" width="600" height="371" data-id="7438" /></a></p>
+<p>Based on 64 byte UDP traffic, we can also see where each solution stands compared to 10GbE line rate:</p>
+<table>
+<tbody>
+<tr>
+<td width="257"></td>
+<td width="174">Rate</td>
+<td width="150">% of line rate</td>
+</tr>
+<tr>
+<td width="257">Netronome Agilio</td>
+<td width="174">14.9 Mpps</td>
+<td width="150">100</td>
+</tr>
+<tr>
+<td width="257">vRouter DPDK</td>
+<td width="174">4.0 Mpps</td>
+<td width="150">26</td>
+</tr>
+<tr>
+<td width="257">Kernel vRouter</td>
+<td width="174">0.56 Mpps</td>
+<td width="150">3</td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+<p>OpenContrail remains the best production-ready SDN solution for OpenStack clusters, but to provide NFV-related infrastructure, OpenContrail can be used in different ways:</p>
+<ul>
+<li>The Kernel vRouter, based on interrupt model packet processing, works, but does not satisfy the high PPS rate requirement.</li>
+<li>The DPDK-based vRouter significantly improves the PPS rate, but due to high resource consumption and because of defined limitations, it can’t achieve the required performance. We also can assume that using a modern DPDK library will improve performance and optimise resource consumption.</li>
+<li>The Netronome Agilio SmartNIC solution significantly improves OpenContrail SDN performance, focusing on saving host resources and providing a stable high-performance infrastructure.</li>
+</ul>
+<p>With Mirantis Cloud Platform tooling, it is possible to provision, orchestrate and destroy high performance clusters with various networking features, making networking intelligent and agile.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

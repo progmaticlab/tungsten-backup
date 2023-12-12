@@ -1,0 +1,572 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>LBaas Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/lbaas/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/lbaas/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Sat, 23 Apr 2016 21:09:27 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>LBaas Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/lbaas/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Enhancing OpenStack LBaaSv1 via Custom Attributes in OpenContrail</title>
+		<link>https://tungsten.io/enhancing-openstack-lbaasv1-via-custom-attributes-in-opencontrail/</link>
+		
+		<dc:creator><![CDATA[Aniket Daptari]]></dc:creator>
+		<pubDate>Sat, 23 Apr 2016 21:09:27 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[LBaas]]></category>
+		<category><![CDATA[Neutron]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6995</guid>
+
+					<description><![CDATA[Note: This blog is co-authored by Aniket Daptari from Juniper Networks and Varun Lodaya from Symantec. Varun will be presenting his work at the upcoming OpenContrail User Group meeting during...]]></description>
+										<content:encoded><![CDATA[<p><em><strong>Note: </strong>This blog is co-authored by Aniket Daptari from Juniper Networks and Varun Lodaya from Symantec. Varun will be presenting his work at the upcoming <a href="http://www.opencontrail.org/event/ocug-austin-2016/">OpenContrail User Group meeting </a>during the OpenStack Summit (April 27th). <strong><a href="http://www.opencontrail.org/event/ocug-austin-2016/">RSVP</a></strong> to the event if you want to see his talk.</em></p>
+<p>&nbsp;</p>
+<p>This blog highlights how OpenContrail has fostered the notion of User and Developer communities. Here, we highlight one example of a specific User and how they have contributed as a Developer to enhance the value they extract from OpenContrail. Symantec has now been a long time user and contributor to OpenContrail. In this particular blog we aim to highlight one of their most recent contributions that enhances the LBaaS offering in a manner that not only addresses their specific use case, but is generic enough for other users to leverage.</p>
+<p>Further, this general approach may be used to extend other API sets beyond LBaaS as well.</p>
+<p>With this, we also want to highlight the contribution of OpenContrail developer, Varun Lodaya who has played a critical role in the design and development of this enhancement</p>
+<h3>Abstract :</h3>
+<p>With LBaaS, OpenStack attempts to define a single set of APIs to consume load balancing functionality regardless of the implementation of those APIs. This allows the OpenStack operator flexibility in choosing the load balancing implementation on the backend as well as in making changes to that back end. This has allowed various vendors to provide their southbound LBaaS drivers for example F5, A10, HAProxy, NGINX, etc. Now, while each of these load balancers offers many varied features, the northbound LBaaS APIs (v1.0) are a bit limited. It is perhaps impractical to provide APIs for every feature provided by all the load balancers. Therefore, there is a need to provide a way to support load balancer functionality beyond what is made available via the LBaaS v1.0 APIs.</p>
+<p>OpenContrail user, Symantec had the following LBaaS use cases that translated to a requirement to exercise additional functionality beyond what is available via LBaaS v1. In response to that requirement, Symantec developers designed the LBaaS Custom Attributes support.</p>
+<p>The following are the use cases in the words of Cloud Platform Engineering developer, Varun Lodaya, from Symantec:</p>
+<h3>Use Cases:</h3>
+<p>● Enable our cloud users to manage all their LBaaS features/configurations themselves.<br />
+● Empower the cloud providers to decide what capabilities they want their users to have since they know their infrastructure capabilities and limitations the best.<br />
+● Support tenant SSL certs with custom attributes.</p>
+<h3>Design :</h3>
+<p>We came up with a modular design that would help to cater to all of the above use cases. Following is the design flow:<br />
+● Based on the LBaaS driver that the cloud provider is using, the cloud provider will identify the additional features they want to expose to their users. These additional features will be made available to the users via custom attributes. The cloud provider will then generate a validation file that contains all the custom attributes (corresponding to the features) they want to provide to their users. In addition to the list of additional features, the cloud provider will also specify any limits they might want to enforce associated with those custom attributes.<br />
+● This validation file will be used and enforced by OpenContrail when facilitating the invocation of the custom attributes.<br />
+● When users exercise the load balancing functionality via the LBaaS APIs, they will invoke additional functionality by specifying a list of keyvalue dicts while configuring the LBaaS pool. This list of keyvalue dicts is saved in a database.<br />
+● When the LBaaS VIP is created, the OpenContrail Service Monitor process reads the custom attributes from the lb_pool object and validates them against the corresponding custom validation file.<br />
+● If validation fails, service_monitor process moves the vip/service_instance to “Error” state with the corresponding error message. It’s users responsibility to then go back and correct their custom attributes to pass validation.<br />
+● If validation passes, the custom attributes are pushed down to the corresponding drivers. In case of OpenContrail’s implementation of LBaaS using HAProxy, these custom attributes get pushed to the vRouter from where they get applied to the corresponding HAProxy process.<br />
+● This custom attributes extension could also be used to support tenant level SSL certs with LBaaSv1. Users could manage their certs in different ways, one of those ways being the Openstack project Barbican.<br />
+● Once they have their certificate pem files ready, they can provide the certificate references as custom attributes to OpenContrail.<br />
+● OpenContrail then downloads the certificates via references provided in custom attributes and updates the corresponding southbound driver with the SSL certificates.<br />
+● Currently, we support Openstack Barbican as certificate manager and OpenContrail code fetches the certificates and private keys from Barbican, but, code is generic enough to be able to plugin any cert_manager_driver which could then fetch the certificates from thirdparty certificate managers.</p>
+<h3>Usage:</h3>
+<p><strong>CLI:</strong><br />
+<em>Neutron CLI to provide custom attributes:</em></p>
+<pre><span style="font-family: 'courier new', courier;">neutron lb-pool-create --name Test_Pool --subnet-id &lt;subnetid&gt;
+--lb-method ROUND_ROBIN --protocol HTTP --custom-attributes type=dict
+list=true client_timeout=50000,
+tls_container= http://&lt;barbican_ep&gt;/v1/containers/ &lt;container_ref_uuid&gt;
+neutron lb-pool-update &lt;pool-id&gt; --custom-attributes type=dict
+list=true server_timeout=100000</span></pre>
+<p><em>Barbican CLI to manage certs :</em></p>
+<pre><span style="font-family: 'courier new', courier;">barbican secret store --payload-content-type='text/plain'
+--name='certificate' --payload="$(cat server.crt)"
+barbican secret store --payload-content-type='text/plain'
+--name='private_key' --payload="$(cat server.key)"
+barbican secret container create --name='tls_container'
+--type='certificate' --secret="certificate=$(barbican secret list |
+awk '/ certificate / {print $2}')" --secret="private_key=$(barbican
+secret list | awk '/ private_key / {print $2}')"</span></pre>
+<p><strong>API</strong>:<br />
+<em>Neutron API to provide custom attributes:</em></p>
+<pre><span style="font-family: 'courier new', courier;">curl -i -X POST http://&lt;neutron_end_point&gt;:9696/v2.0/ports.json -H
+"UserAgent: pythonneutronclient" -H "ContentType:
+application/json" -H "Accept: application/json" -H "X-Auth-Token:
+0cb1bad6081e4ca383495a3f5a3ea718" -d '{"port": {"network_id":
+"9be1ce8e-5226-4046-be82-100fcd041dc1", "fixed_ips": [{"subnet_id":
+"c2968821-e52b-4c2e-a895-4ded7abf2edb", "ip_address":
+"192.168.1.5"}], "custom_attributes": [{"client_timeout=50000",
+"tls_container=http://&lt;barbican_ep&gt;/v1/containers/&lt;container_uuid&gt;"}]
+, "admin_state_up": true}}'</span></pre>
+<p><em>Barbican API to create private_key secrets :</em></p>
+<pre><span style="font-family: 'courier new', courier;">curl -i -X POST https://&lt;barbicanapi_end_point&gt;:9311/v1/secrets -H
+"content-type:application/json" -H "X-Auth-Token:$TOKEN" \
+-d '{"name": "Private_Key", "payload": "&lt;private_key&gt;",
+"payload_content_type": "text/plain"}'</span></pre>
+<p><em>Barbican API to create certificate secrets:</em></p>
+<pre><span style="font-family: 'courier new', courier;">curl -i  -X POST https://&lt;barbicanapi_end_point&gt;:9311/v1/secrets -H
+"content-type:application/json" -H "X-Auth-Token:$TOKEN" \
+-d '{"name": "Certificate", "payload": "&lt;certificate&gt;",
+"payload_content_type": "text/plain"}'</span></pre>
+<p><em>Barbican API to create pem containers:</em></p>
+<pre><span style="font-family: 'courier new', courier;">curl -i -X POST https://&lt;barbicanapi_end_point&gt;:9311/v1/containers -H
+"content-type:application/json" -H "X-Auth-Token:$TOKEN" \
+-d '{"name": "tls_container", "type": "certificate", "secret_refs": \
+[{"name": "private_key", "secret_ref": "&lt;key_ref&gt;"},{"name": \
+"certificate", "secret_ref": "&lt;certificate_ref&gt;"}]}'</span></pre>
+<p><em>Barbican API to update secret ACLs:</em></p>
+<pre><span style="font-family: 'courier new', courier;">curl -i -X PUT \https://&lt;barbicanapi_end_point&gt;:9311/v1/secrets/&lt;secret_uuid&gt;/acls \
+-H "content-type: application/json" -H "X-Auth-Token:$TOKEN" \
+-d '{"read": {"users": "[&lt;user_uuids&gt;]"}}'</span></pre>
+<p><strong>EXAMPLE</strong>:<br />
+How to use Custom Attributes for SSL Cert Support with HAProxy:<br />
+Steps:<br />
+1) Add the new config file which contains keystone auth credentials to<br />
+/etc/contrail/contrail-vrouter-agent.conf file as follows:</p>
+<pre><span style="font-family: 'courier new', courier;">cat /etc/contrail/contrail-vrouter-agent.conf | grep B3 lb_custom
+[ SERVICE INSTANCE]
+<span style="color: #993300;"># Path to the script which handles the netns commands</span>
+netns_command = <span style="color: #339966;">/usr/</span>bin/opencontrail-vrouter-netns
+lb_custom_attr_conf_path = <span style="color: #339966;">/etc/</span>contrail/contrail-vrouter-custom-attr.conf</span></pre>
+<p>2) The keystone file contains the following by default:</p>
+<pre><span style="font-family: 'courier new', courier;">/etc/contrail/contrail-vrouter-custom-attr.conf
+[DEFAULT]
+
+[KEYSTONE]
+keystone_endpoint=http://172.16.38.189:5000
+barbican_endpoint=http://172.16.38.188:9311
+domain_name=default
+username=admin
+password=abc123
+project_name=demo
+keystone_version=v3
+
+[CERT]
+#cert_manager=Barbican_Cert_Manager
+cert_manager=Generic_Cert_Manager</span></pre>
+<p>3) Restart contrail vrouter agent for it to read this new config.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ubuntu : <span style="color: #339966;">/var/</span>log/keystone <span style="color: #993300;"># service supervisor-vrouter restart</span>
+supervisor-vrouter stop / waiting
+supervisor-vrouter start / running , process <span style="color: #008000;">18287</span></span></pre>
+<p>Steps 4 to 7 would vary based on the driver selected in the config.</p>
+<p>Barbican Cert Manager Flow:</p>
+<p>4) Create barbican secrets first. Make sure payloadcontenttype is ‘text/plain’.</p>
+<pre><span style="font-family: 'courier new', courier;">barbican secret store --payload-content-type= <span style="color: #339966;">'text/plain'</span> --name= <span style="color: #339966;">'certificate'</span>
+--payload= <span style="color: #339966;">"$(cat ssl.crt)"</span>
+barbican secret store --payload-content-type= <span style="color: #339966;">'text/plain'</span> --name = <span style="color: #339966;">'private_key'</span>
+--payload= <span style="color: #339966;">"$(cat ssl.key)"</span></span></pre>
+<p>5) Create the barbican container referencing both the secrets</p>
+<pre><span style="font-family: 'courier new', courier;">barbican container create --name= <span style="color: #339966;">'tls_container'</span> --secret=<span style="color: #339966;"> "certificate=$(barbican</span>
+<span style="color: #339966;">secret list | awk '/ certificate / {print $2}')"</span> --secret= <span style="color: #339966;">"private_key=$(barbican</span>
+<span style="color: #339966;">secret list | awk '/ private_key / {print $2}')"</span></span></pre>
+<p>6) Now create the load balancer pool with tls_container as the custom-attribute as follows:</p>
+<pre><span style="font-family: 'courier new', courier;">neutron lb-pool-create --subnet-id c41ec07c-9330-4469-b7f7-33fd4f29fce1 --lb-method
+ROUND_ROBIN --protocol HTTPS --name TestPool --custom-attributes type = dict list = true
+tls_container = <a href="http://172.16.38.188:9311/v1/containers/f3c48a4b-efab-4050-9c6e-289fb6c10168">http://172.16.38.188:9311/v1/containers/f3c48a4b-efab-4050-9c6e-289fb6c10168</a></span></pre>
+<p>7) Create the load balancer VIP now</p>
+<pre><span style="font-family: 'courier new', courier;">neutron lb-vip-create --subnet-id c41ec07c-9330-4469-b7f7-33fd4f29fce1 --protocol HTTP
+--protocol-port 443 --name TestVip TestPool</span></pre>
+<p>Basic Cert Manager Flow:</p>
+<p>4) Store secrets in shared folder.</p>
+<p>5) Now create the load balancer pool with tls_container as the custom-attribute as follows:</p>
+<pre><span style="font-family: 'courier new', courier;">neutron lb-pool-create --subnet-id c41ec07c-9330-4469-b7f7-33fd4f29fce1 --lb-method
+ROUND_ROBIN --protocol HTTPS --name TestPool --custom-attributes type = dict list = true
+tls_container =<span style="color: #808000;">/var/lib/contrail/shared_crts/crt.pem</span></span></pre>
+<p>7) Create the load balancer VIP now</p>
+<pre><span style="font-family: 'courier new', courier;">neutron lb-vip-create --subnet-id c41ec07c-9330-4469--b7f7-33fd4f29fce1 --protocol HTTP
+--protocol-port 443 --name <span style="color: #800080;">TestVip TestPool</span></span></pre>
+<p>8) Monitor Logs by tailing the below file:</p>
+<p>/var/log/contrail/haproxy_parse.log</p>
+<p>BLUEPRINT and SOURCE CODE:<br />
+<a href="https://blueprints.launchpad.net/opencontrail/+spec/lbaas-custom-attr-support">https://blueprints.launchpad.net/opencontrail/+spec/lbaas-custom-attr-support</a><br />
+<a href="https://bugs.launchpad.net/opencontrail/+bug/1475393">https://bugs.launchpad.net/opencontrail/+bug/1475393</a><br />
+<a href="https://bugs.launchpad.net/opencontrail/+bug/1546253">https://bugs.launchpad.net/opencontrail/+bug/1546253</a><br />
+<a href="https://bugs.launchpad.net/opencontrail/+bug/1547645">https://bugs.launchpad.net/opencontrail/+bug/1547645</a></p>
+<p>&nbsp;</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>OpenStack Neutron LbaaS integration with physical F5 in OpenContrail SDN</title>
+		<link>https://tungsten.io/openstack-neutron-lbaas-integration-with-physical-f5-in-opencontrail-sdn/</link>
+		
+		<dc:creator><![CDATA[Jakub Pavlik]]></dc:creator>
+		<pubDate>Wed, 07 Oct 2015 07:56:46 +0000</pubDate>
+				<category><![CDATA[LBaas]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6729</guid>
+
+					<description><![CDATA[This is a guest blog from tcpCloud authored by Marek Celoud &#38; Jakub Pavlik (tcp cloud engineers). To see the original post,click here. In this blog we would like to...]]></description>
+										<content:encoded><![CDATA[<p><em>This is a guest blog from tcpCloud authored by Marek Celoud &amp; Jakub Pavlik (tcp cloud engineers). To see the original post,<a href="http://www.tcpcloud.eu/en/blog/2015/10/06/openstack-neutron-lbaas-integration-physical-f5-opencontrail-sdn/" target="_blank">click here</a>.</em></p>
+<p>In this blog we would like to show how to integrate physical F5 under OpenContrail SDN and create Load Balancer pools through standard Neutron LbaaS API.</p>
+<p>Load Balancers are very important part of cloud and OpenStack Neutron has enabled to use LbaaS features since release Grizzly. However upstream implementation with OpenvSwitch/HAProxy does not provide High Availability by design. SDN OpenContrail provides HA LbaaS feature with HAProxy from release IceHouse and for example Symantec comes with great performance results.(<a class="reference external" href="http://www.slideshare.net/RudrajitTapadar/meetup-vancouverpptx-1">http://www.slideshare.net/RudrajitTapadar/meetup-vancouverpptx-1</a>)</p>
+<p>However lots of companies still need to use physical load balancers especially F5 Networks for performance (HW SSL offloading) and other feature benefits. Therefore integration with physical load balancers is mandatory. Second mandatory requirement is tight integration with Neutron LbaaS to enable developers manage different LbaaS providers through standard API and orchestrate infrastructure by OpenStack Heat.</p>
+<p>There exist different SDN solution, which support integration with physical F5, but none can provide it thru Neutron LbaaS API. They usually offer possibility to manage F5 in their own administrator dashboard, which does not provide the real benefits of automation. OpenContrail as only one SDN/NFV solution released a new driver for physical and virtual F5 balancers, which is compliant with previous two requirements.</p>
+<p>In this blog we show:</p>
+<ul class="simple">
+<li>How to configure OpenContrail to use F5 driver.</li>
+<li>How to provisioning physical F5 thru Neutron LbaaS API.</li>
+<li>How to automatically orchestrate them via OpenStack Heat.</li>
+</ul>
+<div id="lab-overview" class="section">
+<h2>LAB OVERVIEW</h2>
+<p>OpenContrail 2.20 contains beta release for managing physical or virtual F5 through OpenStack Neutron LbaaS API.</p>
+<p>OpenStack Neutron LbaaS v1 contains following objects and their dependencies: member, pool, VIP, monitor.</p>
+<p><img fetchpriority="high" decoding="async" class="aligncenter size-full wp-image-6736" src="http://www.opencontrail.org/wp-content/uploads/2015/10/lbaas-objects.png" alt="lbaas-objects" width="385" height="352" data-id="6736" /></p>
+<p>F5 can operate now only in <em>“global routed mode”</em>, where all the VIPs are assumed to be routable from clients and all members are routable from F5 device. Therefore the entire configuration on F5 for L2 and L3 must be pre-provisioned.</p>
+<p>In the global routed mode, because all access to and from the F5 device is assumed to globally routed, there is no segregation between tenant services on F5 device possible. In other words, overlapping addresses across tenants/networks is not a valid configuration.</p>
+<p>Following assumptions made for global routed mode of F5 LBaaS support:</p>
+<ul class="simple">
+<li>All tenant networks are in the same namespace as fabric corporate network</li>
+<li>IP Fabric is also in the same namespace as corporate network</li>
+<li>All VIPs are also in the same namespace as tenant/corporate networks</li>
+<li>F5 could be attached to corporate network or to IP Fabric</li>
+</ul>
+<p>The following network diagram capture lab topology, where we tested F5 integration.</p>
+</div>
+<p><img decoding="async" class="aligncenter size-full wp-image-6735" src="http://www.opencontrail.org/wp-content/uploads/2015/10/f5_net_topology.png" alt="f5_net_topology" width="867" height="863" data-id="6735" /></p>
+<div id="lab-overview" class="section">
+<ul class="simple">
+<li><strong>VLAN F5-FROM-INET 185.22.120.0/24</strong> &#8211; VLAN with public IP addresses used for VIP on F5 load balancer.</li>
+<li><strong>VLAN F5-TO-CLOUD 192.168.8.8/29</strong> &#8211; VLAN between F5 and Juniper MX LB VRF (subinterface). It is transport network used for communication between members and F5.</li>
+<li><strong>Underlay network 10.0.170.0/24</strong> &#8211; underlay internal network for OpenContrail/OpenStack services (iBGP peering, MPLSoverGRE termination on Juniper MX). Each compute node (vRouter) and Juniper MX have IP addresses from this subnet.</li>
+<li><strong>VIP network 185.22.120.0/24</strong> &#8211; used for VIP pool. Same network as F5-FROM-INET, but created as VN in Neutron. Neutron LbaaS VIP cannot be created from network, which does not exist in OpenStack.</li>
+<li><strong>Overlay Member VN (Virtual Network) 172.16.50.0/24</strong> &#8211; Standard OpenStack Neutron network with Route Target into LB routing-instance (VRF) on Juniper MX. This network is propagated into LB VRF.</li>
+</ul>
+<p><strong>Initial configuration on F5</strong></p>
+<ul class="simple">
+<li>preconfigured VLANs on specific ports with appropriate Self IPs. F5 must be able to access members in OpenStack cloud and INET for VIP pool.</li>
+<li>accessible management from OpenContrail controllers</li>
+</ul>
+<p><strong>Initial configuration on Juniper MX (DC Gateway)</strong></p>
+<ul class="simple">
+<li>In this case configuration for MX is manual, so there must be preconfigured VRF for <em>LB</em> and <em>INET</em>.</li>
+<li>Static routes must be configured correctly.</li>
+</ul>
+</div>
+<div id="initial-opencontrail-configuration" class="section">
+<h2>INITIAL OPENCONTRAIL CONFIGURATION</h2>
+<p>OpenContrail 2.20 contains two new components, which are responsible for managing F5:</p>
+<ul class="simple">
+<li><strong>contrail-f5</strong> &#8211; package with Big IP interface for f5 load balancer.</li>
+<li><strong>f5_driver.py</strong> &#8211; driver itself delived in package contrail-config-openstack.</li>
+</ul>
+<p>We need to create service appliance set definition for general F5 balancer and service appliance for one specific F5 device. These configuration enables to use F5 as LbaaS provider in Neutron API.</p>
+<div id="service-appliance-set-as-lbaas-provider" class="section">
+<h3>Service Appliance Set as LBaaS Provider</h3>
+<p>In neutron, loadbalancer provider is statically configured in neutron.conf using following parameter:</p>
+<p><span style="font-family: 'courier new', courier;"> [service_providers]service_provider= LOADBALANCER:Opencontrail:neutron_plugin_contrail.plugins.opencontrail.loadbalancer.driver.OpencontrailLoadbalancerDriver:default</span></p>
+<p>In OpenContrail, neutron LBaaS provider is configured using configuration object <em>“service appliance set”</em>. This config object includes <em>“python”</em> module to load for LBaaS driver. All the configuration knobs of the LBaaS driver is populated to this object and passed to the driver.</p>
+<p>OpenContrail F5 driver options in current beta version:</p>
+<ul class="simple">
+<li><strong>device_ip</strong> &#8211; ip address for management configuration of F5.</li>
+<li><strong>sync_mode</strong> &#8211; replication</li>
+<li><strong>global_routed_mode</strong> &#8211; only one mode, which is now supported.</li>
+<li><strong>ha_mode</strong> &#8211; standalone is default settings.</li>
+<li><strong>use_snat</strong> &#8211; use F5 for SNAT.</li>
+<li><strong>vip_vlan</strong> &#8211; vlan name on F5, where vip subnet is routed. Our case is F5-TO-INET</li>
+<li><strong>num_snat</strong> &#8211; 1</li>
+<li><strong>user</strong> &#8211; admin user fo connection to F5.</li>
+<li><strong>password</strong> &#8211; password for admin user to F5.</li>
+<li><strong>MX parameters</strong> &#8211; (mx_name, mx_ip, mx_f5_interface, f5_mx_interface) are used for dynamic provisioning routing instances (VRF) between Juniper MX and F5. We have not tested this feature with F5 driver yet.</li>
+</ul>
+<p>At first there must be installed contrail-f5 and python-suds packages. After that create service_appliance_set for neutron lbaas provider F5.</p>
+<pre><span style="font-family: 'courier new', courier;">
+apt-get install python-suds contrail-f5
+/opt/contrail/utils/service_appliance_set.py --api_server_ip 10.0.170.30 --api_server_port 8082 --oper add --admin_user admin --admin_password password --admin_tenant_name admin --name f5 --driver "svc_monitor.services.loadbalancer.drivers.f5.f5_driver.OpencontrailF5LoadbalancerDriver" --properties '{"use_snat": "True", "num_snat": "1", "global_routed_mode":"True", "sync_mode": "replication", "vip_vlan": "F5-FROM-INET"}'</span></pre>
+<p>Service appliance set consists of service appliances (Either physical device (F5) or Virtual machine) for loadbalancing the traffic.</p>
+<pre><span style="font-family: 'courier new', courier;">
+/opt/contrail/utils/service_appliance.py --api_server_ip 10.0.170.30 --api_server_port 8082 --oper add --admin_user admin --admin_password password --admin_tenant_name admin --name bigip --service_appliance_set f5 --device_ip 10.0.170.254 --user_credential '{"user": "admin", "password": "admin"}'</span></pre>
+<p><strong>Note: </strong><em>tcp cloud OpenContrail packages and OpenContrail lauchpad have service_applice.py scripts in /usr/lib/</em></p>
+<div id="initial-opencontrail-configuration" class="section">
+<div id="service-appliance-set-as-lbaas-provider" class="section">
+<p>Finally there must be created vipnet with subnet propagated on F5 interface. This subnet must be created for vip allocation.</p>
+<div id="creating-load-balancer-via-neutron-lbaas" class="section">
+<h2>CREATING LOAD BALANCER VIA NEUTRON LBAAS</h2>
+<p>We booted two instances with apache web server on port 80 into 172.16.50.0/24. This network is terminated in LB VRF. Use the following steps to create a load balancer in Contrail.</p>
+<p>Create a pool for HTTP.</p>
+<pre><span style="font-family: 'courier new', courier;">
+neutron lb-pool-create --lb-method ROUND_ROBIN --name mypool --protocol HTTP --subnet-id 99ef11f3-a04f-45fe-b3bb-c835b9bbd86f --provider f5</span></pre>
+<p>Add members into the pool.</p>
+<pre><span style="font-family: 'courier new', courier;">
+neutron lb-member-create --address 172.16.50.3 --protocol-port 80 mypool 
+neutron lb-member-create --address 172.16.50.4 --protocol-port 80 mypool</span></pre>
+<p>Create and associate VIP into the pool. After this command F5 configuration is applied.</p>
+<pre><span style="font-family: 'courier new', courier;">
+neutron lb-vip-create --name myvip --protocol-port 80 --protocol HTTP --subnet-id vipsubnet mypool</span></pre>
+<p>Finally, create a sample health monitor.</p>
+<pre><span style="font-family: 'courier new', courier;">
+neutron lb-healthmonitor-create --delay 20 --timeout 10 --max-retries 3 --type HTTP</span></pre>
+<p>Associate a health monitor to a pool.</p>
+<pre><span style="font-family: 'courier new', courier;">
+neutron lb-healthmonitor-associate  mypool</span></pre>
+<p>When you login into F5 management dashboard, you have to switch into a new partition, which is dynamically created with each LbaaS instance.</p>
+<p><img decoding="async" class="aligncenter size-full wp-image-6732" src="http://www.opencontrail.org/wp-content/uploads/2015/10/partition.png" alt="partition" width="574" height="65" data-id="6732" /></p>
+</div>
+<p>Local Traffic -&gt; Network Map shows map all objects created and configured by F5 driver.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6731" src="http://www.opencontrail.org/wp-content/uploads/2015/10/network-map.png" alt="network-map" width="775" height="765" data-id="6731" /></p>
+</div>
+<p>Green point shows that everything is available and active. If you select Virtual Servers, there is detail of created VIP.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6733" src="http://www.opencontrail.org/wp-content/uploads/2015/10/vip-detail.png" alt="vip-detail" width="955" height="517" data-id="6733" /></p>
+</div>
+<p>Last screenshot captured selected VLAN for VIP.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6734" src="http://www.opencontrail.org/wp-content/uploads/2015/10/vlan-f5.png" alt="vlan-f5" width="747" height="162" data-id="6734" /></p>
+<h2>HEAT ORCHESTRATION</h2>
+<p>As already mentioned at begging the goal is to manage F5 same like other OpenStack resources thru Heat engine. To enable heat orchestration for LbaaS with F5, there must be resource for neutron lbaas provider, which was added in OpenStack Liberty. Therefore we had to backported this resource into OpenStack Juno and Kilo. This link contains gerrit review for lbaas provider <a class="reference external" href="https://review.openstack.org/#/c/185197/">https://review.openstack.org/#/c/185197/</a></p>
+<div class="admonition note">
+<p class="last"><strong>Note: </strong><em>You can use our Ubuntu repositories, where this feature is included <a class="reference external" href="http://www.opentcpcloud.org/en/documentation/packages-and-repositories/">http://www.opentcpcloud.org/en/documentation/packages-and-repositories/</a></em></p>
+</div>
+<p>We prepared sample template for f5 lbaas provider, which can be downloaded and customized as required. <a class="reference external" href="https://github.com/tcpcloud/heat-templates/blob/master/templates/lbaas_contrail_f5_test.hot">https://github.com/tcpcloud/heat-templates/blob/master/templates/lbaas_contrail_f5_test.hot</a></p>
+<p>When we have a template with appropriate parameters we can lauch stack.</p>
+<pre><span style="font-family: 'courier new', courier;">
+heat stack-create -e env/test_contrail_f5_lbaas/demo_ce.env -f template/test_contrail_f5_lbaas.hot test_contrail_f5_lbaas_demo_ce</span></pre>
+<p>Check the status.</p>
+<pre><span style="font-family: 'courier new', courier;">
+heat stack-list 
++--------------------------------------+---------------------------------+-----------------+----------------------+ 
+| id                                   | stack_name                     | stack_status    | creation_time        | 
++--------------------------------------+---------------------------------+-----------------+----------------------+ 
+| a4825267-7444-46af-87da-f081c5405470 | test_contrail_f5_lbaas_demo_ce | CREATE_COMPLETE | 2015-10-02T12:18:06Z | 
++--------------------------------------+---------------------------------+-----------------+----------------------+ </span></pre>
+<p>Describe resources in this stack and verify balancer configuration.</p>
+<pre><span style="font-family: 'courier new', courier;">
+root@prx01:/srv/heat/env# heat stack-show test_contrail_f5_lbaas_demo_ce
++-----------------------+--------------------------------------------
+| Property              | Value
++-----------------------+--------------------------------------------
+| capabilities          |[]| creation_time         | 2015-10-02T12:18:06Z
+| description           | Contrail F5 LBaaS Heat Template
+| id                    | a4825267-7444-46af-87da-f081c5405470
+| links                 | http://10.0.170.10:8004/v1/2c114f (self)|| notification_topics   |[]| outputs               |[]
+| parameters            |{||"OS::project_id": "2c114f0779ac4367a94679cad918fbd4",
+||"OS::stack_name": "test_contrail_f5_lbaas_demo_ce",
+||"private_net_cidr": "172.10.10.0/24",
+||"public_net_name": "public-net",
+||"key_name": "public-key-demo",
+||"lb_name": "test-lb",
+||"public_net_pool_start": "185.22.120.100",
+||"instance_image": "ubuntu-14-04-x64-1441380609",
+||"instance_flavor": "m1.medium",
+||"OS::stack_id": "a4825267-7444-46af-87da-f081c5405470",
+||"private_net_pool_end": "172.10.10.200",
+||"private_net_name": "private-net",
+||"public_net_id": "621fdf52-e428-42e4-bd61-98db21042f54",
+||"private_net_pool_start": "172.10.10.100",
+||"public_net_pool_end": "185.22.120.200",
+||"lb_provider": "f5",
+||"public_net_cidr": "185.22.120.0/24",
+||||}| parent                | None
+| stack_name            | test_contrail_f5_lbaas_demo_ce
+| stack_owner           | demo
+| stack_status          | CREATE_COMPLETE
+| stack_status_reason   | Stack CREATE completed successfully
+| stack_user_project_id | 76ea6c88fdd14410987b8cc984314bb8
+| template_description  | Contrail F5 LBaaS Heat Template
+| timeout_mins          | None
+| updated_time          | None
++-----------------------+-----------------------------------------------------------</span></pre>
+<p>This template is sample, so you have to manually configure Route Target for private net or try to use Contrail heat resources, which is not part of this blog post.</p>
+</div>
+<h2>CONCLUSION</h2>
+<p>We demonstrated that OpenContrail is the only one SDN solution, which enables to manage physical F5 through Neutron LbaaS API instead of own management portal. The next step is implementation of this feature at our pilot customers, where we want to continue on production testing scenarios. Future release should also provide dynamic MX configuration, multi-tenancy, etc.</p>
+<p>OpenContrail team works also on integration of other vendor Loadbalancer, which will be available in next release.</p>
+</div>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Load Balancer as a Service In Contrail</title>
+		<link>https://tungsten.io/load-balancer-as-a-service-in-contrail/</link>
+		
+		<dc:creator><![CDATA[Aniket Daptari]]></dc:creator>
+		<pubDate>Wed, 07 Jan 2015 04:25:31 +0000</pubDate>
+				<category><![CDATA[LBaas]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=5932</guid>
+
+					<description><![CDATA[Note: This blog is co-authored by Aniket Daptari from Juniper Networks Contrail team and Foucault De Bonneval, Product owner of SDN at CloudWatt, France. Introduction: &#8220;Load Balancing&#8221; is a very...]]></description>
+										<content:encoded><![CDATA[<h4>Note: This blog is co-authored by Aniket Daptari from Juniper Networks Contrail team and Foucault De Bonneval, Product owner of SDN at CloudWatt, France.</h4>
+<h4><a name="_Toc280001894"></a><a name="_Toc274230071"></a><a name="_Toc274229465"></a>Introduction:</h4>
+<p>&#8220;Load Balancing&#8221; is a very commonly deployed function in Virtualized Data Centers and Public/Private clouds. A Load Balancer manages incoming traffic by distributing workloads across multiple servers and resources &#8211; automatically or on demand. In addition, Load Balancers also take care of detecting unhealthy instances and sending traffic only to the healthy instances. Several vendors today make Load Balancers in both physical and virtualized form factors. Each implementation comes with different feature sets and ways to configure them. However, there is a core set of features that most Load Balancers provide and that most users of Load Balancers use. OpenStack Neutron proposed LBaaS as an advanced service of Neutron, which allows a single set of APIs to be used to leverage Load Balancing functionality provided by a multitude of vendors. In short, this will allow the operators to use a common interface and move seamlessly between different load balancing technologies. This will also alleviate the pain of operators of having to familiarize themselves with the nitty gritties and specifics of different Load Balancer implementations.</p>
+<h4><a name="_Toc274230072"></a><a name="_Toc274229466"></a><a name="_Toc280001895"></a>LBaaS use in a sovereign Public Cloud:</h4>
+<p>French Cloud Service Provider, <a href="https://www.cloudwatt.com/fr/">Cloudwatt</a>, used OpenContrail to deploy a scalable sovereign Public Cloud in France. Cloudwatt delivered a live presentation during the recently concluded OpenStack Summit in Paris. Cloudwatt has designs that leverage the LBaaS functionality in particular and talk about it during their presentation. Please watch them talk about it here:<a href="http://youtu.be/uRN-8iMqvIM"> Scalable SDN in Public Cloud</a>.</p>
+<p>In short, the goal behind Cloudwatt’s plans to use LBaaS is to make it seamless for Cloudwatt customers to use load balancing without having to manually configure the involved components. This drastically simplifies the customer’s life, as they no longer need to know the minutiae of configuring Load balancers. Complex designs can be implemented with “internal-only” or “hybrid internal-external” LBaaS.</p>
+<p><strong>Understand</strong>: Customers do not need to know the minutiae,<br />
+<strong>Configure</strong>: Manual configuration is error-prone. LBaaS eliminates tedious and combersome manual configuration of Keepalived, HAProxy<br />
+<strong>Operate</strong>: By virtue of being API driven, Load Balancer deployment and operation is programmatic and automated. Similarly, responding to failures either in the infrastructure or in the application becomes similarly automated.</p>
+<h4><a name="_Toc280001896"></a>OpenContrail implementation:</h4>
+<p>The release 1.20 LBaaS implementation in OpenContrail supports the following:</p>
+<ol>
+<li>Full proxy L7 loadbalancing of HTTP/HTTPS/TCP traffic to a pool of backend servers.</li>
+<li>Provide Health monitoring of the pool members using HTTP, TCP and PING.</li>
+<li>Association of Floating IP to the virtual-IP.</li>
+<li>Resiliency is integrated natively with active/passive failover mode.</li>
+</ol>
+<p>In the release 1.20 of OpenContrail, support for using HA Proxy as a backend to the LBaaS APIs will be made available. In future releases, other backends will be added.</p>
+<p>The OpenContrail plugin will support the Neutron LBaaS API and will create the relevant virtual-IP, pool, members and health-monitor objects. When a pool is associated with a virtual-IP, the OpenContrail plugin will go on to create a service instance. The service scheduler will then instantiate a Linux network namespace on a randomly selected compute-node and spawns the active HA Proxy in the namespace. The service scheduler will then similarly instantiate a namespace on another (different) compute node to spawn the standby HA Proxy instance in the namespace. The properties of the Load Balancer object are passed to HA Proxy as command line parameters. Each VIP-Pool pair will result in two instances of HA Proxy being spawned as active-standby pair in two separate namespaces on two different compute-nodes. This is how High Availability of the Load Balancer is supported. Both active and standby instances are identically configured. Switching mechanism is based on routing priority managed inside the overlay.</p>
+<p>In our implementation, the Load Balancer will proxy all connections to the VIPs thus functioning as a full-proxying Layer7 Load Balancer (as opposed to a L4 Load Balancer). A full-proxy treats the client and server as separate entities by implementing dual network stacks. In L7 load balancing, specific information within the requests can be used to balance the requests to the appropriate destination server end-point.</p>
+<p>Stay tuned to this space to watch for new capabilities in the future Contrail releases in this area.</p>
+<h4><a name="_Toc274230073"></a><a name="_Toc274229467"></a><a name="_Toc280001897"></a>SSL Termination:</h4>
+<p>Modern Load Balancers now also offer SSL Termination. To understand SSL termination, let’s take the case of a virtualized web application hosted in a Contrail managed cluster. A load balancer that manages the traffic to this web application hosts the VIP for this application. Clients initiate HTTPS connections to the VIP. Since the VIP is hosted on the Load balancer, the load balancer has the option to terminate the SSL connection, and initiate an HTTP connection to the web servers running in the load balancer pool. Terminating the SSL connection at the Load balancer allows for centralized certificate management, offloading SSL from the web server to the load balancer, allows HTTP traffic to be inspected by the DPI engines, alleviates the load on the web servers allowing webservers to focus on serving the HTTP requests. For SSL termination, SSL certificates need to be installed on all compute nodes and HA Proxy needs to be made aware of the location of the certificates.</p>
+<h4><a name="_Toc280001898"></a>Typical Workflow:</h4>
+<p>The typical workflow is as follows:</p>
+<ol>
+<li>Create a pool, empty at first</li>
+<li>Add members to the pool</li>
+<li>Create a health monitor</li>
+<li>Associate health monitor with the pool</li>
+<li>Create Load Balancer object</li>
+<li>Listener (Unsupported)</li>
+<li>Add TLS certificate and key (Optional)</li>
+<li>Create a VIP</li>
+<li>Associate pool with VIP</li>
+</ol>
+<h4><a name="_Toc280001899"></a><a name="_Toc274230074"></a><a name="_Toc274229468"></a>Example:</h4>
+<p>Figure 1:</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-5933" src="http://www.opencontrail.org/wp-content/uploads/2015/01/LBaaS_Contrail_Image1.png" alt="LBaaS_Contrail_Image1" width="686" height="298" data-id="5933" /></p>
+<p>Figure 2:</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-5934" src="http://www.opencontrail.org/wp-content/uploads/2015/01/LBaaS_Contrail_Image2.png" alt="LBaaS_Contrail_Image2" width="725" height="502" data-id="5934" /></p>
+<p>In the Figure 1 above, there is a cluster of compute nodes being managed by the Contrail controller. The Load balancer and the virtual-machines housing the application instances are all running on compute nodes on such a cluster being managed by the Contrail controller.</p>
+<p>At the very right is a pool whose members are instances of an application. Traffic to this application needs to be managed by distributing and balancing the workload across the various instances of the application. The pool members have endpoint IP addresses belonging to the Pool subnet. The pool subnet is behind an active-standby pair of Load Balancer instances.</p>
+<p>The Load Balancer is instantiated with a Virtual IP (VIP) of 20.1.1.1. Application virtual-machines are associated with a Pool Subnet 30.1.1.0/24 and individual application virtual-machines obtain IP addresses from that subnet. When a client sends a request to the application directing traffic to the virtual-IP, the Load Balancer proxies the TCP connection on its virtual-IP. The Load Balancer terminates the incoming connection from the client and initiates a new one with one of the members of the pool. The member is picked based on one of following schemes as configured by the administrator:</p>
+<p><strong>Round Robin</strong>: Each pool-member is used in turns, according to their weights. Weights may be adjusted on the fly making this a dynamic scheme.<br />
+<strong>Least connection</strong>: Pool-member with the lowest number of connections receives the new connection. Well suited for protocols with long lasting sessions.<br />
+<strong>Source IP</strong>: The source IP address is hashed and divided by the total weight of the running servers to select the pool-member to serve the new request.</p>
+<p>Further, the Load Balancer is responsible for ensuring that only healthy application instances are part of the pool. To this end, the Load Balancer monitors the health of the pool members via one of the following probe schemes:</p>
+<p><strong>TCP</strong>: Load Balancer initiates TCP connections to the pool members for health checks.<br />
+<strong>HTTP</strong>: Load Balancer initiates HTTP requests after establishing TCP connection with the pool members.<br />
+<strong>PING</strong>: Load Balancer will use ICMP requests to the pool members for health checks.</p>
+<p>To instantiate the above picture, the relevant LBaaS API have to be invoked in the appropriate sequence.</p>
+<p>Watch the <a href="http://youtu.be/bsgtlrgG7Ew">video demonstration</a> of the LBaaS functionality.</p>
+<p><strong><span style="text-decoration: underline;">1 Create Load Balancer</span></strong></p>
+<pre><span style="font-family: 'courier new', courier;"><strong><span style="text-decoration: underline;">Create VIP network</span></strong>
+neutron net-create vipnet
+neutron subnet-create –-name vipsubnet vipnet 20.1.1.0/24
+
+<strong><span style="text-decoration: underline;">Create pool network</span></strong>
+neutron net-create poolnet
+neutron subnet-create --name poolsubnet poolnet 10.1.1.0/24
+
+<strong><span style="text-decoration: underline;">Create a pool for HTTP</span></strong>
+neutron lb-pool-create --lb-method ROUND_ROBIN --name mypool --protocol HTTP 
+--subnet-id poolsubnet
+
+<strong><span style="text-decoration: underline;">Add members to the pool</span></strong>
+neutron lb-member-create --address 10.1.1.2 --protocol-port 80 mypool
+neutron lb-member-create --address 10.1.1.3 --protocol-port 80 mypool
+
+<span style="text-decoration: underline;">Create VIP for HTTP and associate to pool</span>
+neutron lb-vip-create --name myvip --protocol-port 80 --protocol HTTP
+--subnet-id vipsubnet mypool
+
+<strong><span style="text-decoration: underline;">Associate the VIP to a floating IP</span></strong>
+neutron floatingip-create Public
+neutron floatingip-associate 66faf8de-54c5-4f52-8b65-84e5752653a3 a3527b7c-89c0-4f92-9315-2bd9ca5bcd32
+
+</span></pre>
+<p>&nbsp;</p>
+<p><strong><span style="text-decoration: underline;">2 Delete Load Balancer</span></strong></p>
+<pre><span style="font-family: 'courier new', courier;"><span style="text-decoration: underline;">Delete vip</span>
+neutron lb-vip-delete &lt;vip-uuid&gt;<strong><span style="text-decoration: underline;"> </span></strong>
+
+<strong><span style="text-decoration: underline;">Delete members from the pool</span></strong>
+neutron lb-member-delete &lt;member-uuid&gt;
+
+<span style="text-decoration: underline;">Delete pool</span>
+neutron lb-pool-delete &lt;pool-uuid&gt;</span></pre>
+<p><strong><span style="text-decoration: underline;">3 Associate and disassociate healthmonitor</span></strong></p>
+<pre><span style="font-family: 'courier new', courier;"><span style="text-decoration: underline;">Create healthmonitor</span>
+neutron lb-healthmonitor-create --delay 20 --timeout 10 --max-retries 3
+--type HTTP
+
+<strong><span style="text-decoration: underline;">Associate healthmonitor</span></strong>
+neutron lb-healthmonitor-associate &lt;healthmonitor-uuid&gt; mypool
+
+<span style="text-decoration: underline;">Disassociate healthmonitor</span>
+neutron lb-healthmonitor-disassociate &lt;healthmonitor-uuid&gt; mypool
+
+<span style="text-decoration: underline;">Delete healthmonitor</span>
+neutron lb-healthmonitor-delete &lt;healthmonitor-uuid&gt;</span></pre>
+<p>&nbsp;</p>
+<p><strong><span style="text-decoration: underline;">4 Configure SSL VIP with HTTP backend pool</span></strong></p>
+<pre><span style="font-family: 'courier new', courier;"><span style="text-decoration: underline;">Copy certificate to all compute nodes</span>
+scp ssl_certificate.pem &lt;compute-node-ip&gt; &lt;certificate-path&gt;<strong><span style="text-decoration: underline;"> </span></strong>
+
+<strong><span style="text-decoration: underline;">Update /etc/contrail/contrail-vrouter-agent.conf</span></strong>
+# SSL certificate path haproxy
+haproxy_ssl_cert_path=&lt;certificate-path&gt;
+
+Restart contrail-vrouter-agent
+service contrail-vrouter-agent restart
+
+<span style="text-decoration: underline;">Create VIP for port 443 (SSL)</span>
+neutron lb-vip-create --name myvip --protocol-port 443 --protocol HTTP --subnet-id vipsubnet mypool
+
+</span></pre>
+<h4><a name="_Toc280001900"></a><a name="_Toc274230075"></a><a name="_Toc274229469"></a>Note:</h4>
+<p>Compute Nodes where the HAProxy instances will be spawned are chosen at random. It is therefore necessary for all compute nodes to have the HAProxy binaries. Juniper Contrail’s provisioning scripts will take care of installing the HAProxy binaries in all the compute nodes in question.</p>
+<h4><a name="_Toc274230076"></a><a name="_Toc280001901"></a>References:</h4>
+<p><a href="http://www.haproxy.org/">http://www.haproxy.org/</a><br />
+<a href="https://wiki.openstack.org/wiki/Neutron/LBaaS/Glossary">https://wiki.openstack.org/wiki/Neutron/LBaaS/Glossary</a><br />
+<a href="http://www.businesscloudnews.com/2014/07/29/cloudwatt-deploys-open-source-sdn-controller/">http://www.businesscloudnews.com/2014/07/29/cloudwatt-deploys-open-source-sdn-controller/</a></p>
+<h4><a name="_Toc280001902"></a>Appendix:</h4>
+<p>Appendix A: Service Template for LB (HAProxy) Service Template<br />
+<img loading="lazy" decoding="async" class="aligncenter size-full wp-image-5935" src="http://www.opencontrail.org/wp-content/uploads/2015/01/LBaaS_Contrail_Image3.png" alt="LBaaS_Contrail_Image3" width="841" height="261" data-id="5935" /></p>
+<h4>Appendix B: Details of LB (HAProxy) Service Instance</h4>
+<p>http://&lt;Controller-IP&gt;:8081/analytics/uves/service-instance/default-domain:demo:769c9864-3745-493d-a3f0-2790d9e585b6?flat</p>
+<pre><span style="font-family: 'courier new', courier;">{
+ UveSvcInstanceConfig:  {
+ status: "CREATE",
+ vm_list:  [
+  {
+ ha: "active: 200",
+ uuid: "6cffa4c6-1b3a-45be-b9af-5dbe23d52b9f",
+ vr_name: "compute-node-2"
+ }, {
+ ha: "standby: 100",
+ uuid: "4bf23df5-cf91-4710-bd9a-0823707fb616",
+ vr_name: "compute-node-3"
+ }
+ ],
+ create_ts: 1413336206921338,
+ st_name: "default-domain:haproxy-loadbalancer-template"
+ }
+}</span></pre>
+<p>The UUID listed under “vm_list” is the UUID associated with the net-namespace.</p>
+<p>If you issue “ip netns list”, you will see a combination of the UUIDs associated with the service instance and the namespace:</p>
+<pre><span style="font-family: 'courier new', courier;">root@single-node-253:~# ip netns list
+vrouter-6cffa4c6-1b3a-45be-b9af-5dbe23d52b9f:769c9864-3745-493d-a3f0-2790d9e585b6</span></pre>
+<h3>Appendix C: Generated HA Proxy Config:</h3>
+<p>&#8220;/var/lib/contrail/loadbalancer/769c9864-3745-493d-a3f0-2790d9e585b6/etc/haproxy/haproxy.cfg&#8221;</p>
+<pre><span style="font-family: 'courier new', courier;">global
+   daemon
+   user nobody
+   group nogroup
+defaults
+   log global
+   retries 3
+   option redispatch
+   timeout connect 5000
+   timeout client 50000
+   timeout server 50000
+listen contrail-config-stats :5937
+   mode http
+   stats enable
+   stats uri /
+   stats auth haproxy:contrail123
+frontend 10f8c207-065a-4a65-90bb-6d482d681709
+   bind 20.1.1.2:80
+   mode http
+   default_backend 769c9864-3745-493d-a3f0-2790d9e585b6
+backend 769c9864-3745-493d-a3f0-2790d9e585b6
+   mode http
+   balance roundrobin
+   server 29aebe4e-89c6-4924-927f-49003f3796b9 10.1.1.3:80 weight 1
+   server 7f450ab8-2669-4d62-a881-d4712d8713a2 10.1.1.2:80 weight 1</span></pre>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

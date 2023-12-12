@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Containers Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/containers/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/containers/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Tue, 14 May 2019 23:16:04 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>Containers Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/containers/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Tungsten Fabric and Akraino for SDN/NFV for 5G and edge Use Cases</title>
+		<link>https://tungsten.io/tungsten-fabric-and-akraino-for-sdn-nfv-for-5g-and-edge-use-cases/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Tue, 14 May 2019 23:07:03 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[NFV]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Use Case]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8130</guid>
+
+					<description><![CDATA[By Sukhdev Kapur The rollout of 5G is a technological disruption for telecom and technology business players. This requires management of real time data flows, with central control, between various...]]></description>
+										<content:encoded><![CDATA[<h4>By Sukhdev Kapur</h4>
+<p>The rollout of <a href="https://en.wikipedia.org/wiki/5G">5G</a> is a technological disruption for telecom and technology business players. This requires management of real time data flows, with central control, between various <a href="https://en.wikipedia.org/wiki/Edge_device">edge</a> and core deployments. In order to minimize the latency, 5G and IoT deployments require compute power to move toward the edge, closer to the end-users and devices that produce or consume the real time data.</p>
+<p><a href="https://en.wikipedia.org/wiki/Software-defined_networking">SDN</a> controllers are proven to manage such workloads in telco as well as enterprise deployments. In this article, we discuss the SDN stack <a href="https://tungsten.io">Tungsten Fabric</a> and how it can be used for 5G networks and an edge cloud that is based upon <a href="https://www.lfedge.org/projects/akraino/">Akraino Edge Stack</a>.</p>
+<p><a href="https://tungsten.io/">Tungsten Fabric</a> (AKA &#8216;TF&#8217;) is an open source SDN project in the <a href="https://www.lfnetworking.org">LF Networking</a> initiative. TF provides a single point of control, visibility, and management for networking &amp; security for different types of data center deployments or clouds. It has taken SDN technology to next level by:</p>
+<ul>
+<li>Providing consistent network functionality and enforcing security policies for different types of workloads (virtual machines, containers, bare metal) orchestrated with different available orchestrators (OpenStack, Kubernetes, VMware , etc)</li>
+<li>Providing production grade networking &amp; security stack for Data Center and Public Clouds (AWS, Azure, GCP) &amp; Edge cloud deployments</li>
+</ul>
+<p>Tungsten Fabric evolved as a network software stack for providing an SDN solution for Telco Cloud and <a href="https://en.wikipedia.org/wiki/Network_function_virtualization">NFV</a> use cases.</p>
+<h3>Tungsten Fabric Integration with Akraino Edge Cloud</h3>
+<p>TF, by integrating with <a href="https://www.lfedge.org/projects/akraino/">Akraino Edge Stack</a>, can act as unified SDN controller to enhance many features for 5G core and edge nodes, including:</p>
+<ul>
+<li>Enabling distributed edge computing using TF remote compute architecture</li>
+<li>A common SDN controller for different workloads in network cloud i.e. CNF, <a href="https://en.wikipedia.org/wiki/Network_function_virtualization">VNF</a>, PNFs (Containerized, Virtual, and Physical Network Functions)</li>
+<li>Service chaining at different types of edge sites or clouds (public or private)</li>
+<li>Common security policy enforcement for all nodes</li>
+<li>Advanced networking performance features: <a href="https://en.wikipedia.org/wiki/Single-root_input/output_virtualization">SR/IOV</a>, <a href="https://www.dpdk.org">DPDK</a>, BGP-VPN, IPSec/TLS Support, etc.</li>
+</ul>
+<p><img fetchpriority="high" decoding="async" class="alignnone size-full wp-image-8131" src="https://tungsten.io/wp-content/uploads/sites/73/2019/05/Tungsten-Fabric-SDN.png" alt="" width="776" height="465" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/05/Tungsten-Fabric-SDN.png 776w, https://tungsten.io/wp-content/uploads/sites/73/2019/05/Tungsten-Fabric-SDN-300x180.png 300w" sizes="(max-width: 776px) 100vw, 776px" /></p>
+<h3>Tungsten Fabric powered Akraino Blueprints</h3>
+<p>These Akraino blueprints address different edge use cases:</p>
+<ul>
+<li>Network Cloud &#8211; <a href="https://wiki.akraino.org/display/AK/Akraino+Network+Cloud+and+TF+Integration">Telco edge cloud use case</a></li>
+<li>Kubernetes Native Infrastructure for Edge &#8211; <a href="https://wiki.akraino.org/display/AK/Provider+Access+Edge+%28PAE%29+Blueprint">Provider access use case</a></li>
+<li>Integrated Edge Cloud &#8211; <a href="https://wiki.akraino.org/pages/viewpage.action?pageId=11993339">AI/ML and AR/VR applications at Edge</a></li>
+</ul>
+<h3>Learn more at Cloud Native Network Services Day @ KubeCon + CloudNativeCon EU 2019</h3>
+<p>Intrigued? I&#8217;ll be doing a deep dive on this subject at the <a href="https://www.linuxfoundation.org/calendar/kubecon-cloudnativecon-europe/">Cloud Native Network Services Day</a> at KubeCon EU on May 20th. If you&#8217;re going to be in Barcelona for the conference, come by and learn more.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Deployments and management made easy with Openstack &#038; Opencontrail Helm</title>
+		<link>https://tungsten.io/deployments-and-management-made-easy-with-openstack-opencontrail-helm/</link>
+		
+		<dc:creator><![CDATA[Ranjini Rajendran]]></dc:creator>
+		<pubDate>Mon, 06 Nov 2017 22:52:17 +0000</pubDate>
+				<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[Orchestration]]></category>
+		<category><![CDATA[SDN]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7625</guid>
+
+					<description><![CDATA[Note: This blog is co&#8211;authored by Ranjini Rajendran and Madhukar Nayakbomman from Juniper Networks. OpenStack provides modular architecture to enable IaaS for primarily managing virtualized workloads. However, this open source platform is a...]]></description>
+										<content:encoded><![CDATA[<p>Note: This blog is <em>co</em>&#8211;<em>authored</em> by Ranjini Rajendran and Madhukar Nayakbomman from Juniper Networks.</p>
+<p>OpenStack provides modular architecture to enable IaaS for primarily managing virtualized workloads. However, this open source platform is a complex piece of architecture, one that provides organizations with a tall order problem for dealing with configuration and management of  applications. One of the biggest challenge or pain point that Cloud administrators experience is around life cycle management of Openstack enabled Cloud environments.</p>
+<p>To simplify the life cycle management of Openstack components, Openstack-helm project was started during the Barcelona Openstack Summit in 2016. In October 2017, Openstack-helm became an official Openstack Project.</p>
+<p>&nbsp;</p>
+<h3>What is Helm</h3>
+<p>Well, think of it as the apt-get / yum of Kubernetes, it is a package manager for Kubernetes. If you deploy applications to Kubernetes, Helm makes it incredibly easy to</p>
+<ul>
+<li>version deployments</li>
+<li>package deployments</li>
+<li>make a release of it</li>
+<li>and deploy, delete, upgrade and</li>
+<li>even rollback those deployments</li>
+</ul>
+<p>as “charts”.</p>
+<p>“Charts” being the terminology that Helm uses for a package of configured Kubernetes resources.</p>
+<h3>What is Openstack-Helm ?</h3>
+<p>Openstack-Helm project enables deployment, maintenance and upgrades of loosely coupled Openstack services and its dependencies as kubernetes pods. The different components of Openstack like glance, keystone, nova, neutron, heat etc are deployed as kubernetes pods. More details about the openstack-helm charts can be found at:</p>
+<p><a href="https://github.com/openstack/openstack-helm">https://github.com/openstack/openstack-helm</a></p>
+<h3>OpenContrail Helm charts</h3>
+<p>Recently, OpenContrail components have been containerized. There are mainly three containers in Opencontrail &#8211;</p>
+<ul>
+<li>OpenContrail Controller (config and control nodes)</li>
+<li>OpenContrail Analytics (Analytics node)</li>
+<li>OpenContrail Analytics DB (Analytics Database node)</li>
+</ul>
+<p>There is now support for  OpenContrail Helm charts for deployment, maintenance, and upgrade of these  Opencontrail Container pods. The details on OpenContrail Helm charts can be found here:</p>
+<p><a href="https://github.com/Juniper/contrail-docker/tree/master/kubernetes/helm/contrail">https://github.com/Juniper/contrail-docker/tree/master/kubernetes/helm/contrail</a></p>
+<p>The video below shows the integration of OpenContrail helm charts with Openstack-helm and how easy it is to upgrade OpenContrail using helm charts with minimal downtime for existing tenant workloads.</p>
+<p><iframe src="https://www.youtube.com/embed/nDZvJEkkt2U" width="560" height="315" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p>&nbsp;</p>
+<p>You can also see this at Openstack Sydney summit session on Tuesday 7<sup>th</sup> November at 5:50 pm. <a href="https://www.openstack.org/summit/sydney-2017/summit-schedule/events/19938">https://www.openstack.org/summit/sydney-2017/summit-schedule/events/19938</a></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>OpenContrail Containers Now on DockerHub</title>
+		<link>https://tungsten.io/opencontrail-containers-now-on-dockerhub/</link>
+		
+		<dc:creator><![CDATA[James Kelly]]></dc:creator>
+		<pubDate>Mon, 11 Sep 2017 07:01:13 +0000</pubDate>
+				<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Docker]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenShift]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[4.0]]></category>
+		<category><![CDATA[4.0.1]]></category>
+		<category><![CDATA[containers]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7579</guid>
+
+					<description><![CDATA[Yes, a most powerful of warriors – patience – offers a gift today: at last, new OpenContrail container images are on Docker Hub. If you were paying attention, you know...]]></description>
+										<content:encoded><![CDATA[<p><img decoding="async" class="alignnone wp-image-7580" src="http://www.opencontrail.org/wp-content/uploads/2017/09/colorful-2567060_1280.jpg" alt="" width="500" height="361" /></p>
+<p>Yes, a most powerful of warriors – patience – offers a gift today: at last, new OpenContrail container images are on <a href="https://hub.docker.com/u/opencontrail/">Docker Hub</a>.</p>
+<p>If you were paying attention, you know that OpenContrail software was recently containerized. The control and management components were packaged into 4 containers, and the vRouter’s kernel module deployment is container-enabled too.</p>
+<p>This new canonical way to deploy OpenContrail was eagerly anticipated, simplifying the day-1 user experience. News of the package refactoring was revealed in a <a href="http://www.opencontrail.org/container-networking-made-simple-with-opencontrail-and-kubernetes/">past blog</a> that also covered integration with Kubernetes. The formal software containerization support in Juniper’s Contrail Networking followed this June in the release of version 4.0.</p>
+<p>The support of networking containers as endpoints came a while ago however. Some of us have been using it <a href="https://engineering.riotgames.com/news/running-online-services-riot-part-iii">in production</a> and others have been musing with that support paired with Kubernetes; it’s been 2^9 days since my early <a href="http://www.opencontrail.org/getting-to-gifee-with-sdn-demo/">demo</a> of OpenContrail with Kubernetes and OpenShift (see the newer <a href="https://www.youtube.com/watch?v=LKL3vLErsvY&amp;t=43s">demo</a> now).</p>
+<p>That original open-sourced demo was in fact using Docker container images that Juniper uploaded to Docker Hub way back for version 2.20. After none of the subsequent releases made it to Docker Hub, you may have been wondering if those images were a one-hit wonder: nope. While the community is rolling a CI/CD <a href="https://github.com/Juniper/contrail-controller/wiki/OpenContrail-Continuous-Integration-(CI)">pipeline</a> for OpenContrail’s core elements, today’s posting of the version 4.0.1 images is an intermediate step until that fully codifies.</p>
+<p>The containerization of the OpenContrail software itself, may understandably lead you to associate it with other container tools like CNI, Kubernetes, Mesos or OpenShift – all of which are supported – but it’s worth noting that the containerized deployment is also used <a href="https://gitlab.com/gokulpch/OpenContrail-Kolla/blob/master/README.md">with OpenStack</a> Kolla. That being said, it’s exciting to imagine the possibility of deploying OpenContrail containers directly on top of container orchestration platforms, bringing their features to bear to manage an OpenContrail deployment. This is exactly what’s being planned with the help of Helm. In the meantime, it’s still click-click easy with the server manager GUI, and equally simple with <a href="https://github.com/Juniper/contrail-ansible">Ansible</a>, which also affords you the opportunity to deploy your SDN as code a la DevNetOps, perhaps upholding your application stack and DevOps; now there’s a dynamic duo!</p>
+<p>The new Docker Hub images shouldn’t lower the barrier to entry, with any luck, they should remove it entirely. For example, if you’re working with Kubernetes, you’ve already done enough learning and lifting to get that going, and the hope is to keep you focused on that: until you want to dig into SDN, the OpenContrail networking and security features just work. To make that a reality, the download and <a href="https://github.com/Juniper/contrail-docker/wiki/Provision-Contrail-CNI-for-Kubernetes">installation of OpenContrail</a> needs to be simple and steady, and then get out of your way. Hopefully that’s what you’ll find. If you do, please support the community by giving us some stars on <a href="https://hub.docker.com/u/opencontrail/">Docker Hub</a>, and tell others about your experience.</p>
+<p>&nbsp;</p>
+<p><strong>Recap of key resources:</strong></p>
+<ul>
+<li><a href="https://github.com/Juniper/contrail-docker/wiki/Provision-Contrail-CNI-for-Kubernetes">Installation with Kubernetes</a></li>
+<li><a href="https://gitlab.com/gokulpch/OpenContrail-Kolla/blob/master/README.md">Installation with OpenStack</a></li>
+<li><a href="https://github.com/Juniper/contrail-controller/wiki">OpenContrail Wiki</a></li>
+</ul>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Are Service Meshes the Next-gen SDN?</title>
+		<link>https://tungsten.io/are-service-meshes-the-next-gen-sdn/</link>
+		
+		<dc:creator><![CDATA[James Kelly]]></dc:creator>
+		<pubDate>Tue, 20 Jun 2017 06:03:38 +0000</pubDate>
+				<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Docker]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenShift]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7533</guid>
+
+					<description><![CDATA[June 28, 2017 update: more awesome background on service meshes, proxies and Istio in particular on yet another new SE Daily podcast with Istio engineers from Google. June 26, 2017...]]></description>
+										<content:encoded><![CDATA[<p><img decoding="async" class="alignnone wp-image-7534" src="http://www.opencontrail.org/wp-content/uploads/2017/06/mesh-1430107.png" alt="" width="100%" /></p>
+<p><a href="https://soundcloud.com/james-kelly-63/are-service-meshes-the-next-gen-sdn" target="_blank" rel="noopener"><img decoding="async" class="alignnone wp-image-7544" src="http://www.opencontrail.org/wp-content/uploads/2017/06/Screen-Shot-2017-06-19-at-11.01.15-PM.png" alt="" width="100%" /></a></p>
+<p><span style="font-family: arial, helvetica, sans-serif"><em><strong>June 28, 2017 update:</strong></em> more awesome background on service meshes, proxies and Istio in particular on yet another new SE Daily <a href="https://softwareengineeringdaily.com/2017/06/27/istio-service-mesh-with-varun-talwar-and-louis-ryan/" target="_blank" rel="noopener">podcast</a> with Istio engineers from Google.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif"><strong><em>June 26, 2017 update: </em></strong>For great background on service meshes (a relatively new concept) check out <a href="https://softwareengineeringdaily.com/2017/06/26/service-mesh-with-william-morgan/" target="_blank" rel="noopener">today&#8217;s podcast</a> on SE Daily with the founder of Linkerd.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif">Whether you’re adopting a containers- or functions-as-a-Service stack, or both, in the new world of micro-services architectures, one thing that has grown in importance is the network because:</span></p>
+<ol>
+<li><span style="font-family: arial, helvetica, sans-serif">Micro-service application building blocks are decoupled from one another over the network. They re-integrate over the network with APIs as remote procedure calls (RPC) that have evolved from the likes of CORBA and RMI, past web services with SOAP and REST, to new methods like Apache <a href="https://thrift.apache.org/">Thrift</a> and the even-fresher <a href="http://www.grpc.io/">gRPC</a>: a new CNCF project donated by Google for secure and fast http2-based RPC. RPC has been around for a long time, but now the network is actually fast enough to handle it as a general means of communication between application components, allowing us to break down monoliths where service modules would have previously been bundled or coupled with tighter API communications based on package includes, libraries, and some of us may even remember more esoteric IPC.</span></li>
+</ol>
+<p>&nbsp;</p>
+<ol start="2">
+<li><span style="font-family: arial, helvetica, sans-serif">Each micro-service building block scales out by instance <a href="https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/">replication</a>. The front-end of each micro-service is thus a load balancer which is itself a network component, but beyond that, the services need to discover their dependent services, which is generally done with DNS and service discovery.</span></li>
+</ol>
+<p>&nbsp;</p>
+<ol start="3">
+<li><span style="font-family: arial, helvetica, sans-serif">To boost processing scale out and engineer better reliability, each micro-service instance is often itself decoupled from application state and its storage. The state is saved over the network as well. For example, using an API into an object store, a database, a k/v-store, a streaming queue or a message queue. There is also good-ol’ disk, but such disk and accompanying file systems too, may be virtual network-mounted volumes. The API- and RPC-accessible variants of storing state are, themselves, systems that are micro-services too, and probably the best example of using disks in fact. They would also incorporate a lot of distributed storage magic to deliver on whatever promises they make, and that magic is often performed over the network.</span></li>
+</ol>
+<p>&nbsp;</p>
+<p><span style="font-family: arial, helvetica, sans-serif">Hopefully we’re all on the same page now as to why the network is important micro-services glue. If this was familiar to you, then maybe you already know about cloud-native SDN solutions and service meshes too.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif">The idea and implementation of a service mesh is fairly new. The topic is also garnering a lot of attention because they handle the main networking challenges listed above (esp #1 &amp; 2), and much more in the case of new projects like the CNCF Linkerd and newly launched project Istio.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif">Since I’ve written about SDN for container stacks before, namely OpenContrail for Kubernetes and OpenShift, I’m not going to cover it super deeply. Nor am I going to cover service meshes in general detail except to make comparisons. I will also put some references below and throughout. And I’ve tried to organize my blog by compartmentalizing the comparisons, so you can skip technical bits that you might not care for, and dive into the ones that matter most to you.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif">So on to the fun! Let’s look at some of the use cases and features of services meshes and compare them to SDN solutions, mostly OpenContrail, so we can answer the question posed in the title. Are service meshes the “Next-Generation” of SDN?</span></p>
+<p>&nbsp;</p>
+<p><img loading="lazy" decoding="async" class="wp-image-7535 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2017/06/logos-service-mesh.png" alt="" width="508" height="286" /></p>
+<p>&nbsp;</p>
+<p><span style="font-family: arial, helvetica, sans-serif"><strong>Automating SDN and Service Meshes</strong></span></p>
+<p><span style="font-family: arial, helvetica, sans-serif">First, let’s have a look at 3 general aspects of automation in various contexts where SDN and service meshes are used: 1 &#8211; programmability, 2 &#8211; configuration and 3 &#8211; installation.</span></p>
+<ol>
+<li><span style="font-family: arial, helvetica, sans-serif"><em>Programmability</em></span><br />
+<span style="font-family: arial, helvetica, sans-serif"> When it comes to automating everything, programmability is a must. Good SDNs are untethered from the hardware side of networking, and many, like OpenContrail, offer a logically centralized control plane with an <a href="http://www.opencontrail.org/documentation/api/r4.0/">API</a>. The main two service meshes introduced above do this too, and they follow an architectural pattern similar to SDNs of centralized control plane with a distributed forwarding plane agent. While Istio has a centralized control plane <a href="https://istio.io/docs/concepts/what-is-istio/overview.html#architecture">API</a>, Linkerd is more distributed but offers an <a href="https://blog.buoyant.io/2017/05/24/a-service-mesh-for-kubernetes-part-x-the-service-mesh-api/">API</a> through its Namerd counterpart. Most people would probably say that the two service meshes’ gRPC API is more modern and advantageous than the OpenContrail RESTful API, but then again OpenContrail’s API is very well built-out and tested compared to Istio’s still-primordial API functions.</span></li>
+<li><span style="font-family: arial, helvetica, sans-serif"><em>Configuration<br />
+</em>A bigger difference than the API, is in how functionality can be accessed. The service meshes take in YAML to declare configuration intent that can be delivered through a CLI. I suppose most people would agree that’s an advantage over SDNs that don’t offer that (at least OpenContrail doesn’t today). In terms of a web-based interface, the service meshes do offer those, as so many SDNs. OpenContrail’s web interface is fairly sophisticated after 5 years of development, yet still modern-feeling and enterprise friendly.</span><span style="font-family: arial, helvetica, sans-serif"> Looking toward “network as code” trends however, CLI and YAML is codable and version controllable more easily than say OpenContrail’s API calls. In an OpenStack environment OpenContrail can be configured with YAML-based <a href="https://docs.openstack.org/developer/heat/template_guide/hot_spec.html#hot-spec">Heat</a> templates, but that’s less relevant for container-based K8s and OpenShift world. In a K8s world, OpenContrail SDN configuration is annotated into K8s objects. It’s intentionally simple, so it’s just exposing a fraction of the OpenContrail functionality. It remains to be seen what will be done with K8s <a href="https://kubernetes.io/docs/tasks/access-kubernetes-api/extend-api-third-party-resource/">TPRs</a>, ConfigMaps or through some OpenContrail interpreter of its own.</span></li>
+<li><span style="font-family: arial, helvetica, sans-serif"><em>Installation</em></span><br />
+<span style="font-family: arial, helvetica, sans-serif"> When it comes to getting going with Linkerd, having a company behind it, Buoyant, means anyone can get support, but getting through day-one looks pretty straightforward on one’s own anyway. Deployed with Kubernetes in the model of a <a href="https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/">DaemonSet</a>, it is straightforward to use out of the box.</span><span style="font-family: arial, helvetica, sans-serif"> Istio is brand new, but already has Helm charts to deploy it quickly with Kubernetes thanks to our friends at Deis (<a href="https://twitter.com/LachlanEvenson">@LachlanEvenson</a> has done some amazing demo videos already –links below). Using Istio, on the other hand, means bundling its Envoy proxy into every Kubernetes pod as a <a href="http://blog.kubernetes.io/2015/06/the-distributed-system-toolkit-patterns.html">sidecar</a>. It’s an extra step, but it looks fairly painless with the <a href="https://www.istio.io/docs/tasks/integrating-services-into-istio.html">kube-inject</a> Sidecar <a href="https://linkerd.io/getting-started/k8s-daemonset/">vs.</a> DaemonSet considerations aside, this bundling is doing some magic, and it’s important to understand for debugging later.</span><span style="font-family: arial, helvetica, sans-serif"> When it comes to SDNs, they’re all different wrt deployments. OpenContrail is working on a Juniper-supported Helm chart for simple deployment, but in the meantime there are Ansible playbooks and other comparable configuration management solutions offered by the community.</span><span style="font-family: arial, helvetica, sans-serif"> One thing OpenContrail has in common with the two service meshes, is that it is deployed as containers. One difference is that OpenContrail’s forwarding agent on each node is both a user-space component and Kernel module (or DPDK-based or SmartNIC-based). They’re containerized, but the kernel module is only there for installation purposes to bootstrap the insmod installation. You may feel ambivalent towards kernel modules… The kernel module will obviously streamline performance and integration with the networking stack, but the resources it uses are not container-based, and thus not resource restricted, so resource management is different than say a user-space sidecar process. Anyway, this is same deal as using the kube-proxy or any IP tables-based networking which OpenContrail vRouter replaces.</span></li>
+</ol>
+<p><span style="font-family: arial, helvetica, sans-serif"><strong>SDN and Service Meshes: Considerations in DevOps</strong></span></p>
+<p><span style="font-family: arial, helvetica, sans-serif">When reflecting on micro-services architectures, we must remember that the complexity doesn’t stop there. There is also the devops apparatus to manage the application through dev, test, staging and prod, and through continuous integration, delivery, and response. Let’s look at some of the considerations:</span></p>
+<ol>
+<li><span style="font-family: arial, helvetica, sans-serif"><em><strong>Multi-tenancy / multi-environment</strong><br />
+</em>In a shared cluster, code shouldn’t focus on operational contexts like operator or application dev/test environments. To achieve this, we need isolation mechanisms. Kubernetes namespaces and RBAC help this, but there is still more to do. I’ll quickly recap my understanding of the routing in OpenContrail and service meshes to better dissect the considerations for context isolation.</span><span style="font-family: arial, helvetica, sans-serif"> <strong><em>&lt;background&gt;</em></strong></span><br />
+<span style="font-family: arial, helvetica, sans-serif"> OpenContrail for K8s recap: One common SDN approach to isolation is overlay networks. They allow us to create virtual networks that are separate from each other on the wire (different encapsulation markings) and often in the forwarding agent as well. This is indeed the case with OpenContrail, but OpenContrail also allows higher-level namespace-like wrappers called <a href="http://www.opencontrail.org/opencontrail-architecture-documentation/#section3_2">domains/tenants and projects</a>. Domains are isolated from each other, projects within domains are isolated from each other, and virtual networks within projects are isolated from each other. This hierarchy maps nicely to isolate tenants and dev/test/staging/prod environments, and then we can use a virtual network to isolate every micro-service. To connect networks (optionally across domains and projects), a policy is created and applied to the networks that need connecting, and this policy can optionally specify direction, network names, ports, and service chains to insert (for example, a stateful firewall service). </span><span style="font-family: arial, helvetica, sans-serif"> The way these domains, projects, and networks are created for Kubernetes is based on annotations. OpenContrail maps namespaces to their own OpenContrail project or their own virtual network, so optionally micro-services can all be reachable to each other on one big network (similar to the default cluster behavior). There are security concerns there, and OpenContrail can also enforce ACL rules and automate their creation as a method of isolating micro-services for security based on K8s object annotations or implementing Kubernetes <a href="https://kubernetes.io/docs/tasks/administer-cluster/declare-network-policy/">NetworkPolicy</a> objects as OpenContrail <a href="http://www.opencontrail.org/opencontrail-architecture-documentation/#section3_2">security groups</a> and rules. Another kind of new annotations on objects like K8s deployments, jobs or services would specify the whole OpenContrail domain, project, and virtual network of choice. Personally, I think the best approach is a hierarchy designed to match devops teams and environments structure that makes use of the OpenContrail model of segmentation by domain, project and network. This is in (unfortunately) contrast to the simpler yet more frequently used global default-deny rule and ever-growing whitelist that ensues that turns your cluster into Swiss cheese. Have fun managing that :/ </span><span style="font-family: arial, helvetica, sans-serif"> The overlay for SDN is at layer 2, 3 and 4, meaning that when the packet is received on the node, the vRouter (in OpenContrail’s case) will receive the packet destined to it and look at the inner header (the VXLAN ID or MPLS LSP number) to determine the domain/tenant, project and network. Basically, the number identifies which routing table will be used as a lookup context for the inner destination address, and then (pending ACLs) the packet is handed off to the right container/pod interface (per <a href="https://github.com/containernetworking/cni">CNI</a> standards).</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif"> Service mesh background: The model of Istio’s Envoy and Linkerd insofar as they are used (which can be on a per-microservice basis), is that there is a layer-7 router and proxy in front of your microservices. All traffic is intercepted at this proxy, and tunneled between nodes. Basically, it is also an overlay at a higher layer.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif"> The overlay at layer-7 is conceptually the same as SDN overlays except that the overlay protocol over the wire is generally HTTP or HTTP2, or TLS with one of those. In the DaemonSet deployment mode of Linkerd, there is one IP address for the host and Linkerd will proxy all traffic. It’s conceptually similar to the vRouter except in reality it is just handling HTTP traffic on certain ports, not all traffic. Traffic is routed and destinations are resolved using a delegation tables (<a href="https://twitter.github.io/finagle/guide/Names.html#interpreting-paths-with-delegation-tables">dtabs</a>) format inherited from Finagle. In the <a href="https://linkerd.io/in-depth/deployment/">sidecar</a> deployment model for Linkerd or for Istio’s Envoy (which is always a sidecar), the proxy is actually in the same container network context as each micro-service because it is in the same pod. There are some IP tables <a href="https://istio.io/docs/tasks/integrating-services-into-istio.html#understanding-what-happened">tricks</a> they do to sit between your application and the network. In Istio Pilot (the control plane) and Envoy (the data plane), traffic routing and destination resolution is based primarily on the Kubernetes service name.</span><br />
+<span style="font-family: arial, helvetica, sans-serif"> <strong><em>&lt;/background&gt;</em></strong></span></p>
+<p><span style="font-family: arial, helvetica, sans-serif"> With that background, here are a few implications for multi-tenancy.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif"> Let’s observe that in the SDN setup, the tenant, environment and application (network) classification happens in the kernel vRouter. In service mesh proxies, we still need a CNI solution to get the packets into the pod in the first place. In Linkerd, we need dtab <a href="https://linkerd.io/in-depth/routing/">routing rules</a> that include tenant, environment and service. Dtabs seems to give a good way to break this down that is manageable. In the sidecar mode, more frequently used for Envoy, it’s likely that the pod in which traffic ends up already has a K8s namespace associated with it, and so we would map a tenant or environment outside of the Istio <a href="https://istio.io/docs/concepts/traffic-management/rules-configuration.html">rules</a>, and just focus on resolving the service name to a container and port when it comes to Envoy.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif"> It seems that OpenContrail here has a good way to match the hierarchy of separate teams, and separate out those RBAC and routing contexts. Linkerd dtabs are probably a more flexible way to create as many layers of routing interpretation as you want, but it may need a stronger RBAC to allow the splitting of dtabs among team tenants for security and coordination. Istio doesn’t do much in the way of isolating tenants and environments at all. Maybe that is out of scope for it which seems reasonable since Envoy is always a sidecar container and you should have underlying multi-tenant networking anyway to get traffic into the sidecar’s pod.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif"> One more point is that service discovery baked into the service mesh solutions, but it is still important in the SDN world, and systems that include DNS (OpenContrail does) can help manage name resolution in a multi-tenant way as well as provide IP address management (like bring your own IPs) across the environments you carve up. This is out of scope for service meshes, but with respect to multiple team and dev/test/staging/prod environments, it may be desirable to have the same IP address management pools and subnets.</span><em style="font-family: arial, helvetica, sans-serif"> </em></li>
+</ol>
+<ol start="2">
+<li><span style="font-family: arial, helvetica, sans-serif"><em><strong>Deployment and load balancing</strong><br />
+</em>When it comes to deployment and continuous delivery (CD), the fact that SDN is programmable helps, but service meshes have a clear advantage here because they’re designed with CD in mind.</span><span style="font-family: arial, helvetica, sans-serif"> To do <a href="https://martinfowler.com/bliki/BlueGreenDeployment.html">blue-green</a> deployments with SDN, it helps to have floating IP functionality. Basically, we can cut over to green (float a virtual IP to the new version of the micro-service) and safely float it back to blue if we needed to in case of an issue. As you continuously deliver or promote staging into the non-live deployment, you can still reach it with a different floating IP address. OpenContrail handles overlapping floating IPs to let you juggle this however you want to.</span><span style="font-family: arial, helvetica, sans-serif"> Service mesh routing rules can achieve the same thing, but based on routing switch overs at the HTTP level that point to for <a href="https://istio.io/docs/concepts/traffic-management/rules-configuration.html#split-traffic-between-service-versions">example</a> a newer backend version. What service meshes further allow is traffic roll over like this <a href="https://blog.buoyant.io/2016/11/04/a-service-mesh-for-kubernetes-part-iv-continuous-deployment-via-traffic-shifting/">example</a> showing a small percentage of traffic at first and then all of it, effectively giving you a canary deployment that is traffic load-oriented as opposed to a Kubernetes rolling upgrade or the Kubernetes deployment canary <a href="https://kubernetes.io/docs/concepts/cluster-administration/manage-deployment/#canary-deployments">strategy</a> that gives you a canary that is instance-count based, and relies on the load balancing across instances to partition traffic.</span><span style="font-family: arial, helvetica, sans-serif"> This brings us to load balancing. Balancing traffic between the instances of a micro-service, by default happens with the K8s kube-proxy controller by its programming of IP tables. There is a bit of a performance and scale advantage here of using OpenContrail’s vRouter which uses its own ECMP load balancing and NAT instead of the kernel’s IP tables.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif"> Service meshes also handle such load balancing. They support wider ranging features, both in terms of load balancing schemes like <a href="https://blog.buoyant.io/2016/03/16/beyond-round-robin-load-balancing-for-latency/">EWMA</a> and also in terms of cases to eject an instance from the load balancing pool, like if they’re too slow.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif"> Of course service meshes do also handle load balancing for ingress HTTP frontending. Linkerd and Istio integrate with the K8s Ingress as ingress controllers. While most SDNs don’t seem to offer this, OpenContrail does have a solution here that is based on haproxy, an open source TCP proxy project. One difference, is that OpenContrail does not yet support SSL/TLS, but there are also K8s pluggable alternatives like nginx for pure software-defined load balancing.</span></li>
+<li><span style="font-family: arial, helvetica, sans-serif"><em><strong>Reliability Engineering</strong><br />
+</em>Yes, I categorize SRE and continuous response under the DevOps umbrella. In this area, since service meshes are more application-aware, it’s no surprise, they do the most further the causes of reliability.</span><span style="font-family: arial, helvetica, sans-serif"> When it comes to reliably optimizing and engineering performance, one point here from above is that EWMA and such advanced load balancing policies will assist in avoiding or ejecting slow instances, thus improving tail latency. A Buoyant <a href="https://blog.buoyant.io/2017/01/31/making-things-faster-by-adding-more-steps/">article</a> about performance addresses performance in terms of latency directly. Envoy and Linkerd are after all TCP proxies, and unpacking and repacking a TCP stream is seen as notoriously slow if you’re in the networking world (I can attest to this personally recalling one project I assisted with that did HTTP header injection for ad placement purposes). Anyway, processors have come far, and Envoy and Linkerd are probably some of the fastest TCP proxies you can get. That said, there are always the sensitive folks that balk at inserting such latency. I thought it was enlightening that in the test conducted in the article cited above, they’ve added more latency and steps, but because they’re also adding intelligence, they’re netting an overall latency speed up!</span><span style="font-family: arial, helvetica, sans-serif"> The consensus seems to be that service meshes solve more problems than they create, such as latency. Are they right for your particular case? As somebody highly quoted once said, “it depends.” As is the case with DPI-based firewalls, these kind of traffic processing applications can have great latency and throughput with a given feature set or load, but wildly different performance by turning on certain features or under load. Not that it’s a fair comparison, but the lightweight stateless processing that an SDN forwarding agent does is always going to be way faster than such proxies, especially when, like for OpenContrail, there are smart NIC vendors implementing the vRouter in hardware.</span><span style="font-family: arial, helvetica, sans-serif"> Another area that needs more attention in terms of reliability is security. As soon as I think of a TCP proxy, my mind wonders about protecting against a DoS attack because so much state is created to track each session. A nice way that service meshes nicely solve this is through the use of TLS. While Linkerd can support this, Istio makes this even easier because of the Istio Auth controller for key management. This is a great step to not only securing traffic over the wire (which SDNs could do too with IPsec etc.), but also making strong identity-based AAA for each micro-service. It’s worth noting that these proxies can change the wire protocol to anything they can configure, regardless of if it was initiated as such from the application. So an HTTP request could be sent as HTTP2 within TLS on the wire.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif"> I’ll cap off this section by mentioning circuit breaking. I don’t know of any means that an SDN solution could do this very well without interpreting a lot of analytics and application tracing information and feeding that back into the API of the SDN. Even if that is possible in theory, service meshes already do this today as a built-in <a href="https://istio.io/docs/concepts/traffic-management/handling-failures.html">feature</a> to gracefully handle failures instead of having them escalate.</span></li>
+<li><span style="font-family: arial, helvetica, sans-serif"><em><strong>Testing and debugging</strong><br />
+</em>This is an important topic, but there’s not really an apples-to-apples comparison of features, so I’ll just hit prominent points on this topic separately.</span><span style="font-family: arial, helvetica, sans-serif"> Services meshes provide an application RPC-oriented view into the intercommunication in the mesh of micro-services. This information can be very useful for monitoring and ops visibility and during debugging by tracing the communication path across an application. Linkerd <a href="https://linkerd.io/features/distributed-tracing-and-instrumentation/">integrates</a> with Zipkin for tracing and other tools for metrics, and works for applications written in any language unlike some language-specific tracing libraries.</span><span style="font-family: arial, helvetica, sans-serif"> Service meshes also provide per-request routing based on things like HTTP headers, which can be manipulated for testing. Additionally, Istio also provides fault <a href="https://istio.io/docs/concepts/traffic-management/fault-injection.html">injection</a> to simulate blunders in the application.</span><span style="font-family: arial, helvetica, sans-serif"> On the SDN side of things, solutions differ. OpenContrail is fairly mature in this space compared to the other choices one has with CNI providers. OpenContrail has the ability to run packet capture and sniffers like Wireshark on demand, and its comprehensive analytics engines and visibility tools expose flow records and other traffic stats. Aside from debugging (at a more of network level), there are interesting security applications for auditing ACL deny logs. Finally, OpenContrail can tell you the end-to-end path of your traffic if it’s run atop of a physical network (not a cloud). All of this can potentially help debugging, but the kind of information is far more indirect vis-à-vis the applications, and is probably better suited for NetOps.</span></li>
+</ol>
+<p><span style="font-family: arial, helvetica, sans-serif"><strong>Legacy and Other Interconnection</strong></span></p>
+<p><span style="font-family: arial, helvetica, sans-serif">Service meshes seem great in many ways, but one hitch to watch out for is how they can allow or block your micro-services connecting to your legacy services or any services that don’t have a proxy in front of them.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif">If you are storing state in S3 or making a call to a cloud service, that’s an external call. If you’re reaching back to a legacy application like an Oracle database, same deal. If you’re calling an RPC of another micro-service that isn’t on the service mesh (for example it’s sitting in virtual machine instead of a container), same again. If your micro-service is supposed to deal with traffic that isn’t TCP traffic, that too isn’t going to be handled through your service mesh (for example, DNS is UDP traffic, ping is ICMP).</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif">In the case of Istio, you can setup <a href="https://istio.io/docs/tasks/egress.html">egress</a> connectivity with a service alias, but that may require changes to the application, so a direct pass-thru is perhaps a simpler option. Also there are a lot of variants of TCP traffic that are not HTTP nor directly supported as higher-level protocols riding on HTTP. Common examples might be ssh and mail protocols.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif">There is also the question of how service meshes will handle multiple IPs per pod and multiple network interfaces per pod once CNI soon allows it.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif">You most certainly have some of this communication in your applications that doesn’t quite fit the mesh. In these cases you not only need to plan how to allow this communication, but also how to do it securely, probably with an underlying SDN solution like OpenContrail that can span Kubernetes as well as OpenStack, VMware and metal.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif"><strong>What do you think?</strong></span></p>
+<p><span style="font-family: arial, helvetica, sans-serif">Going back to the original question in the title: Are Service Meshes the Next-Gen SDN?</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif">On one hand: yes! because they‘re eating a lot of the value that some SDNs provided by enabling micro-segmentation and security for RPC between micro-services. Service meshes are able to do this with improved TLS-based security and identity assignment to each micro-service. Also service meshes are adding advanced application-aware load balancing and fault handling that is otherwise hard to achieve without application analytics and code refactoring.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif">On the other hand: no! because service meshes sit atop of CNI and container connectivity. They ride on top of SDN, so they’ll still need a solid foundation. Moreover, most teams will want multiple layers of security isolation when they can get micro-segmentation and multi-tenancy that comes with SDN solutions without any performance penalty. SDN solutions can also span connectivity across clusters, stacks and runtimes other than containers, and satisfy the latency obsessed.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif">Either way, service meshes are a new, cool and shiny networking toy. They offer a lot of value beyond the networking and security values that they subsume, and I think we’ll soon see them in just about every micro-services architecture and stack.</span></p>
+<p><span style="font-family: arial, helvetica, sans-serif"><strong>More questions…</strong></span></p>
+<p><span style="font-family: arial, helvetica, sans-serif">Hopefully something in this never-ending blog makes you question SDN or the service meshes. Share your thoughts or questions. The anti-pattern of technology forecasting is thinking we’re done, so some open questions:</span></p>
+<ol>
+<li><span style="font-family: arial, helvetica, sans-serif">Should we mash-up service meshes and fit Linkerd into the Istio framework as an alternative to Envoy? If so, why?</span></li>
+<li><span style="font-family: arial, helvetica, sans-serif">Should we mash-up OpenContrail and service meshes and how?</span></li>
+</ol>
+<p><span style="font-family: arial, helvetica, sans-serif"><strong>Resources on Learning About Service Meshes</strong></span></p>
+<ul>
+<li><span style="font-family: arial, helvetica, sans-serif">Istio blog: <a href="https://istio.io/blog/">https://istio.io/blog/</a></span></li>
+<li><span style="font-family: arial, helvetica, sans-serif">Buoyant blog: <a href="https://blog.buoyant.io/">https://blog.buoyant.io/</a></span></li>
+<li><span style="font-family: arial, helvetica, sans-serif">Demo videos with Istio and Kubernetes thanks to Lachie:</span></li>
+<li><span style="font-family: arial, helvetica, sans-serif"><a href="https://www.youtube.com/watch?v=ePwd5bK2Cuo&amp;list=PLbj_Bz58yLCw09JYfG2xbFMi5-jN89LfB">https://www.youtube.com/watch?v=ePwd5bK2Cuo&amp;list=PLbj_Bz58yLCw09JYfG2xbFMi5-jN89LfB</a></span></li>
+<li><span style="font-family: arial, helvetica, sans-serif">Istio Service Mesh Podcast: <a href="https://softwareengineeringdaily.com/2017/06/27/istio-service-mesh-with-varun-talwar-and-louis-ryan/" target="_blank" rel="noopener">https://softwareengineeringdaily.com/2017/06/27/istio-service-mesh-with-varun-talwar-and-louis-ryan/</a></span></li>
+<li><span style="font-family: arial, helvetica, sans-serif">Linkerd Service Mesh Podcast: <a href="https://softwareengineeringdaily.com/2017/06/26/service-mesh-with-william-morgan/" target="_blank" rel="noopener">https://softwareengineeringdaily.com/2017/06/26/service-mesh-with-william-morgan/</a></span></li>
+<li><span style="font-family: arial, helvetica, sans-serif">Scaling Twitter Podcast about Linkerd: <a href="https://softwareengineeringdaily.com/2016/06/22/scaling-twitter-buoyant-ios-william-morgan/">https://softwareengineeringdaily.com/2016/06/22/scaling-twitter-buoyant-ios-william-morgan/</a></span></li>
+<li><span style="font-family: arial, helvetica, sans-serif">Service Proxying Podcast about Envoy: <a href="https://softwareengineeringdaily.com/2017/02/14/service-proxying-with-matt-klein/">https://softwareengineeringdaily.com/2017/02/14/service-proxying-with-matt-klein/</a></span></li>
+<li><span style="font-family: arial, helvetica, sans-serif">Comparing Envoy and Linkerd: <a href="https://lyft.github.io/envoy/docs/intro/comparison.html#id7">https://lyft.github.io/envoy/docs/intro/comparison.html#id7</a></span></li>
+</ul>
+<p>&nbsp;</p>
+<p><em><span style="font-family: arial, helvetica, sans-serif">This blog was originally posted at <a href="http://jameskelly.net/blog/2017/6/19/are-service-meshes-the-next-gen-sdn" target="_blank" rel="noopener">http://jameskelly.net/blog/2017/6/19/are-service-meshes-the-next-gen-sdn</a> </span></em></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Container networking made simple with OpenContrail and Kubernetes</title>
+		<link>https://tungsten.io/container-networking-made-simple-with-opencontrail-and-kubernetes/</link>
+		
+		<dc:creator><![CDATA[Yuvaraja Mariappan]]></dc:creator>
+		<pubDate>Thu, 18 May 2017 18:18:33 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7510</guid>
+
+					<description><![CDATA[This blog is co-authored by Gokul Chandra Purnachandra Reddy and Yuvaraja Mariappan from Juniper Networks. We have recently announced the latest enhancements done to OpenContrail where one of the features that stood...]]></description>
+										<content:encoded><![CDATA[<p><em>This blog is co-authored by Gokul Chandra Purnachandra Reddy and Yuvaraja Mariappan from Juniper Networks.</em></p>
+<p>We have recently <a href="https://forums.juniper.net/t5/SDN-and-NFV-Era/Here-s-Why-Contrail-Was-Chosen-as-the-Best-Commercial-SDN/ba-p/307517">announced </a>the latest enhancements done to OpenContrail where one of the features that stood out is containerizing the contrail controller services to enable ease of deployment and operation.</p>
+<p>Additionally, OpenContrail will be available as a network plugin for CNI enabling contrail to provide networking services for containers in frameworks such as Kubernetes, OpenShift and Mesos.</p>
+<p>In any Kubernetes deployment, OpenContrail offers the following capabilities &#8211; pod addressing, network isolation, policy based security, gateway services, snat, ecmp load balancing in services and ingress load balancing</p>
+<p>The following are some of the key advantages of the Opencontrail networking solution for K8s.</p>
+<ul>
+<li>Load Balancing: A non-proxy load balancing capability based on ECMP paths without the need for any additional hops. This is implemented as a distributed construct in vRouters for the virtual IP addresses used in K8s service objects. This also eliminates the need for kube-proxy which is a drag on the performance due to its constant reconfiguration of iptables NAT rules.</li>
+<li>Network Policy: OpenContrail implements the Kubernetes network policy objects applied to pods.  This framework enables tenant and network isolation with constructs for micro-segmentation using custom security groups. It also provides capabilities to insert transparent network services such as firewalls, DPI etc.</li>
+<li>Ingress Controller: Stock Kubernetes solution does not provide an implementation to support ingress load balancing for services. With OpenContrail this implementation comes standard which provides a solution with HAProxy.</li>
+</ul>
+<p>The following video provides a view into how these features work with OpenContrail.</p>
+<p>&nbsp;</p>
+<p><iframe loading="lazy" src="https://www.youtube.com/embed/KL0E4SaRCs0" width="560" height="315" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>OpenContrail integration with Mesos</title>
+		<link>https://tungsten.io/opencontrail-integration-with-mesos/</link>
+		
+		<dc:creator><![CDATA[Fawad Shaikh]]></dc:creator>
+		<pubDate>Thu, 18 May 2017 18:09:26 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Mesos]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7506</guid>
+
+					<description><![CDATA[Note: This blog is co&#8211;authored by Aniket Gawade, Praneet Bachheti and Fawad Shaikh from Juniper Networks. In this blog we’ll cover OpenContrail integration with Mesos. Mesos is a cluster management and orchestration...]]></description>
+										<content:encoded><![CDATA[<p>Note: This blog is <em>co</em>&#8211;<em>authored</em> by Aniket Gawade, Praneet Bachheti and Fawad Shaikh from Juniper Networks.</p>
+<p>In this blog we’ll cover OpenContrail integration with Mesos. Mesos is a cluster management and orchestration framework. It gives us the flexibility to write our own schedulers (frameworks) and then plug them into the cluster management aspect of Mesos by registering these frameworks with Mesos Master. Mesos master via offer mechanism gets the resource information from all the slaves.</p>
+<p>The following diagram lists the different components in a typical Mesos Architecture:</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-7508" src="http://www.opencontrail.org/wp-content/uploads/2017/05/mesos_architecture.png" alt="" width="632" height="465" data-id="7508" /></p>
+<p>In order understand the integration between contrail and Mesos, it’s important to understand how a common application comes up in Mesos today.</p>
+<ol>
+<li>Based on the type of framework, user will create an application template (json, yaml etc), which in most cases will have the following parameters
+<ol>
+<li>Name of the application (ID)</li>
+<li>Image name</li>
+<li>Network name</li>
+<li>Domain name</li>
+<li>Project name</li>
+</ol>
+</li>
+<li>The request is sent to a framework.</li>
+<li>Framework which is registered to Mesos master will validate the request</li>
+<li>Framework scheduler picks a compute node and forwards the request to Mesos Master</li>
+<li>Mesos Master sends the request to the scheduled slave agent which is running on the compute node</li>
+<li>Slave invokes Mesos executor which creates the environment and launches the application</li>
+</ol>
+<p>Having a general idea of the work flow, lets see what are the different components in the complete contrail-mesos architecture:</p>
+<ol>
+<li>Dockerized Contrail Components (Multiprocess containers):
+<ul>
+<li>Controller, Analytics, AnalyticsDB, vRouter-agent, Contrail-repo</li>
+</ul>
+</li>
+<li>Mesos-Components:
+<ul>
+<li>Master, Mesos Agent, Framework(Marathon, Hadoop, redis etc), Mesos executor</li>
+</ul>
+</li>
+<li>Contrail Mesos Components:
+<ul>
+<li>Contrail-CNI, Mesos Manager (containerized)</li>
+</ul>
+</li>
+</ol>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-7507" src="http://www.opencontrail.org/wp-content/uploads/2017/05/OpenContrail_Mesos_Integration.png" alt="" width="855" height="469" data-id="7507" /></p>
+<p>Contrail Mesos workflow:</p>
+<ol>
+<li>Request to framework to create application A</li>
+<li>Request send from the framework scheduler to Mesos Master</li>
+<li>Master forwards the task request to a particular Mesos Slave. This slave was chosen by the framework scheduler</li>
+<li>Mesos Slave invokes Mesos executor which launches application A</li>
+<li>CNI plugin is invoked when Mesos Slave issues a task</li>
+<li>CNI plugin connects to the REST API of contrail Mesos Manager which sends the request to the API server for IP address, creating contrail objects</li>
+<li>CNI plugin connects to the REST API vRouter to plug container  in to vRouter</li>
+</ol>
+<p>The following video demonstrates the following:</p>
+<ol>
+<li>Create an application container via Mesos Marathon framework</li>
+<li>Contrail networking provides IP address to containers/applications</li>
+<li>Intra VN connectivity between Mesos applications</li>
+<li>Destroying of Mesos applications results in removal of open contrail objects</li>
+</ol>
+<p>&nbsp;</p>
+<p><iframe loading="lazy" src="https://www.youtube.com/embed/AYmfy3dNjTg" width="560" height="315" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Juniper &#038; Red Hat Serve Up an Open Double-Stack Cloud with an SDN Twist</title>
+		<link>https://tungsten.io/juniper-red-hat-serve-up-an-open-double-stack-cloud-with-an-sdn-twist/</link>
+		
+		<dc:creator><![CDATA[James Kelly]]></dc:creator>
+		<pubDate>Tue, 02 May 2017 01:05:17 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Integration]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenShift]]></category>
+		<category><![CDATA[SDN]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7490</guid>
+
+					<description><![CDATA[Juniper Networks Contrail Networking, developed in the OpenContrail open source project, has long been a part of Red Hat’s millinery. The partnership between Juniper and Red Hat goes back some...]]></description>
+										<content:encoded><![CDATA[<p><img loading="lazy" decoding="async" class="alignright size-full wp-image-7492" src="http://www.opencontrail.org/wp-content/uploads/2017/05/medium.jpg" alt="" width="288" height="400" data-id="7492" />Juniper Networks Contrail Networking, developed in the OpenContrail open source project, has long been a part of Red Hat’s millinery. The <a href="https://www.juniper.net/assets/us/en/local/pdf/solutionbriefs/3510554-en.pdf" target="_blank" rel="nofollow noopener noreferrer">partnership between Juniper and Red Hat</a> goes back some years now. Collaborating on OpenStack cloud and NFV infrastructure has won these partners success in supporting large enterprises and communications service providers like Orange Business Services.</p>
+<p>At the long list of open source festivities in Boston over the next 2 weeks, you will hear these partners in cloud building on their past successful OpenStack + Contrail integration and now putting the spotlight on new integrations to support cloud native. You’ve heard me blog about the OpenContrail integration with OpenShift back a year already (in its first alpha form that I <a href="http://jameskelly.net/blog/2016/4/7/getting-to-gifee-with-sdn-demo" target="_blank" rel="nofollow noopener noreferrer">demoed</a>), and more recently for CloudNativeCon and DockerCon <a href="http://jameskelly.net/blog/2017/3/27/the-best-sdn-for-openstack-now-for-kubernetes" target="_blank" rel="nofollow noopener noreferrer">talking</a> about how we evolved that work to make this integration enterprise-ready and up-to-date with all the innovation that’s happened in the fast-paced OpenShift releases.</p>
+<p><strong>But how do you get the best of OpenStack and OpenShift?</strong></p>
+<p>Red Hat has been helping customers to move faster with devops, continuous delivery, and containers using OpenShift for a long time. Naturally Red Hat often does this atop of Red Hat OpenStack Platform, where OpenStack creates clusters of virtual machine hosts for the Red Hat OpenShift Container Platform cluster.</p>
+<p>One latent hitch in this double stack is the software-defined networking (SDN). Like OpenStack, OpenShift and Kubernetes (on which OpenShift is based) have their opportunities for improvement. One area that is frequently fortified and improved is the software-defined networking (SDN), and the importance of doing this doubles when you’re running the double stack of OpenShift on top of OpenStack.</p>
+<p>Why can SDN be such a snag? Well, the network is a critical part of any cloud, and especially cloud-native, infrastructure because of the enormous volume of microservice-generated east-west traffic, along with load balancing, multi-tenancy, and security requirements; that’s just for starters. The good-enough SDN that is included but swappable in such open source cloud stacks is very often indeed good enough for small cloud setups, but it is common to see the SDN replaced with something more robust for clouds with more than 100 nodes or other advanced use cases like NFV.</p>
+<p><strong>Fast and Furious Clouds</strong></p>
+<p>I think of this 100-node edge like the 100mph edge of a car… As I make my way to Boston, I just took an Uber to SFO, and of course, it was a Prius. Like most cars nowadays they’re very efficient and great for A-to-B commuting. But also like most cars, when you approach or (hopefully don’t) pass 100mph mark, the thing feels like it is going to disintegrate! I was a little uneasy today flying down the 101 at just 80-something mph. Eeek!</p>
+<p>Now I love to drive, and drive fast, but I don’t do it in a bloody Prius! My speed-seeking readers will probably know, as I do, that if you go fast in a sports car, it is a way better experience. It’s smooth at high speeds, and the power feels awesome. Now let’s say you also aren’t just driving in a straight line, but you’re on the Laguna Seca Raceway. To handle cornering agility, gas and maintenance pit stops, and defense/offense versus the other drivers, you need more than just smooth handling. The requirements add up. I think you get my drift…</p>
+<p>My point is that, similarly, if you’re going to build a cloud, you need to consider that you’re going to need a lot more than good enough. Good enough might do you fine for some dev/test or basic scenarios, but if you need performance, elastic scale, resilience, F1-pit-crew speed and ease of maintenance, and a security defense/offense, then you need to invest in building the best. Juniper has been helping its customers build the best networks for over 20 years. It’s what Juniper is known for: high-performance and innovation. When you (or say NSS) compare security solutions, again, Juniper is on top for performance, effectivity (stopping the bad stuff) and value I might add.</p>
+<p><strong>When Compounding Good-enough Isn’t Great</strong></p>
+<p>Imagine the challenges you can run into with good-enough networking… now imagine you stack two such solutions on top of each other. That’s what happens with OpenShift or Kubernetes on top of OpenStack.</p>
+<p>In this kind of scenario, compounding the two stacks’ SDN, as you demand more from your cloud, you will double complexity and twice as quickly hit network disintegration!</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-7491" src="http://www.opencontrail.org/wp-content/uploads/2017/05/large.jpg" alt="" width="565" height="267" data-id="7491" /></p>
+<p><strong>Ludacris Mode for Your Cloud</strong></p>
+<p>If you want to drive your cloud fast and furious, <em>and not crash</em>, you need some racing readiness. OpenContrail is designed for this, and proven in some of the largest most-demanding clouds. No need to recount the awesomeness here. It’s already well documented. Before you green-light it though, there is one thing we’ve needed to iron out: How does an OpenContrail <em>double stack</em> drive?</p>
+<p><strong>SDN Inception</strong></p>
+<p>When OpenContrail developers were in their first throws of SDN integration for Kubernetes and OpenShift, we often ran it inside of an OpenStack cloud. And what was the OpenStack SDN? OpenContrail of course. Yep, that’s right we have OpenContrail providing an IP overlay on top of the physical network for the OpenStack VM connectivity, and then inside of that overlay and those VMs we installed OpenShift (or Kubernetes) with another OpenContrail overlay. It turns out this SDN inception works just fine. There’s nothing special to it. OpenContrail just requires an IP network, and the OpenStack-level OpenContrail fits the bill perfectly.</p>
+<p>In fact, SDN inception is pretty common, but not usually with the same SDN at both levels. The main place this happens in practice is because we run cloud-native CaaS/PaaS stacks like Kubernetes, Mesos, OpenShift paired with OpenContrail on top of public clouds, and that public IaaS line AWS has its own underlying SDN. It provides the IP underlay that we need in those cases.</p>
+<p>What about when we control the SDN at the IaaS AND the CaaS/PaaS layers? Even if 2 SDNs (the same or different solution) work well stacked atop each other, it’s not ideal because there is still double the complexity of managing them. If only there was a better way…</p>
+<p><strong>A New Hat Stack Trick</strong></p>
+<p>This is where the OpenContrail community was inspired to raise the bar, and the Red Hat stack of OpenShift on OpenStack is the perfect motivation. What’s now possible today is to unwind the SDN inception and use one single control and data plane for OpenShift or Kubernetes on top of OpenStack when you run OpenContrail. The way this is realized is by having the OpenStack layer work as usual, and using OpenContrail in a different way with OpenShift or Kubernetes. In that instance, the OpenContrail plugin for OpenShift/Kubernetes master will speak directly to the OpenContrail controller used at the OpenStack layer. To collapse the data plane, we have a CNI plugin passthru that will not require the OpenContrail vRouter to sit inside the host VM for each OpenShift/Kubernetes minion (compute) node. Instead the traffic will be channeled from the container to the underlying vRouter that is sitting on the OpenStack nova compute node. We’ll save further technicalities and performance boost analysis for an OpenContrail engineering blog another day.</p>
+<p>Juniper and Red Hat work on this latest innovation of flattening the SDN stack is coming to fruition. It is available today in the <a href="http://www.opencontrail.org/" target="_blank" rel="nofollow noopener noreferrer">OpenContrail community</a> or Juniper <a href="https://www.juniper.net/us/en/products-services/sdn/contrail/contrail-networking/" target="_blank" rel="nofollow noopener noreferrer">Contrail Networking</a> beta, and slated for Juniper’s next Contrail release. As to that, stay tuned. As to catching this in action, visit Juniper and Red Hat at the Red Hat Summit this week and the OpenStack Summit next week. We’ll see you there, and I hope you hear about this and more OpenContrail community innovations ahead and in deployment at the <a href="http://www.opencontrail.org/event/ocug-boston-2017/">OpenContrail User Group</a> meeting next week.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Red Hat OpenShift Container Platform with OpenContrail Networking</title>
+		<link>https://tungsten.io/red-hat-openshift-container-platform-with-opencontrail-networking/</link>
+		
+		<dc:creator><![CDATA[Savithru Lokanath]]></dc:creator>
+		<pubDate>Fri, 21 Apr 2017 01:09:03 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[OpenShift]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7473</guid>
+
+					<description><![CDATA[Red Hat OpenShift is the industry’s most secure and comprehensive enterprise-grade container platform. It is a Platform-as-a-Service (PaaS) based on Google’s Kubernetes, that allows developers to quickly develop, host, and...]]></description>
+										<content:encoded><![CDATA[<p>Red Hat OpenShift is the industry’s most secure and comprehensive enterprise-grade container platform. It is a Platform-as-a-Service (PaaS) based on <em>Google’s Kubernetes</em>, that allows developers to quickly develop, host, and scale applications in a cloud environment.</p>
+<p>OpenContrail<em>,</em> is the leading SDN automation solution for the cloud. From network virtualization to integrated cloud management, <em>OpenContrai</em>l delivers freedom of choice, intelligent automation, and always-on reliability for cloud, software-defined WAN (SD-WAN), and Network Functions Virtualization (NFV) environments.</p>
+<p>Today, enterprises know that to be competitive, they must build, deploy, and scale applications faster. Slowly, the industry is moving away from monolithic architecture (which are difficult to scale, resource intensive and increase the time to market) to a microservice architecture, to speed up continuous deployment and delivery.</p>
+<p>As the industry embraces the microservices model, cloud platforms (public and private) will start hosting the container platforms. With thousands of containers, VMs and bare-metals in an enterprise environment, managing workloads becomes a painful task and most importantly networking becomes complex. Since multiple overlay networks are involved, our customers want a single solution to stitch and manage their next-gen and legacy workloads. To solve this networking problem, we came up with a solution which supports all the leading Container orchestration platforms (<em>Google’s Kubernetes, Red Hat OpenShift Container Platform </em>and<em> Apache Mesos</em>). With the latest <em>OpenContrail </em>release, we can now manage a whole spectrum of workloads, be it containers, virtual-machines and bare-metal. Along with this, <em>OpenContrail</em> provides certain features which other Container networking solutions don’t (Eg. namespace isolation). Due to the rich feature-set and flexibility of <em>OpenContrail,</em> enterprises can now seamlessly migrate to a microservices model, and manage various workloads using a single solution.</p>
+<p>The below demo shows <em>OpenContrail’s</em> integration with <em>Red Hat OpenShift Container Platform</em> and walk you through key features such as,</p>
+<p><iframe loading="lazy" src="https://www.youtube.com/embed/_vdwY1ux_gg" width="560" height="315" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p>&nbsp;</p>
+<p><strong>NAMESPACE ISOLATION</strong></p>
+<p>Isolate pods/services in different <em>OpenShift</em> projects from talking to each other</p>
+<p><strong>SOURCE NAT (EGRESS)</strong></p>
+<p>Allow pods/services to talk to the outside world (Internet)</p>
+<p>By default, we restrict the pods/services from communicating with the outside world. This provides granular control over the <em>OpenShift</em> cluster</p>
+<p><b>INGRESS</b></p>
+<ul>
+<li><strong>Single Service Ingress</strong></li>
+</ul>
+<p style="padding-left: 60px;">Expose a single service to the outside world</p>
+<p style="padding-left: 60px;">1:1 mapping between ingress and service</p>
+<p style="padding-left: 90px;"><em>test.contrail.com -&gt; 178.91.123.132 -&gt;  / dev   service-dev:80</em></p>
+<ul>
+<li><strong>Simple Fanout Ingress</strong></li>
+</ul>
+<p style="padding-left: 60px;">Expose multiple services to the outside world</p>
+<p style="padding-left: 60px;">1:many mapping between ingress and services. Uses <em>HAPROXY</em> load-balancer in <em>OpenContrail’s</em> vRouter agent container to route the traffic to different backend services</p>
+<p style="padding-left: 90px;"><em>test.contrail.com -&gt; 178.91.123.132 -&gt; / dev    service-dev:80</em></p>
+<p><strong>                                                                                        </strong><em>/ qa      service-qa:80</em></p>
+<ul>
+<li><strong>Name Based Virtual Hosting</strong></li>
+</ul>
+<p style="padding-left: 60px;">Expose multiple services to the outside world through multiple hostnames</p>
+<p style="padding-left: 60px;">1:many mapping between ingress and services through hostnames. Uses the HTTP header information and <em>HAPROXY</em> load-balancer in <em>OpenContrail’s</em> vRouter agent container to route the traffic to different backend services</p>
+<p style="padding-left: 90px;"><em>dev.contrail.com &#8211;|                       |-&gt; service-dev:80</em></p>
+<p><em>                                                                                     | 178.91.123.132  |</em></p>
+<p style="padding-left: 90px;"><em>qa.contrail.com   &#8211;|                       |-&gt; service-qa:80</em></p>
+<p><em> </em></p>
+<p><strong> </strong>There’s also a couple of other interesting demos that are lined up, so keep watching this space for latest updates.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>A Contrarian Viewpoint On Container Networking</title>
+		<link>https://tungsten.io/a-contrarian-viewpoint-on-container-networking/</link>
+		
+		<dc:creator><![CDATA[James Kelly]]></dc:creator>
+		<pubDate>Mon, 17 Apr 2017 16:33:18 +0000</pubDate>
+				<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Docker]]></category>
+		<category><![CDATA[SDN]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7468</guid>
+
+					<description><![CDATA[With DockerCon in Austin happening this week, I’m reminded of last year’s DockerCon Seattle, and watching some announcements with utter fascination or utter disappointment. Let’s see if we can’t turn...]]></description>
+										<content:encoded><![CDATA[<p><img loading="lazy" decoding="async" class="aligncenter wp-image-7470" src="http://www.opencontrail.org/wp-content/uploads/2017/04/dockercon_2017_blogpost.png" alt="" width="582" height="250" data-id="7470" /></p>
+<p>With DockerCon in Austin happening this week, I’m reminded of last year’s DockerCon Seattle, and watching some announcements with utter fascination or utter disappointment. Let’s see if we can’t turn the disappointments into positives.</p>
+<p>The first disappointment has a recent happy ending. It was a broadly shared observation in Seattle, the media, and discussion forums: Docker was overstepping when they bundled in Swarm with the core of Docker Engine in 1.12. This led to the trial balloon that forking Docker was a potential solution towards a lighter-weight Docker that could serve in Mesos and Kubernetes too. Last September I covered this <a href="https://www.linkedin.com/pulse/meet-fockers-what-fork-james-kelly" target="_blank">in my blog</a> sparing little disdain over the idea of forking Docker Engine simply because it had become too monolithic. There are other good options, and I’m happy to say Docker heeded the community’s outcry and cleanly broke out a component of Docker Engine called containerd which is the crux of the container runtime. This gets back to the elegant Unix-tool inspired modularization and composition, and I’m glad to see containerd and rkt have recently been accepted into the CNCF. Crisis #1 averted.</p>
+<p>My next disappointment was not so widely shared, and in fact it is still a problem at large today: the viewpoint on container networking. Let’s have a look.</p>
+<h3><strong>IS CONTAINER NETWORKING SPECIAL?</strong></h3>
+<p>When it comes to containers, there’s a massive outpour of innovation from both mature vendors and startups alike. When it comes to SDN there’s no exception.</p>
+<p>Many of these solutions you can discount because, as I said <a href="https://www.linkedin.com/pulse/best-sdn-openstack-now-kubernetes-james-kelly" target="_blank">in my last blog</a>, as shiny and interesting as they may be on the surface or in the community, their simplicity is quickly discovered as a double-edged sword. In other words, they may be easy to get going and wrap your head around, but they have serious performance issues, security issues, scale issues, and “experiential cliffs” to borrow a turn of phrase from the Kubernetes founders when they commented on the sometimes over-simplicity of many PaaS systems (iow. they hit a use case where the system just can’t do that experience/feature that is needed).</p>
+<h3><strong>BACK TO DOCKERCON SEATTLE…</strong></h3>
+<p>Let’s put aside the SDN startups that to various extents suffer from the over-simplicity or lack of soak and development time, leading to the issues above. The thing that really grinds my gears about last year’s DockerCon can be boiled down to Docker, a powerful voice in the community, really advocating that container networking was making serious strides, when at the same time they were using the most primitive of statements (and solution) possible, introducing “Multi-host networking”</p>
+<p id="yui_3_17_2_1_1492446495186_899">You may recall my social post/poke at the photo of this slide with my sarcastic caption.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-7469" src="http://www.opencontrail.org/wp-content/uploads/2017/04/dockercon_2017_blogpost_image2.png" alt="" width="750" height="421" data-id="7469" /></p>
+<p>Of course, Docker was talking about their overlay-based approach to networking that was launched as the (then) new default mode to enable networking in Swarm clusters. The problem is that most of the community are not SDN experts, and so they really don’t know any better than to believe this is an aww!-worthy contribution. A few of us that have long-worked in networking were less impressed.</p>
+<p>Because of the attention that container projects get, Docker being the biggest, these kind of SDN solutions are still seen today by the wider community of users as good networking solutions to go with because they easily work in the very basic CaaS use cases that most users start playing with. Just because they work for your cluster today, however, doesn’t make them a solid choice. In the future your netops team will ask about X, Y and Z (and yet more stuff down the road they won’t have the foresight to see today). Also in the future you’ll expand and mature your use cases and start to care about non-functional traits of the network which often happens too late in production or when problems arise. I totally get it. Networking isn’t the first thing you want to think about in the cool new world of container stacks. It’s down in the weeds. It’s more exciting to contemplate the orchestration layer, and things we understand like our applications.</p>
+<p>On top of the fact that many of these new SDN players offer primitive solutions with hidden pitfalls down the road that you won’t see until it’s too late, another less pardonable nuisance is the fact that most of them are perpetrating the myth that container networking is somehow special. I’ve heard this a lot in various verbiage over the ~7 years that SDN has arisen for cloud use cases. Just this week, I read a meetup description that started, “Containers require a new approach to networking.” Because of all the commotion in the container community with plenty of new SDN projects and companies having popped up, you may be duped into believing that, but it’s completely false. These players have a vested interest, though, in making you see it that way.</p>
+<h3><strong>THE TRUTH ABOUT NETWORKING CONTAINERS</strong></h3>
+<p>The truth is that while workload connectivity to the network may change with containers (see CNM or CNI) or with the next new thing, the network itself doesn’t need to change to address the new endpoint type. Where networks did need some work, however, is on the side of plugging into the orchestration systems. This meant that networks needed better programmability and then integration to connect-up workloads in lock-step with how the orchestration system created, deleted and moved workloads. This meant plugging into systems like vSphere, OpenStack, Kubernetes, etc. In dealing with that challenge, there were again two mindsets to making the network more programmable, automated, and agile: one camp created totally net-new solutions with entirely new protocols (OpenFlow, STT, VxLAN, VPP, etc.), and the other camp used existing protocols to build new more dynamic solutions that met the new needs.</p>
+<p>Today the first camp solutions are falling by the wayside, and the camp that built based on existing open standards and with interoperability in mind is clearly winning. <a href="http://www.opencontrail.org/" target="_blank">OpenContrail</a> is the most successful of these solutions.</p>
+<p>The truth about networks is that they are pervasive and they connect everything. Interoperability is key. 1) Interoperability across networks: If you build a network that is an island of connectivity, it can’t be successful. If you build a network that requires special/new gateways, then it doesn’t connect quickly and easily to other networks using existing standards, and it won’t be successful. 2) Interoperability across endpoints connections: If you build a network that is brilliant at connecting only containers, even if it’s interoperable with other networks, then you’ve still created an island. It’s an island of operational context because the ops team needs a different solution for connecting bare-metal nodes and virtual machines. 3) Interoperability across infrastructure: If you have an SDN solution that requires a lot from the underlay/underlying infrastructure, it’s a failure. We’ve seen this with SDNs like NSX that required multicast in the underlay. We’ve seen this with ACI that requires Cisco switches to work. We’ve even seen great SDN solutions in the public cloud, but they’re specific to AWS or GCP. If your SDN solution isn’t portable anywhere, certainly to most places, then it’s still doomed.</p>
+<h3><strong>IF YOU WANT ONE UNIFIED NETWORK, YOU NEED ONE SDN SOLUTION</strong></h3>
+<p>This aspect of interoperability and portability actually applies to many IT tools if you’re really going to realize a hybrid cloud and streamline ops, but perhaps nowhere is it more important than in the network because of its inherently pervasive nature.</p>
+<p>If you’re at DockerCon this week, you’ll be happy to know that the best solution for container networking, OpenContrail, is also the best SDN for Kubernetes, Mesos, OpenStack, NFV, bare-metal node network automation, and VMware. While this is one SDN to rule and connect them all, and very feature rich in its 4th year of development, it’s also never been more approachable, both commercially turn-key and in open source. You can deploy it on top of any public cloud or atop of private clouds with OpenStack or VMware, or equally easily on bare-metal CaaS, especially with Kubernetes, thanks to Helm.</p>
+<p>Please drop by and ask for an OpenContrail demo and <a href="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fphoto.php%3Ffbid%3D677962765593635%26set%3Da.156115871111663.33285.100001397528602%26type%3D3&amp;width=500" target="_blank">sticker</a>! for your laptop or phone at the Juniper Networks booth, and booths of partners of Juniper’s that have Juniper Contrail Networking integrations: Red Hat, Mirantis, Canonical, and we’re now happy to welcome Platform9 to the party too. We at Juniper will be showcasing a joint demo with Platform9 that you can read more about on the <a href="https://platform9.com/blog/sdn-kubernetes-opencontrail-platform9-bring-simple-secure-container-networking-solution-enterprises/" target="_blank">Platform9 blog</a>.</p>
+<p>PS. If you’re running your CaaS atop of OpenStack, then even more reason that you’ll want to stop by and get a sneak peak of what you’ll also hear more about at the upcoming Red Hat and OpenStack Summits in Boston.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>The Best SDN For Openstack, Now For Kubernetes</title>
+		<link>https://tungsten.io/the-best-sdn-for-openstack-now-for-kubernetes/</link>
+		
+		<dc:creator><![CDATA[James Kelly]]></dc:creator>
+		<pubDate>Tue, 28 Mar 2017 17:39:11 +0000</pubDate>
+				<category><![CDATA[Conference]]></category>
+		<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7427</guid>
+
+					<description><![CDATA[In between two weeks of events as I write this, I got to stop at home and in the office for only a day, but I was excited by what...]]></description>
+										<content:encoded><![CDATA[<p><img loading="lazy" decoding="async" class="aligncenter wp-image-7428" src="http://www.opencontrail.org/wp-content/uploads/2017/03/download.jpg" alt="" width="600" height="200" /></p>
+<p>In between two weeks of events as I write this, I got to stop at home and in the office for only a day, but I was excited by what I saw on Friday afternoon… The best SDN and network automation solution out there, OpenContrail, is now set to rule the Kubernetes stage too. With title of “#1 SDN for OpenStack” secured for the last two years, the OpenContrail community is now ready for Kubernetes (K8s), the hottest stack out there, and a passion of mine for which I’ve been advocating for more and more of attention around the office at Juniper.</p>
+<p>It couldn’t be better timing, heading into KubeCon / CloudNativeCon / OpenShift Commons in Berlin this week. For those that know me, you know I love the (b)leading edge of cloud and devops, and last year when I built an AWS cluster for OpenContrail + OpenShift / Kubernetes then shared it in my Getting to #GIFEE <a href="http://jameskelly.net/blog/2016/4/7/getting-to-gifee-with-sdn-demo">blog</a>, github repo, and demo video, those were early days for OpenContrail in the K8s space. It was work pioneered by OpenContrail co-founder and a few star engineers to help me cut through the off-piste mank and uncharted territory. It was also inspired by my friends at tcp cloud (now Mirantis) who <a href="https://youtu.be/_L_pR6ZYwEs">presented</a> on Smart cities / IoT with K8s, OpenContrail, and Raspberry Pi at the last KubeCon EU. Today, OpenContrail, <em>the</em> all-capability open SDN is ready to kill it in the Kubernetes and OpenShift spaces, elevating it to precisely what I recently demo shopped for in skis: a true all-mountain top performer (BTW my vote goes to the Rosi Exp. HD 88). Now that you know what I was doing when not blogging recently… Skiing aside, our demos are ready for the KubeCon audience this week at our Juniper booth, and I’ll be there talking about bringing a ton of extra value to the Kubernetes v1.6 networking stack.</p>
+<p>What sets OpenContrail apart from the other networking options for Kubernetes and OpenShift is that it brings an arsenal of networking and security features to bear on your stack, developed by years of the performance-obsessed folks at Juniper and many other engineers in the community. In this space OpenContrail often competes with smaller SDN solutions offered by startups. Their said advantage is positioned as nimbler and simpler solutions. This was particularly true in their easy, integrated installation with K8s (coming for OpenContrail very soon), but on the whole, their advantage, in general across the likes of Contiv, Calico, Flannel, Weave, etc. boils down to 2 things. Let’s have a look…</p>
+<p>First, it is easy to be simpler when primitive. This isn’t a knock on the little guys. They are very good for some pointed use cases and indeed they are simple to use. They do have real limits however. Simple operation can always come from less knobs and fewer capabilities, but I believe an important goal of SDN, self-driving infrastructure, cognitive / AI in tech, is abstraction; in other words, simplicity needn’t come from striping away functionality. We only need start with a good model for excellent performance at scale and design for elegance and ease of use. It’s not easy to do, but have you noticed that Kubernetes itself is the perfect example of this? – super easy 2 years ago, still is, but at the same time there’s a lot more to it today. It’s built on solid concepts and architecture, from a lot of wisdom at Google. Abstraction is the new black. It’s open, layered and transparent when you need to peel it back, and it is the solution to manage complexity that arises from features and concepts that aren’t for everyone. General arguments aside, if you look at something like K8s ingress or services networking / balancing, none of the SDN solutions cover that except for very pointed solutions like GKE or nginx where you’d still need one or more smaller SDN tools. Furthermore, when you start to demand network performance on the control (protocol/API) and data (traffic feeds &amp; speeds) planes with scale in many other K8s metrics, the benefits of OpenContrail that you get for free really stand apart from the defacto K8s networking components and these niche offerings. Better still, you get it all as one OpenContrail solution that is portable across public and private clouds.</p>
+<p>Second, other solutions are often solely focused on K8s or CaaS stacks. OpenContrail is an SDN solution that isn’t <em>just</em> for Kubernetes nor containers. It’s one ring to rule them all. It works on adjacent CaaS stack integrations with OpenShift, Mesos, etc., but it’s equally if not more time-tested in VMware and OpenStack stacks and even bare-metal or DIY orchestration of mixed runtimes. You might have heard of publicized customer cases for CaaS, VMware and OpenStack across hybrid clouds and continuing with the same OpenContrail networking irrespective of stacking PaaS and CaaS upon pub/prvt IaaS or metal (here are a few <a href="https://engineering.riotgames.com/news/running-online-services-riot-part-iii" target="_blank">1</a>, <a href="https://www.youtube.com/watch?v=3SgDcIFiZQI" target="_blank">2</a>, <a href="http://www.opencontrail.org/videos/" target="_blank">3</a>). It’s one solution unifying your stack integration, network automation and policy needs across everything. In other words, the only-one-you-need all-mountain ski. The only competitor that comes close to this breadth is Nuage Networks, but they get knocked out quickly for not being open source (without tackling other important performance and scale detail here). If the right ski for the conditions sounds more fun to you, like the right tool for the right job, then wait for my next blog on hybrid cloud…and what I spoke about at IBM Interconnect (sorry no recording). In short, while having lots of skis may have an appeal to different conditions, having lots of networking solutions is a recipe for IT disaster because the network foundation is so pervasive and needs to connect everything.</p>
+<p>With OpenContrail developers now making it is dead easy to deploy with K8s (think kubeadm, Helm, Ansible…) and seamless to operate with K8s, it’s going to do what it did for OpenStack networking, for Kubernetes networking very quickly. I’m really excited to be a part of it.</p>
+<p>You can visit the Juniper booth to find me and hear more. As you may know, Juniper is the leading contributor to OpenContrail, but we’re also putting K8s to work in the Juniper customer service workbench and CSO product (NFV/CPE offering). Moreover, and extremely complementary to Juniper’s Contrail Networking (our OpenContrail offering), Juniper just acquired AppFormix 4 months ago. AppFormix is smart operations management software that will make your OpenStack or K8s cluster ops akin to a self-driving Tesla (a <em>must</em> if your ops experience is about as much fun as a traffic jam). Juniper’s AppFormix will give you visibility into the state of workloads both apps and software-defined infrastructure stack components alike, and it applies big data and cognitive machine learning to automate and adapt policies, alarms, chargebacks and more. AppFormix is my new jam (with Contrail PB)… it gathers and turns your cloud ops data into insight… The better and faster you can do that, the better your competitive advantage. As you can tell, KubeCon is going to be fun this week!</p>
+<h2>DEMOS DEMOS DEMOS</h2>
+<p>+update 3/28<br />
+Thanks to the Juniper marketing folks for a list of the demos that we&#8217;ll be sharing at KubeCon:</p>
+<ol id="yui_3_17_2_1_1492251066093_394">
+<li>Contrail Networking integrated with a Kubernetes cluster (fully v1.6 compatible) &#8211;
+<ul>
+<li>Namespaces/RBAC/Network Policy improved security with OpenContrail virtual networks, VPC/projects and security groups (<a href="https://www.youtube.com/watch?v=xJygirrUnD8&amp;feature=youtu.be" target="_blank"><strong>YouTube demo video</strong></a>)</li>
+<li>Ingress and Services load balancing with OpenContrail HAProxy, vRouter ECMP, and floating IP addresses, improving performance (remove KubeProxy) and consolidating SDN implementation (<strong><a href="https://www.youtube.com/watch?v=-jVToK84r9Q" target="_blank">YouTube demo video</a></strong>)</li>
+<li>Connecting multiple hybrid clouds with simple network federation and unified policy</li>
+<li>Consolidating stacked CaaS on IaaS SDN: optimized OpenContrail vRouter networking &#8220;passthru&#8221; for Kubernetes nodes on top of OpenStack VMs</li>
+</ul>
+</li>
+<li>Contrail Networking integrated with an OpenShift cluster (<a href="https://www.youtube.com/watch?v=ikV5pizoDK0&amp;feature=youtu.be" target="_blank"><strong>YouTube demo video</strong></a>)</li>
+<li>Contrail Networking containerized and easy deployment in Kubernetes</li>
+<li>AppFormix monitoring and analytics for Kubernetes and workload re-placement automation</li>
+</ol>
+<p>I&#8217;ll light these up with links to YouTube videos as I get the URLs.</p>
+<p>&nbsp;</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

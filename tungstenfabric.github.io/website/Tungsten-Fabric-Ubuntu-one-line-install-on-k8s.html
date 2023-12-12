@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120516132-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-120516132-1');
+    </script>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,maximum-scale=2">
+    <link rel="stylesheet" type="text/css" media="screen" href="assets/css/style.css%3Fv=9ae6919b82d7f9b871eb06c0c2b979def1cca2b1.css">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>[“Tungsten Fabric”] | [“Open source network virtualization”]</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="[“Tungsten Fabric”]" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="[“Open source network virtualization”]" />
+<meta property="og:description" content="[“Open source network virtualization”]" />
+<link rel="canonical" href="Tungsten-Fabric-Ubuntu-one-line-install-on-k8s.html" />
+<meta property="og:url" content="https://tungstenfabric.github.io/website/Tungsten-Fabric-Ubuntu-one-line-install-on-k8s.html" />
+<meta property="og:site_name" content="[“Tungsten Fabric”]" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="[“Tungsten Fabric”]" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"[“Open source network virtualization”]","headline":"[“Tungsten Fabric”]","url":"https://tungstenfabric.github.io/website/Tungsten-Fabric-Ubuntu-one-line-install-on-k8s.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto%3A100%2C200%2C300%2C400%2C500%2C600%2C700%2C800%2C900%2C100i%2C200i%2C300i%2C400i%2C500i%2C600i%2C700i%2C800i%2C900i&amp;subset=latin&amp;ver=4.9.6" type="text/css" media="all">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+  <title>Tungsten Fabric</title>
+  </head>
+  <body>
+
+    <!-- HEADER -->
+    <header>
+      <div id="lf_header">
+        <div class="container"><a id="lf-header" href="https://www.linuxfoundation.org/projects" target="_blank" rel="noopener"><img class="header_image" style="padding-top:1px" src="https://tungsten.io/wp-content/themes/salient-child/images/logo_lf_projects_horizontal_2018.png" width="500" height="28"/></a></div>
+        </div><div id="tungsten_header" style="text-align:right;">
+        <div class="container">
+          <!-- #site-logo -->
+          <div style="position:absolute; left 0px;">
+          <a href="https://tungsten.io/" rel="noopener"><img class="header_image" style="padding-top:6px" height="58" src="https://github.com/tungstenfabric/website/raw/master/TungstenFabric_Gradient_RGB-DarkBG.png"/></a></div>
+          <!-- #site-navigation -->
+          <nav style="float:right; padding-top:20px;">
+            <ul class="menu">
+              <li class="menu"><a href="https://tungsten.io/start/" class="menu-item">Get Started</a></li>
+              <li class="menu"><a href="https://tungsten.io/community/" class="menu-item">Community</a></li>
+              <li class="menu"><a href="../website.html" class="menu-item">Documentation</a></li>
+              <li class="menu"><a href="https://tungsten.io/blog/" class="menu-item">Blog</a></li>
+              <li class="menu"><a href="https://tungsten.io/wp-content/uploads/2018/03/Tungsten-Fabric-Project-Technical-Charter-3-13-2018-Final.pdf" class="menu-item">Charter</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>Tungsten Fabric CNI can be installed on a Kubernetes cluster through multiple provisioning schemes.</p>
+
+<p>This wiki will describe the most simplest of all: <strong>A single yaml based install</strong></p>
+
+<h2 id="pre-requisites">Pre-requisites</h2>
+<ol>
+  <li>
+    <p><strong>A running Kubernetes cluster</strong></p>
+
+    <p>There are multiple options available to a user to install Kubernetes. The most simplest being <a href="https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/">kubeadm</a></p>
+
+    <p>Alternatively if you would like to install Tungsten Fabric and K8s cluster together, you can use <a href="https://github.com/Juniper/contrail-ansible-deployer/wiki/Contrail-microservice-installation-with-kubernetes">Tungsten Fabric Ansible Deployer</a>.</p>
+  </li>
+  <li>
+    <p><strong>Docker version on all nodes should be &gt;= 1.24</strong></p>
+  </li>
+</ol>
+
+<h2 id="installation">Installation</h2>
+<p>Installation of Tungsten Fabric is a <strong>1</strong>-step process.</p>
+
+<p>Note: Replace x.x.x.x with the IP of your Kubernetes Master node.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>K8S_MASTER_IP=x.x.x.x; CONTRAIL_REPO="docker.io\/opencontrailnightly"; CONTRAIL_RELEASE="latest"; mkdir -pm 777 /var/lib/contrail/kafka-logs; curl https://raw.githubusercontent.com/Juniper/contrail-kubernetes-docs/master/install/kubernetes/templates/contrail-single-step-cni-install-ubuntu.yaml | sed "s/{{ K8S_MASTER_IP }}/$K8S_MASTER_IP/g; s/{{ CONTRAIL_REPO }}/$CONTRAIL_REPO/g; s/{{ CONTRAIL_RELEASE }}/$CONTRAIL_RELEASE/g" | kubectl apply -f -
+</code></pre></div></div>
+
+<h2 id="what-just-happened-">What just happened ?</h2>
+
+<p><strong>Hurray! Welcome to Tungsten Fabric.</strong></p>
+
+<ol>
+  <li>
+    <p>You installed Tungsten Fabric CNI in your Kubernetes node. If new compute nodes are added to your Kubernetes cluster, Tungsten Fabric CNI will be propogated to them auto-magically as it is backed by a Kubernetes DaemaonSet.</p>
+  </li>
+  <li>
+    <p>You installed entire Tungsten Fabric Networking suite with rich Networking, Analytics, Security, Visualization functions, to name a few.</p>
+  </li>
+  <li>
+    <p>Tungsten Fabric UI is available on port 8143 of your node.  Feel free to play around. <a href="https://www.juniper.net/documentation/en_US/release-independent/contrail/information-products/pathway-pages/index.html">About Tungsten Fabric</a></p>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://x.x.x.x:8143
+Default credentials: admin/contrail123
+</code></pre></div>    </div>
+    <h2 id="check-tungsten-fabric-status">Check Tungsten Fabric Status</h2>
+  </li>
+</ol>
+
+<p>You can get the status of Tungsten Fabric components, by running “contrail-status” command line tool in your Kubernetes master node. This will list all Tungsten Fabric components running in your system.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[root@foo ~]# contrail-status
+Pod         Service         Original Name                          State    Status         
+            zookeeper       contrail-external-zookeeper            running  Up 35 minutes  
+analytics   alarm-gen       contrail-analytics-alarm-gen           running  Up 35 minutes  
+analytics   api             contrail-analytics-api                 running  Up 35 minutes  
+analytics   collector       contrail-analytics-collector           running  Up 35 minutes  
+analytics   nodemgr         contrail-nodemgr                       running  Up 33 minutes  
+analytics   query-engine    contrail-analytics-query-engine        running  Up 35 minutes  
+analytics   snmp-collector  contrail-analytics-snmp-collector      running  Up 35 minutes  
+analytics   topology        contrail-analytics-topology            running  Up 34 minutes  
+config      api             contrail-controller-config-api         running  Up 35 minutes  
+config      cassandra       contrail-external-cassandra            running  Up 35 minutes  
+config      device-manager  contrail-controller-config-devicemgr   running  Up 35 minutes  
+config      nodemgr         contrail-nodemgr                       running  Up 33 minutes  
+config      rabbitmq        contrail-external-rabbitmq             running  Up 35 minutes  
+config      schema          contrail-controller-config-schema      running  Up 35 minutes  
+config      svc-monitor     contrail-controller-config-svcmonitor  running  Up 35 minutes  
+control     control         contrail-controller-control-control    running  Up 35 minutes  
+control     dns             contrail-controller-control-dns        running  Up 35 minutes  
+control     named           contrail-controller-control-named      running  Up 35 minutes  
+control     nodemgr         contrail-nodemgr                       running  Up 33 minutes  
+database    cassandra       contrail-external-cassandra            running  Up 35 minutes  
+database    kafka           contrail-external-kafka                running  Up 35 minutes  
+database    nodemgr         contrail-nodemgr                       running  Up 34 minutes  
+kubernetes  kube-manager    contrail-kubernetes-kube-manager       running  Up 35 minutes  
+vrouter     agent           contrail-vrouter-agent                 running  Up 34 minutes  
+vrouter     nodemgr         contrail-nodemgr                       running  Up 33 minutes  
+webui       job             contrail-controller-webui-job          running  Up 35 minutes  
+webui       web             contrail-controller-webui-web          running  Up 35 minutes  
+
+WARNING: container with original name 'contrail-external-zookeeper' have Pod os Service empty. Pod: '' / Service: 'zookeeper'. Please pass NODE_TYPE with pod name to container's env
+
+vrouter kernel module is PRESENT
+== Contrail control ==
+control: active
+nodemgr: initializing (NTP state unsynchronized. ) . &lt;-- Safe to ignore
+named: active
+dns: active
+
+== Contrail kubernetes ==
+kube-manager: active
+
+== Contrail database ==
+kafka: active
+nodemgr: initializing (NTP state unsynchronized. ) . &lt;-- Safe to ignore
+zookeeper: inactive                                  &lt;-- Safe to ignore
+cassandra: active
+
+== Contrail analytics ==
+nodemgr: initializing (NTP state unsynchronized. ) . &lt;-- Safe to ignore
+api: active
+collector: active
+query-engine: active
+alarm-gen: active
+
+== Contrail webui ==
+web: active
+job: active
+
+== Contrail vrouter ==
+nodemgr: initializing (NTP state unsynchronized. )    &lt;-- Safe to ignore
+agent: active
+
+== Contrail config ==
+api: active
+zookeeper: inactive                                   &lt;-- Safe to ignore
+svc-monitor: active
+nodemgr: initializing (NTP state unsynchronized. ) .  &lt;-- Safe to ignore
+device-manager: active
+cassandra: active
+rabbitmq: active
+schema: active
+
+</code></pre></div></div>
+
+<h2 id="get-to-know-tungsten-fabric-more">Get to know Tungsten Fabric more</h2>
+
+<p><a href="https://www.juniper.net/documentation/en_US/release-independent/contrail/information-products/pathway-pages/index.html">All about Tungsten Fabric</a></p>
+
+<p><a href="https://github.com/Juniper/contrail-controller/wiki/Kubernetes">Tungsten Fabric and Kubernetes Intro</a></p>
+
+<p><a href="https://github.com/Juniper/contrail-controller/wiki/Install-K8s-using-Kubeadm">Install Kubernetes using Kubeadm</a></p>
+
+<p><a href="Tungsten-Fabric-15-minute-deployment-with-k8s-on-AWS.html">Install Tungsten Farbric on AWS</a></p>
+
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <footer id="site-footer">
+      <div>
+        <div id="footer-widgets">
+          <div class="container">
+
+            <div class="col col-1">
+              <div class="footer-menu">
+                <p class="footer_heading">MENU</p>
+                <ul class="footer-menu">
+                  <li class="footer-menu-item"><a href="https://tungsten.io/start/">Get Started</a></li>
+                  <li class="footer-menu-item"><a href="https://tungsten.io/community/">Community</a></li>
+                  <li class="footer-menu-item"><a target="_blank" href="../website.html">Documentation</a></li>
+                  <li class="footer-menu-item"><a href="https://tungsten.io/blog/">Blog</a></li>
+                  <li class="footer-menu-item"><a href="https://tungstenfabric.github.io/wp-content/uploads/2018/03/Tungsten-Fabric-Project-Technical-Charter-3-13-2018-Final.pdf">Charter</a></li>
+                </ul>
+              </div>
+              <div><a href="https://tungsten.io"><img class="header_image" width="20" height="17" src="https://i1.wp.com/tungstenfabric.io/wp-content/uploads/2018/03/TungstenFabric_White_logoonly.png"></a></div>
+            </div>
+
+            <div class="col col-2">
+              <div class="footer-menu">
+                <p class="footer_heading">Engage</p>
+                <ul class="footer-menu">
+                  <li class="no-label footer-menu-item"><a href="https://github.com/tungstenfabric/" target="_blank" title="Visit Tungsten Fabric on GitHub"><span class="fab fa-2x fa-github"></span></a></li>
+                  <li class="no-label footer-menu-item"><a href="https://join.slack.com/t/tungstenfabric/shared_invite/enQtMzM0MjMyMDIzMzk3LTZmY2FmY2JlZmRjN2YxMzgyOTNkNDZiNTRiYWU0NTRmNzI3N2RjMDIwY2UxZDlkODgzZDE0YzQ3MTlhNTg0N2I" target="_blank" title="Visit Tungsten Fabric on Slack"><span class="fab fa-2x fa-slack"></span></a></li>
+                  <li class="no-label footer-menu-item"><a href="https://twitter.com/tungstenfabric" target="_blank" title="Visit Tungsten Fabric on Twitter"><span class="fab fa-2x fa-twitter"></span></a></li>
+                  <li class="no-label footer-menu-item"><a href="https://www.facebook.com/tungstenfabric/" target="_blank" title="Visit Tungsten Fabric on Facebook"><span class="fab fa-2x fa-facebook"></span></a></li>
+                  <li class="no-label footer-menu-item"><a href="https://www.linkedin.com/groups/6517760" target="_blank" title="Visit Tungsten Fabric on LinkedIn"><span class="fab fa-2x fa-linkedin"></span></a></li>
+                </ul>
+              </div>
+              <div>
+                <div>
+                  <ul class="footer-menu">
+                    <li class="footer-menu-item"><a target="_blank" href="https://groups.google.com/forum/#!forum/tungsten-users">Mailing List: User Forum</a></li>
+                    <li class="footer-menu-item"><a target="_blank" href="https://groups.google.com/forum/#!forum/tungsten-dev">Mailing List: Developer Forum</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="col col-3 ">
+              <div class="footer-menu">
+                <p class="footer_heading">RESOURCES</p>
+                <ul class="footer-menu">
+                  <li class="footer-menu-item"><a target="_blank" href="https://github.com/tungstenfabric/">Code on GitHub</a></li>
+                  <li class="footer-menu-item"><a target="_blank" href="https://hub.docker.com/u/tungstenfabric/">Packages on DockerHub</a></li>
+                  <li class="footer-menu-item"><a target="_blank" href="https://drive.google.com/drive/folders/0AM-bGoKiRBuTUk9PVA">Community Google Drive</a></li>
+                  <li class="footer-menu-item"><a target="_blank" href="https://calendar.google.com/calendar?cid=ZW1xMjBjZmJyNmZ0NWIwcjNrdjZraG9udnNAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ">Community Calendar</a></li>
+                  <li class="footer-menu-item"><a target="_blank" href="https://www.youtube.com/channel/UCHX_THOp9d0vclXBMNp2g6g/">Community Videos</a></li>
+                </ul>
+              </div>
+            </div>
+
+          </div>  <!-- .container -->
+        </div>
+        <!-- #footer-widgets -->
+
+        <div id="footer-bottom">
+          <div class="container">
+            <div>
+              Copyright © 2018 Tungsten Fabric a Series of LF Projects, LLC For web site terms of use, trademark policy and general project policies please see <a href="https://lfprojects.org" target="_blank" rel="noopener">https://lfprojects.org</a>.</div>
+            <!-- #copyright -->
+          </div>
+          <!-- #footer-bottom-inner -->
+        </div>
+        <!-- #footer-bottom -->
+
+      </div>
+      <!-- #footer-inner -->
+    </footer>
+
+    
+  </body>
+</html>

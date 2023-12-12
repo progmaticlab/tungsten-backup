@@ -1,0 +1,1021 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Orchestration Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/orchestration/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/orchestration/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Mon, 06 Nov 2017 22:52:17 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>Orchestration Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/orchestration/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Deployments and management made easy with Openstack &#038; Opencontrail Helm</title>
+		<link>https://tungsten.io/deployments-and-management-made-easy-with-openstack-opencontrail-helm/</link>
+		
+		<dc:creator><![CDATA[Ranjini Rajendran]]></dc:creator>
+		<pubDate>Mon, 06 Nov 2017 22:52:17 +0000</pubDate>
+				<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[Orchestration]]></category>
+		<category><![CDATA[SDN]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7625</guid>
+
+					<description><![CDATA[Note: This blog is co&#8211;authored by Ranjini Rajendran and Madhukar Nayakbomman from Juniper Networks. OpenStack provides modular architecture to enable IaaS for primarily managing virtualized workloads. However, this open source platform is a...]]></description>
+										<content:encoded><![CDATA[<p>Note: This blog is <em>co</em>&#8211;<em>authored</em> by Ranjini Rajendran and Madhukar Nayakbomman from Juniper Networks.</p>
+<p>OpenStack provides modular architecture to enable IaaS for primarily managing virtualized workloads. However, this open source platform is a complex piece of architecture, one that provides organizations with a tall order problem for dealing with configuration and management of  applications. One of the biggest challenge or pain point that Cloud administrators experience is around life cycle management of Openstack enabled Cloud environments.</p>
+<p>To simplify the life cycle management of Openstack components, Openstack-helm project was started during the Barcelona Openstack Summit in 2016. In October 2017, Openstack-helm became an official Openstack Project.</p>
+<p>&nbsp;</p>
+<h3>What is Helm</h3>
+<p>Well, think of it as the apt-get / yum of Kubernetes, it is a package manager for Kubernetes. If you deploy applications to Kubernetes, Helm makes it incredibly easy to</p>
+<ul>
+<li>version deployments</li>
+<li>package deployments</li>
+<li>make a release of it</li>
+<li>and deploy, delete, upgrade and</li>
+<li>even rollback those deployments</li>
+</ul>
+<p>as “charts”.</p>
+<p>“Charts” being the terminology that Helm uses for a package of configured Kubernetes resources.</p>
+<h3>What is Openstack-Helm ?</h3>
+<p>Openstack-Helm project enables deployment, maintenance and upgrades of loosely coupled Openstack services and its dependencies as kubernetes pods. The different components of Openstack like glance, keystone, nova, neutron, heat etc are deployed as kubernetes pods. More details about the openstack-helm charts can be found at:</p>
+<p><a href="https://github.com/openstack/openstack-helm">https://github.com/openstack/openstack-helm</a></p>
+<h3>OpenContrail Helm charts</h3>
+<p>Recently, OpenContrail components have been containerized. There are mainly three containers in Opencontrail &#8211;</p>
+<ul>
+<li>OpenContrail Controller (config and control nodes)</li>
+<li>OpenContrail Analytics (Analytics node)</li>
+<li>OpenContrail Analytics DB (Analytics Database node)</li>
+</ul>
+<p>There is now support for  OpenContrail Helm charts for deployment, maintenance, and upgrade of these  Opencontrail Container pods. The details on OpenContrail Helm charts can be found here:</p>
+<p><a href="https://github.com/Juniper/contrail-docker/tree/master/kubernetes/helm/contrail">https://github.com/Juniper/contrail-docker/tree/master/kubernetes/helm/contrail</a></p>
+<p>The video below shows the integration of OpenContrail helm charts with Openstack-helm and how easy it is to upgrade OpenContrail using helm charts with minimal downtime for existing tenant workloads.</p>
+<p><iframe src="https://www.youtube.com/embed/nDZvJEkkt2U" width="560" height="315" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p>&nbsp;</p>
+<p>You can also see this at Openstack Sydney summit session on Tuesday 7<sup>th</sup> November at 5:50 pm. <a href="https://www.openstack.org/summit/sydney-2017/summit-schedule/events/19938">https://www.openstack.org/summit/sydney-2017/summit-schedule/events/19938</a></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>OpenContrail &#8211; Enabling Advancements in Cloud Infrastructure Adoption</title>
+		<link>https://tungsten.io/opencontrail-enabling-advancements-in-cloud-infrastructure-adoption/</link>
+		
+		<dc:creator><![CDATA[Geoff Sullivan]]></dc:creator>
+		<pubDate>Fri, 14 Apr 2017 18:19:18 +0000</pubDate>
+				<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[Orchestration]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Service Provider]]></category>
+		<category><![CDATA[Use Case]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7458</guid>
+
+					<description><![CDATA[OpenContrail has solidified its position as the top SDN and network automation solution for OpenStack, and recently announced it&#8217;s integration into Kubernetes (K8s) and thus OpenShift (recent versions are powered by Kubernetes.) What does this mean for...]]></description>
+										<content:encoded><![CDATA[<p><a href="http://www.opencontrail.org/wp-content/uploads/2017/04/AAEAAQAAAAAAAAm9AAAAJDIwMDFhYWI3LWI2YWYtNDVhNC1iOTMwLTFiNGNjODZkYTdhZg.png"><img fetchpriority="high" decoding="async" class="aligncenter wp-image-7460" src="http://www.opencontrail.org/wp-content/uploads/2017/04/AAEAAQAAAAAAAAm9AAAAJDIwMDFhYWI3LWI2YWYtNDVhNC1iOTMwLTFiNGNjODZkYTdhZg.png" alt="" width="651" height="350" data-id="7460" /></a></p>
+<p>OpenContrail has solidified its position as the top SDN and network automation solution for <a href="https://www.openstack.org/" target="_blank" rel="nofollow noopener">OpenStack</a>, and <a href="http://www.opencontrail.org/the-best-sdn-for-openstack-now-for-kubernetes/" target="_blank" rel="nofollow noopener">recently announced</a> it&#8217;s integration into <a href="https://kubernetes.io/" target="_blank" rel="nofollow noopener">Kubernetes (K8s)</a> and thus <a href="https://www.openshift.com/" target="_blank" rel="nofollow noopener">OpenShift</a> (recent versions are powered by Kubernetes.) What does this mean for the organization mapping out their cloud infrastructure architecture?</p>
+<h3>VMware -&gt; OpenStack -&gt; Kubernetes</h3>
+<p>At this juncture in cloud adoption, service providers and enterprises alike are defining their ever evolving stacks. The emergence of containers has changed the game &#8211; changing the conversation from &#8220;OpenStack or Kubernetes?&#8221; to &#8220;OpenStack and Kubernetes.&#8221; In many cases VMware is still in the mix somewhere. The combination of these platforms allows an organization to select the best hosting platform for each workload, based on it&#8217;s own unique characteristics:</p>
+<ul>
+<li>Aging monolithic application that will be deprecated in the next few years? Keep it where it is (VMware.)</li>
+<li>Distributed multi-tier web app? Perhaps OpenStack is a good candidate.</li>
+<li>Highly variable, net new microservices based application(s) &#8211; Kubernetes will allow the individual microservices to scale up and down independently of one another.</li>
+</ul>
+<p>While all of this choice provides flexibility, it introduces complexity &#8211; especially on the network with each of the three platforms with three different networking stacks.</p>
+<h3>How Contrail enables Successful Cloud Adoption</h3>
+<p>Introducing Contrail into a heterogeneous cloud/virtualization environment will help an organization move towards SDN adoption based on open standards. One SDN solution to manage them all! Furthermore, it isn&#8217;t realistic or likely for an organization to go from VMware to OpenStack to Kubernetes all at once &#8211; that is too much change to manage and it introduces risk. Because of it&#8217;s interoperability with all of these platforms, introducing Contrail will allow an organization to stitch together their virtualization/container platforms on their terms as their infrastructure evolves with the applications that sit atop it.</p>
+<p>Check out how Contrail integrates with VMware, OpenStack, Kubernetes and OpenShift:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2017/04/AAEAAQAAAAAAAA2YAAAAJDA1ZDg2MGU3LWU4OTAtNDA2NS1hMjJhLTgwMzVhZjM4ZmRiMQ.png"><img decoding="async" class="size-full wp-image-7459 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2017/04/AAEAAQAAAAAAAA2YAAAAJDA1ZDg2MGU3LWU4OTAtNDA2NS1hMjJhLTgwMzVhZjM4ZmRiMQ.png" alt="" width="960" height="458" data-id="7459" /></a></p>
+<ul>
+<li><a href="http://www.opencontrail.org/integrating-vmware-esxi-with-openstack-opencontrail/" target="_blank" rel="nofollow noopener">Integrating VMware ESXi with OpenStack, OpenContrail</a></li>
+<li><a href="http://www.juniper.net/techpubs/en_US/contrail2.2/topics/task/configuration/vcenter-integration-vnc.html" target="_blank" rel="nofollow noopener">Installing Contrail with VMware vCenter</a></li>
+<li><a href="http://www.opencontrail.org/opencontrail-kubernetes-integration/" target="_blank" rel="nofollow noopener">OpenContrail Kubernetes Integration</a></li>
+<li><a href="https://www.youtube.com/user/OpenContrail" target="_blank">Video Demo: OpenContrail integration with OpenShift, Kubernetes</a></li>
+</ul>
+<h3>3 ways to get Getting Started with OpenContrail</h3>
+<ul>
+<li>Try it yourself! &#8211; <a href="http://www.opencontrail.org/opencontrail-quick-start-guide/" target="_blank" rel="nofollow noopener">OpenContrail Quick Start Guide</a> (Software <em>Installation guide</em> for <em>OpenContrail)</em></li>
+<li>Try OpenContrail Sandbox &#8211; <a href="http://www.opencontrail.org/sandbox/" target="_blank" rel="nofollow noopener">The Contrail Sandbox</a> is a cloud based testing environment that can help you evaluate Contrail Networking product on our infrastructure free of cost</li>
+<li><a href="http://mailto:gsullivan@juniper.net/" target="_blank" rel="nofollow noopener">Let&#8217;s Chat &#8211; Shoot me an email!</a></li>
+</ul>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>BGPaaS in OpenStack &#8211; Kubernetes with Calico in OpenStack with OpenContrail</title>
+		<link>https://tungsten.io/bgpaas-in-openstack-kubernetes-with-calico-in-openstack-with-opencontrail/</link>
+		
+		<dc:creator><![CDATA[Jakub Pavlik]]></dc:creator>
+		<pubDate>Fri, 12 Aug 2016 17:43:37 +0000</pubDate>
+				<category><![CDATA[BGPaaS]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[Orchestration]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7160</guid>
+
+					<description><![CDATA[Note: This is a guest blog from tcpCloud, authored by Marek Celoud &#38; Jakub Pavlik (tcp cloud engineers). To see the original post,click here. It’s been a while since new version...]]></description>
+										<content:encoded><![CDATA[<p><em>Note: This is a guest blog from tcpCloud, authored by Marek </em>Celoud<em> &amp; Jakub Pavlik (</em>tcp<em> cloud engineers). To see the original post,<a href="http://www.tcpcloud.eu/en/blog/2016/08/12/bgpaasinopenstack/">click here</a>.</em></p>
+<p>It’s been a while since new version 3.X of OpenContrail was released and we have not got so much time to take a good look at new features of this most deployed SDN/NFV with OpenStack. This blog post therefore brings our perspective on specific use cases and how to use BGP as a Service in OpenStack private cloud.</p>
+<p>BGPaaS together with configurable ECMP, Intel DPDK and SRIOV support are key features of the new release. All of these features show that OpenContrail became the number one SDN/NFV solution for telco and service providers. Simply because telcos as Deutsche Telekom, France Telekom and AT&amp;T pick this as a solution for the SDN. The last named has significantly influenced features in the last OpenContrail release. To explain the reasons for these requirements and decisions you can watch Austin OC meetup videos, where AT&amp;T has explained their <a class="reference external" href="https://www.youtube.com/watch?v=WOWvsQwZdrQ">use cases</a> and why they like MPLS L3VPN approach.</p>
+<p>tcp cloud tries to bring the real use cases not only for telco VNF for running virtual router appliances. Therefore we try to show you another interesting use case for the global community, where BGPaaS is very important part not only for VNF. We deployed Kubernetes with Calico on top of OpenStack with OpenContrail and redistributed routes through the BGPaaS.</p>
+<div id="bgp-as-a-service" class="section">
+<h2>BGP as a Service</h2>
+<p>The BGP as a service (BGPaaS) allows a guest virtual machine (VM) to place routes in its own virtual routing and forwarding (VRF) instance using BGP. It has been implemented according to the following <a class="reference external" href="https://blueprints.launchpad.net/juniperopenstack/+spec/bgp-as-a-service">blueprint</a>.</p>
+<p>However, why do we need BGP route redistribution within Contrail? By default, virtual machines have only directly connected routes and default route pointing to Contrail IRB interface where all unknown traffic is being sent to. Then the route lookup occurs in that particular VRF. Normally, in VRF are only /32 routes of virtual machines and sometimes routes which are propagated via BGP from Cloud GW. When no match in route fits the lookup, the traffic is discarded.</p>
+<p>You can run into several issues with this default behavior. For example Calico does not use overlay tunnels between its containers/VMs so the traffic goes transparently through your infrastructure. That means all networking devices between Calico nodes must be aware of Calico routes, so the traffic can be routed properly.</p>
+<p>I’ll explain this issue on one of our use cases &#8211; Kubernetes with Calico. When we operate Kubernetes on top of OpenStack with OpenContrail, the problem occurs after the first container is started. Calico allocates /26 route for Kubernetes node, where the container started. This route is distributed via BGP to all the other Kubernetes nodes. But when you try to access this container, traffic goes to particular Kubernetes node. The problem is with traffic that is going back. By default there is Reverse Path Forwarding enabled, so when the traffic goes back, Contrail VRF discards traffic. The only solution prior OpenContrail 3.x release was to use static routes. This is not very agile since subnets for Calico nodes are generated dynamically and in larger scale it would be really painful to maintain all of these. In 3.x release we can use BGPaaS or disable Reverse Path Forwarding. In this blog we want to show how BGPaaS is implemented, therefore we leave Reverse Path Forwarding enabled. More detail explanation is in next section.</p>
+<p>Standard BGPaaS use cases are following:</p>
+<ul class="simple">
+<li>Dynamic Tunnel Insertion Within a Tenant Overlay</li>
+<li>Dynamic Network Reachability of Applications</li>
+<li>Liveness Detection for High Availability</li>
+</ul>
+<p>More information about this feature in general is available at <a class="reference external" href="http://www.juniper.net/techpubs/en_US/contrail3.0/topics/concept/bgp-as-a-service-overview.html">link</a>.</p>
+</div>
+<div id="kubernetes-with-calico-in-openstack-with-opencontrail" class="section">
+<h2>Kubernetes with Calico in OpenStack with OpenContrail</h2>
+<p>The motivation for this use case is not just to use BGPaaS feature for NFV/VNF service providers, but also for standard private clouds as well, where Kubernetes on OpenStack is deployed. Kubernetes can be used with OpenContrail plugin especially in mixing VMs with containers (multi-cloud networking <a class="reference external" href="http://www.tcpcloud.eu/en/blog/2016/02/12/kubernetes-and-openstack-multi-cloud-networking/">blog</a>). However, Overlay on top of Overlay is not really good idea from a performance point of view. OpenContrail <a href="http://www.opencontrail.org/newsletter-and-mailing-lists/">community </a>has already discussed working on reusing underlay vRouter instead of vRouter in vRouter, which is a little bit similar to BGPaaS feature of propagation routing information from VMs to underlay.</p>
+<p>Based on this we decided to use Calico as network plugin for Kubernetes, which uses <a class="reference external" href="http://bird.network.cz/">BIRD</a> routing engine without any overlay technology.</p>
+<p>Let’s explain the BGPaaS solution. Since Calico is using Bird, you can create BGP peering directly from each Calico node to OpenContrail. However, this full-mesh approach does not scale very well. So we decided to create two VMs with Bird service and use them as a route reflectors for Calico. Then we use these VMs as BGP peers with OpenContrail. The route exchange will be further described in following architecture section.</p>
+<div id="lab-architecture" class="section">
+<h3>Lab Architecture</h3>
+</div>
+</div>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/08/bgpasaservice-calico-opencontrail.png"><img loading="lazy" decoding="async" class="alignnone wp-image-7161" src="http://www.opencontrail.org/wp-content/uploads/2016/08/bgpasaservice-calico-opencontrail.png" alt="bgpasaservice-calico-opencontrail" width="867" height="600" data-id="7161" /></a></p>
+<div id="lab-architecture" class="section">
+<p>Let’s have a closer look on this figure. The red and black lines stand for BGP peering between our Bird route reflectors (RTR01 and RTR02) VMs and OpenContrail controllers. When you want to use BGPaaS you first create a peering with .1 which stands for default gateway (peering with ntw01) and .2 (peering with ntw02) which stands for DNS (both are OpenContrail interfaces), but the actual peering is done with Controllers and .1 .2 are just BGP proxies. There is also BGP peering between all Calico nodes and RTR01,02 router reflectors. Last peering is default XMPP connections between Contrail controllers and vRouters which is used to learn and distribute route information between vRouters.</p>
+<p>Now we have all information about connections in our use-case and we can now explain Control plane workflow on yellow balls. We start with creating a pod on Kubernetes master (1). Kubernetes scheduler scheduled the pod on Kubernetes Node02 and Calico allocated /26 network for that node as well as /32 route for pod (2). This /26 is distributed via BGP to route reflectors (3). Route reflectors then send the update to other Kubernetes nodes as well as to Contrail Controllers (4). Right now, all Kubernetes nodes are aware of this subnet and would be able to route traffic between them, but there is a need for route information in VRF as well. That is achieved in step (5), where route is distributed via XMPP to vRouters. Now we have dynamic Kubernetes with Calico environment on top of OpenStack with OpenContrail.</p>
+</div>
+<div id="configuration-and-outputs" class="section">
+<h3>Configuration and Outputs</h3>
+<p>First we had to setup and configure BIRD service on OpenStack VMs RTR01 and RTR02. It peers with default gateway and DNS server, which is propagated through vRouter to OpenContrail controls. Then it peers with each Calico node and second route reflector RTR01.</p>
+<div class="highlight-bash">
+<div class="highlight">
+<pre><span class="c1">#Peering with default GW/vRouter</span>
+    protocol bgp contrail1 <span class="o">{</span>
+            debug all<span class="p">;</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.1 as 64512<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+            source address 172.16.10.115<span class="p">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">#Peering with default DNS server/vRouter</span>
+    protocol bgp contrail2 <span class="o">{</span>
+            debug all<span class="p">;</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.2 as 64512<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">#Peering with calico nodes</span>
+    protocol bgp calico_master <span class="o">{</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.111 as 64512<span class="p">;</span>
+            rr client<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+    <span class="o">}</span>
+
+    protocol bgp calico_node1 <span class="o">{</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.112 as 64512<span class="p">;</span>
+            rr client<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+    <span class="o">}</span>
+
+    protocol bgp calico_node2 <span class="o">{</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.113 as 64512<span class="p">;</span>
+            rr client<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">#Peering with second route reflector BIRD</span>
+    protocol bgp rtr1 <span class="o">{</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.114 as 64512<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+    <span class="o">}</span></pre>
+</div>
+</div>
+<p>After that we configured a new BGPaaS in OpenContrail UI under <strong>Configure -&gt; Services -&gt; BGPaaS</strong>.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/08/create_bgp_opencontrail.png"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-7162" src="http://www.opencontrail.org/wp-content/uploads/2016/08/create_bgp_opencontrail.png" alt="create_bgp_opencontrail" width="700" height="386" data-id="7162" /></a></p>
+</div>
+<p>Then we can see <em>Established</em> BGP peerings (172.16.10.114 and .115) under peers in Control Nodes.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/08/peering_opencontrail.png"><img loading="lazy" decoding="async" class="alignnone wp-image-7163" src="http://www.opencontrail.org/wp-content/uploads/2016/08/peering_opencontrail.png" alt="peering_opencontrail" width="952" height="400" data-id="7163" /></a></p>
+<p>Calico uses by default bgp full mesh topology. We had to disable full mesh and configure only peerings with route reflectors (RTR01 and RTR02).</p>
+<div class="highlight-bash">
+<div class="highlight">
+<pre>root@kubernetes-node01:~# calicoctl bgp node-mesh off
+root@kubernetes-node01:~# calicoctl bgp peer add 172.16.10.114 as 64512
+root@kubernetes-node01:~# calicoctl bgp peer add 172.16.10.115 as 64512
+</pre>
+</div>
+</div>
+<p>Calico status shows <em>Established</em> peerings with our RTR01 and RTR02.</p>
+<div class="highlight-bash">
+<div class="highlight">
+<pre>root@kubernetes-node01:~# calicoctl status
+calico-node container is running. Status: Up <span class="m">44</span> hours
+Running felix version 1.4.0rc2
+
+IPv4 BGP status
+IP: 172.16.10.111    AS Number: <span class="m">64512</span> <span class="o">(</span>inherited<span class="o">)</span>
++---------------+-----------+-------+----------+-------------+
+<span class="p">|</span>  Peer address <span class="p">|</span> Peer <span class="nb">type</span> <span class="p">|</span> State <span class="p">|</span>  Since   <span class="p">|</span>     Info    <span class="p">|</span>
++---------------+-----------+-------+----------+-------------+
+<span class="p">|</span> 172.16.10.114 <span class="p">|</span>   global  <span class="p">|</span>   up  <span class="p">|</span> 13:14:54 <span class="p">|</span> Established <span class="p">|</span>
+<span class="p">|</span> 172.16.10.115 <span class="p">|</span>   global  <span class="p">|</span>   up  <span class="p">|</span> 07:26:10 <span class="p">|</span> Established <span class="p">|</span>
++---------------+-----------+-------+----------+-------------+
+</pre>
+</div>
+</div>
+<p>Finally we can see part of VRF routing table for our virtual network on compute 01. It shows direct interface for RTR01 VM (172.16.10.114/32) and tunnel to RTR02 (172.16.10.115/32). Subnet 192.168.156.192/26 is for Kubernetes pods and it is dynamically propagated by Calico through BIRD route reflectors.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/08/vrouter_routing_table_opencontrail.png"><img loading="lazy" decoding="async" class="alignnone wp-image-7164" src="http://www.opencontrail.org/wp-content/uploads/2016/08/vrouter_routing_table_opencontrail.png" alt="vrouter_routing_table_opencontrail" width="1007" height="600" data-id="7164" /></a></p>
+<h2>Conclusion</h2>
+<p>In this blog post we showed how easy it is to use BGPaaS in OpenContrail and how you can look at general use case of running Kubernetes on top of OpenStack. All OpenContrail installations can be automated via Heat templates, but contrail-heat resources for BGPaaS require some modifications to work properly.</p>
+<p>&nbsp;</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Getting to GIFEE with SDN: Demo</title>
+		<link>https://tungsten.io/getting-to-gifee-with-sdn-demo/</link>
+		
+		<dc:creator><![CDATA[James Kelly]]></dc:creator>
+		<pubDate>Thu, 07 Apr 2016 23:50:42 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[DataCenter]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[Orchestration]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6965</guid>
+
+					<description><![CDATA[A few short years ago, espousing for open source and cloud computing was even more difficult than touting the importance of clean energy and the realities of climate change. The...]]></description>
+										<content:encoded><![CDATA[<p>A few short years ago, espousing for open source and cloud computing was even more difficult than touting the importance of clean energy and the realities of climate change. The doubters and naysayers, vocal as they are, are full of reasons why things are (fine) as they are. Reasons, however, don’t get you results. We needed transformative action in IT, and today, as we’re right between the Google NEXT event and the OpenStack Summit in Austin, open source and cloud are the norm for the majority.</p>
+<p>After pausing for a moment of vindication – we told you so – we get back to work to improve further and look forward, and a good place to look is indeed at Google: a technology trailblazer by sheer necessity. We heard a lot about the GCP at NEXT, especially their open source project Kubernetes, powering GKE. What’s most exciting about such container-based computing with Docker is that we’ve finally hit the sweet spot in the stack with the right abstractions for developers and infrastructure &amp; ops pros. With this innovation now accessible to all in the Kubernetes project, Google’s infrastructure for everyone else (#GIFEE) and NoOps is within reach. Best of all, the change this time around is less transformative and more incremental…</p>
+<p>One thing you’ll like about a serverless architecture stack like Kubernetes, is that you can run it on bare-metal if you want the best performance possible, but you can easily run it on top of IaaS providing VMs in public or private cloud, and that benefits us with a great deal of flexibility in so many ways. Then of course if you just want to deploy workloads, and not worry about the stack, an aaS offering like GKE or ECS is a great way to get to NoOps faster. We have a level playing field across public and private and a variety of underpinnings.</p>
+<p>For those that are not only using a public micro-service stack aaS offering like GKE, but supplementing or fully building one internally with Kubernetes or a PaaS on top of it like OpenShift, you’ll need some support. Just like you didn’t build an OpenStack IaaS by yourself (I hope), there’s no reason to go it alone for your serverless architecture micro-services stack. There’s many parts under the hood, and one of them you need baked into your stack from the get go is software-defined<em>secure</em> networking. It was a pleasure to get back in touch with my developer roots and put together a demo of how you can solve your networking and security microsegmentation challenges using OpenContrail.</p>
+<p>I’ve taken the test setup for OpenContrail with OpenShift, and forked and modified it to create a pure demo cluster of OpenContrail + OpenShift (thus including Kubernetes) showing off the OpenContrail features with Kubernetes and OpenShift. If you learn by doing like me, then maybe best of all, this demo cluster is also open source and Ansible-automated to easily stand up or tear down on AWS with just a few commands to go from nada to a running OpenShift and OpenContrail consoles with a running sample app. Enjoy getting your hands dirty, or sit back and watch demo video.</p>
+<p>If you are looking to setup and run this demo yourself, please see: <a href="https://github.com/jameskellynet/container-networking-ansible" target="_blank">https://github.com/jameskellynet/container-networking-ansible</a><br />
+<iframe loading="lazy" src="https://www.youtube.com/embed/iMo54WUg6Kk" width="560" height="315" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Kubernetes and OpenStack multi-cloud networking</title>
+		<link>https://tungsten.io/kubernetes-and-openstack-multi-cloud-networking/</link>
+		
+		<dc:creator><![CDATA[Jakub Pavlik]]></dc:creator>
+		<pubDate>Tue, 16 Feb 2016 20:04:27 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[Orchestration]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6912</guid>
+
+					<description><![CDATA[This is a guest blog from tcpCloud, authored by Marek Celoud &#38; Jakub Pavlik (tcp cloud engineers). To see the original post,click here. This blog brings first insight into usage...]]></description>
+										<content:encoded><![CDATA[<p><em>This is a guest blog from tcpCloud, authored by Marek Celoud &amp; Jakub Pavlik (tcp cloud engineers). To see the original post,<a href="http://www.tcpcloud.eu/en/blog/2016/02/12/kubernetes-and-openstack-multi-cloud-networking/" target="_blank">click here</a>.</em></p>
+<p>This blog brings first insight into usage of real bare metal Kubernetes clusters for application workloads from networking point of view. A special thanks goes to Lachlan Evenson and his colleagues from Lithium for collaboration on this post and providing real use cases.</p>
+<p>Since the last OpenStack Summit in Tokyo last November we realized the magnitude of impact the containers have on a global community. Everyone has been speaking about using containers and Kubernetes instead of standard virtual machines. There are couple of reasons for that, especially because it is lightweight nature, easy and fast deploys, and developers love this. They can easily develop, maintain, scale and roll-update their applications. We at tcp cloud focus on building private cloud solutions based on open source technologies wanted to get Kubernetes and see if it can really be used in production setup along or within the OpenStack powered virtualization.</p>
+<p>Kubernetes brings a new way to manage container-based workloads and enables similar features like OpenStack for VMs for start. If you start using Kubernetes you will soon realize that you can deploy easily it in AWS, GCE or Vagrant, but what about your on-premise bare-metal deployment? How to integrate it into your current OpenStack or virtualized infrastructure? All blog posts and manuals document small clusters running in virtual machines with sample web applications, but none of them show real scenario for bare-metal or enterprise performance workload with integration in current network design. To properly design networking is the most difficult part of architectural design, just like with OpenStack. Therefore we have defined following networking requirements:</p>
+<ul class="simple">
+<li><strong>Multi tenancy</strong> &#8211; separation of containers workload is basic requirement for every security policy standard. e.g. default Flannel networking only provides flat network architecture.</li>
+<li><strong>Multi-cloud support</strong> &#8211; not every workload is suiteble for containers and you still need to put heavy loads like databases in VMs or even on bare metals. For this reason single control plane for the SDN is the best option.</li>
+<li><strong>Overlay</strong> &#8211; is related to multi-tenancy. Almost every OpenStack Neutron deployment uses some kind of overlays (VXLAN, GRE, MPLSoverGRE, MPLSoverUDP) and we have to be able inter-connect them.</li>
+<li><strong>Distributed routing engine</strong> &#8211; East-West and North-South traffic cannot go through one central software service. Network traffic has to go directly between OpenStack compute nodes and Kubernetes nodes. Optimal is to provide routing on routers instead of proprietary gateway appliances.</li>
+</ul>
+<p>Based on these requirements we have decided to start using OpenContrail SDN first and our mission was to integrate OpenStack workload with Kubernetes, then find a suitable application stack for the actual load testing.</p>
+<div id="opencontrail-overview" class="section">
+<h2>OpenContrail overview</h2>
+<p><a class="reference external" href="http://opencontrail.org">OpenContrail</a> is open source SDN &amp; NFV solution, with tight ties to OpenStack since Havana. It was one of the first production ready Neutron plugins along with Nicira (now VMware NSX-VH) and last summit’s <a class="reference external" href="https://www.openstack.org/assets/survey/Public-User-Survey-Report.pdf">survey</a> showed it is the second most deployed solution after OpenVwitch and first of the Vendor based solutions. OpenContrail has integrations to OpenStack, VMware, Docker and Kubernetes.</p>
+<p>Kubernetes network plugin <a class="reference external" href="https://github.com/Juniper/contrail-kubernetes">kube-network-manager</a> was under development since OpenStack summit at Vancouver last year and first announcement was released in end of year.</p>
+<p>The kube-network-manager process uses the kubernetes controller framework to listen to changes in objects that are defined in the API and add annotations to some of these objects. Then it creates network solution for the application using the OpenContrail API that define objects such as virtual-networks, network interfaces and access control policies. More information is available at this <a class="reference external" href="https://pedrormarques.wordpress.com/2015/07/14/kubernetes-networking-with-opencontrail/">blog</a></p>
+</div>
+<div id="architecture" class="section">
+<h2>Architecture</h2>
+<p>We started testing with two independent Contrail deployments and then set up BGP federation. The reason for federation is keystone authentication of kube-network-manager. When contrail-neutron-plugin is enabled, contrail API uses keystone authentication and this feature is not yet implemented at kubernetes plugin. The Contrail federation is described in more later in this post.</p>
+<p>The following schema shows high level architecture, where on left side is OpenStack cluster and Kubernetes cluster is on the right side. OpenStack and OpenContrail are deployed in fully High Available best practice design, which can be scaled up to hundreds of compute nodes.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/02/opencontrail-kubernetes.png" rel="attachment wp-att-6915"><img loading="lazy" decoding="async" class="alignleft wp-image-6915" src="http://www.opencontrail.org/wp-content/uploads/2016/02/opencontrail-kubernetes.png" alt="opencontrail-kubernetes" width="800" height="542" data-id="6915" /></a></p>
+</div>
+<p>The following figure shows federation of two Contrail clusters. In general, this feature enables Contrail controllers connection between different sites of a Multi-site DC without the need of a physical gateway. The control nodes at each site are peered with other sites using BGP. It is possible to stretch both L2 and L3 networks across multiple DCs this way.</p>
+<p>This design is usually used for two independent OpenStack cloud or two OpenStack Region. All components of Contrail including vRouter are exactly the same. Kube-network-manager and neutron-contrail-plugin just translate API requests for different platforms. The core functionality of the networking solution remains unchanged. This brings not only robust networking engine, but analytics too.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/02/opencontrail-kubernetes-bgp.png" rel="attachment wp-att-6916"><img loading="lazy" decoding="async" class="alignleft wp-image-6916" src="http://www.opencontrail.org/wp-content/uploads/2016/02/opencontrail-kubernetes-bgp.png" alt="opencontrail-kubernetes-bgp" width="800" height="586" data-id="6916" /></a></p>
+<h2>Application Stack</h2>
+<div id="overview" class="section">
+<h3>Overview</h3>
+<p>Lets have a look at typical scenario. Our developers gave us docker <a class="reference external" href="https://github.com/django-leonardo/django-leonardo/blob/master/contrib/haproxy/docker-compose.yml">compose.yml</a> , which is use for development and local tests on their laptop. This situation is easier, because our developers already know docker and application workload is docker-ready. This application stack contains following components:</p>
+<ul class="simple">
+<li><strong>Database</strong> &#8211; PostgreSQL or MySQL database cluster.</li>
+<li><strong>Memcached</strong> &#8211; it is for content caching.</li>
+<li><strong>Django app Leonardo</strong> &#8211; Django CMS <a class="reference external" href="https://www.leonardo-cms.org">Leonardo</a> was used for application stack testing.</li>
+<li><strong>Nginx</strong> &#8211; web proxy.</li>
+<li><strong>Load balancer</strong> &#8211; HAProxy load balancer for containers scaling.</li>
+</ul>
+<p>When we want to get it into production, we can transform everything into kubernetes replication controllers with services, but as we mentioned at beginning not everything is suitable for containers. Therefore we separate database cluster to OpenStack VMs and rewrite rest into kubernetes manifests.</p>
+</div>
+<div id="application-deployment" class="section">
+<h3>Application deployment</h3>
+<p>This section describes workflow for application provisioning on OpenStack and Kubernetes.</p>
+<div id="openstack-side" class="section">
+<h4></h4>
+<div id="openstack-side" class="section">
+<h4>OpenStack side</h4>
+<p>At the first step, we have launched Heat database stack on OpenStack. This created 3 VMs with PostgreSQL and database network. Database network is private tenant isolated network.</p>
+<div class="highlight-bash">
+<div class="highlight">
+<pre><span class="c"># nova list</span>
++--------------------------------------+--------------+--------+------------+-------------+-----------------------+
+<span class="p">|</span> ID                                   <span class="p">|</span> Name         <span class="p">|</span> Status <span class="p">|</span> Task State <span class="p">|</span> Power State <span class="p">|</span> Networks              <span class="p">|</span>
++--------------------------------------+--------------+--------+------------+-------------+-----------------------+
+<span class="p">|</span> d02632b7-9ee8-486f-8222-b0cc1229143c <span class="p">|</span> PostgreSQL-1 <span class="p">|</span> ACTIVE <span class="p">|</span> -          <span class="p">|</span> Running     <span class="p">|</span> <span class="nv">leonardodb</span><span class="o">=</span>10.0.100.3 <span class="p">|</span>
+<span class="p">|</span> b5ff88f8-0b81-4427-a796-31f3577333b5 <span class="p">|</span> PostgreSQL-2 <span class="p">|</span> ACTIVE <span class="p">|</span> -          <span class="p">|</span> Running     <span class="p">|</span> <span class="nv">leonardodb</span><span class="o">=</span>10.0.100.4 <span class="p">|</span>
+<span class="p">|</span> 7681678e-6e75-49f7-a874-2b1bb0a120bd <span class="p">|</span> PostgreSQL-3 <span class="p">|</span> ACTIVE <span class="p">|</span> -          <span class="p">|</span> Running     <span class="p">|</span> <span class="nv">leonardodb</span><span class="o">=</span>10.0.100.5 <span class="p">|</span>
++--------------------------------------+--------------+--------+------------+-------------+-----------------------+
+</pre>
+</div>
+</div>
+</div>
+<div id="kubernetes-side" class="section">
+<h4>Kubernetes side</h4>
+<p>At kubernetes side we have to launch manifests with Leonardo and Nginx services. All of them can be displayed <a class="reference external" href="https://github.com/pupapaik/scripts/tree/master/kubernetes/leonardo">there</a>.</p>
+<p>In order for it to run successfully with networking isolation, look at the following sections.</p>
+<ul class="simple">
+<li><strong>leonardo-rc.yaml</strong> &#8211; Replication Controller for Leonardo app with replicas 3 and virtual network leonardo</li>
+</ul>
+<div class="highlight-yaml">
+<div class="highlight">
+<pre><span class="l-Scalar-Plain">apiVersion</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">v1</span>
+<span class="l-Scalar-Plain">kind</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ReplicationController</span>
+<span class="nn">...</span>
+  <span class="l-Scalar-Plain">template</span><span class="p-Indicator">:</span>
+<span class="l-Scalar-Plain">metadata</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">labels</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">app</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">leonardo</span>
+    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">leonardo</span> <span class="c1"># label name defines and creates new virtual network in contrail</span>
+<span class="nn">...</span></pre>
+</div>
+</div>
+<ul class="simple">
+<li><strong>leonardo-svc.yaml</strong> &#8211; leonardo service expose application pods with virtual IP from cluster network on port 8000.</li>
+</ul>
+<div class="highlight-yaml">
+<div class="highlight">
+<pre><span class="l-Scalar-Plain">apiVersion</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">v1</span>
+<span class="l-Scalar-Plain">kind</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Service</span>
+<span class="l-Scalar-Plain">metadata</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">labels</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ftleonardo</span>
+  <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ftleonardo</span>
+<span class="l-Scalar-Plain">spec</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">ports</span><span class="p-Indicator">:</span>
+    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">port</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">8000</span>
+  <span class="l-Scalar-Plain">selector</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">leonardo</span> <span class="c1"># selector/name matches label/name in replication controller to receive traffic for this service</span>
+<span class="nn">...</span></pre>
+</div>
+</div>
+<ul class="simple">
+<li><strong>nginx-rc.yaml</strong> &#8211; NGINX replication controller with 3 replicas and virtual network nginx and policy allowing traffic to leonardo-svc network. This sample does not use SSL.</li>
+</ul>
+<div class="highlight-yaml">
+<div class="highlight">
+<pre><span class="l-Scalar-Plain">apiVersion</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">v1</span>
+<span class="l-Scalar-Plain">kind</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ReplicationController</span>
+<span class="nn">...</span>
+  <span class="l-Scalar-Plain">template</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">metadata</span><span class="p-Indicator">:</span>
+      <span class="l-Scalar-Plain">labels</span><span class="p-Indicator">:</span>
+        <span class="l-Scalar-Plain">app</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">nginx</span>
+        <span class="l-Scalar-Plain">uses</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">ftleonardo</span> <span class="c1"># uses creates policy to allow traffic between leonardo service and nginx pods.</span>
+        <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">nginx</span> <span class="c1"># creates virtual network nginx with policy ftleonardo</span>
+<span class="nn">...</span></pre>
+</div>
+</div>
+<ul class="simple">
+<li><strong>nginx-svc.yaml</strong> &#8211; creates service with cluster vip IP and public virtual IP to access application from Internet.</li>
+</ul>
+<div class="highlight-yaml">
+<div class="highlight">
+<pre><span class="l-Scalar-Plain">apiVersion</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">v1</span>
+<span class="l-Scalar-Plain">kind</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">Service</span>
+<span class="l-Scalar-Plain">metadata</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">nginx</span>
+  <span class="l-Scalar-Plain">labels</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">app</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">nginx</span>
+    <span class="l-Scalar-Plain">name</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">nginx</span>
+<span class="nn">...</span>
+  <span class="l-Scalar-Plain">selector</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">app</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">nginx</span> <span class="c1"># selector/name matches label/name in RC to receive traffic for the svc</span>
+  <span class="l-Scalar-Plain">type</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">LoadBalancer</span> <span class="c1"># this creates new floating IPs from external virtual network and associate with VIP IP of the service.</span>
+<span class="nn">...</span></pre>
+</div>
+</div>
+<p>Lets run all manifests by calling kubeclt</p>
+<div class="highlight-bash">
+<div class="highlight">
+<pre>kubectl create -f /directory_with_manifests/
+</pre>
+</div>
+</div>
+<p>This creates following pods and services in Kubernetes.</p>
+<div class="highlight-bash">
+<div class="highlight">
+<pre><span class="c"># kubectl get pods</span>
+NAME             READY     STATUS    RESTARTS   AGE
+leonardo-369ob   1/1       Running   <span class="m">0</span>          35m
+leonardo-3xmdt   1/1       Running   <span class="m">0</span>          35m
+leonardo-q9kt3   1/1       Running   <span class="m">0</span>          35m
+nginx-jaimw      1/1       Running   <span class="m">0</span>          35m
+nginx-ocnx2      1/1       Running   <span class="m">0</span>          35m
+nginx-ykje9      1/1       Running   <span class="m">0</span>          35m
+</pre>
+</div>
+</div>
+<div class="highlight-bash">
+<div class="highlight">
+<pre><span class="c"># kubectl get service</span>
+NAME         CLUSTER_IP      EXTERNAL_IP     PORT<span class="o">(</span>S<span class="o">)</span>    SELECTOR        AGE
+ftleonardo   10.254.98.15    &lt;none&gt;          8000/TCP   <span class="nv">name</span><span class="o">=</span>leonardo   35m
+kubernetes   10.254.0.1      &lt;none&gt;          443/TCP    &lt;none&gt;          35m
+nginx        10.254.225.19   185.22.97.188   80/TCP     <span class="nv">app</span><span class="o">=</span>nginx       35m
+</pre>
+</div>
+</div>
+<p>Only Nginx service has public ip 185.22.97.188, which is floating ip configured as LoadBalancer. All traffic is now balanced by ECMP on Juniper MX.</p>
+<p>To get cluster fully working, there must set routing between leonardo virtual network in Kubernetes Contrail and database virtual network in OpenStack Contrail. Go into both Contrail UI and set same Route Target for both networks. This can be automated too through contrail heat resources.</p>
+</div>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/02/route-target.png" rel="attachment wp-att-6918"><img loading="lazy" decoding="async" class="alignleft size-full wp-image-6918" src="http://www.opencontrail.org/wp-content/uploads/2016/02/route-target.png" alt="route-target" width="968" height="513" data-id="6918" /></a></p>
+</div>
+</div>
+<p>The following figure shows how should look final production application stack. At top there are 2 Juniper MXs with Public VRF, where are floating IPs propagated. The traffic is ballanced through ECMP to MPLSoverGRE tunnel to 3 nginx pods. Nginx proxies request to Leonardo application server, which stores sessions and content into PostgreSQL database cluster running at OpenStack VMs. Connection between PODs and VMs is direct without any routed central point. Juniper MXs are used only for outgoing connection to Internet. Thanks to storing application session into database (normally is memcached or redis), we do not need specific L7 load balancer and ECMP works without any problem.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/02/opencontrail-kubernetes-scenario.png" rel="attachment wp-att-6917"><img loading="lazy" decoding="async" class="alignleft wp-image-6917" src="http://www.opencontrail.org/wp-content/uploads/2016/02/opencontrail-kubernetes-scenario.png" alt="opencontrail-kubernetes-scenario" width="800" height="645" data-id="6917" /></a></p>
+<h3>Other Outputs</h3>
+<p>This section shows other interesting outputs from application stack. Nginx service description with LoadBalancer shows floating IP and private cluster IP. Then 3 IP addresses of nginx pods. Traffic is distributed through vrouter ecmp.</p>
+<div class="highlight-bash">
+<div class="highlight">
+<pre><span class="c"># kubectl describe svc/nginx</span>
+Name:                   nginx
+Namespace:              default
+Labels:                 <span class="nv">app</span><span class="o">=</span>nginx,name<span class="o">=</span>nginx
+Selector:               <span class="nv">app</span><span class="o">=</span>nginx
+Type:                   LoadBalancer
+IP:                     10.254.225.19
+LoadBalancer Ingress:   185.22.97.188
+Port:                   http    80/TCP
+NodePort:               http    30024/TCP
+Endpoints:              10.150.255.243:80,10.150.255.248:80,10.150.255.250:80
+Session Affinity:       None
+</pre>
+</div>
+</div>
+<p>Nginx routing table shows internal routes between pods and route 10.254.98.15/32, which points to leonardo service.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/02/nginxRT.png" rel="attachment wp-att-6914"><img loading="lazy" decoding="async" class="alignleft wp-image-6914" src="http://www.opencontrail.org/wp-content/uploads/2016/02/nginxRT.png" alt="nginxRT" width="800" height="312" data-id="6914" /></a></p>
+<p>The previous route 10.254.98.15/32 is inside of description for leonardo service.</p>
+<div class="highlight-bash">
+<div class="highlight">
+<pre><span class="c"># kubectl describe svc/ftleonardo</span>
+Name:                   ftleonardo
+Namespace:              default
+Labels:                 <span class="nv">name</span><span class="o">=</span>ftleonardo
+Selector:               <span class="nv">name</span><span class="o">=</span>leonardo
+Type:                   ClusterIP
+IP:                     10.254.98.15
+Port:                   &lt;unnamed&gt;       8000/TCP
+Endpoints:              10.150.255.245:8000,10.150.255.247:8000,10.150.255.252:8000
+</pre>
+</div>
+</div>
+<p>The routing table for leonardo looks similar like nginx except routes 10.0.100.X/32, whose points to OpenStack VMs in different Contrail.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/02/leonardoRT.png" rel="attachment wp-att-6913"><img loading="lazy" decoding="async" class="alignleft wp-image-6913" src="http://www.opencontrail.org/wp-content/uploads/2016/02/leonardoRT.png" alt="leonardoRT" width="800" height="475" data-id="6913" /></a></p>
+<p>The last output is from Juniper MXs VRF showing multiple routes to nginx pods.</p>
+<div class="highlight-bash">
+<div class="highlight">
+<pre><span class="c">185.22.97.188/32   @[BGP/170] 00:53:48, localpref 200, from 10.0.170.71
+                      AS path: ?, validation-state: unverified
+                    > via gr-0/0/0.32782, Push 20
+                    [BGP/170] 00:53:31, localpref 200, from 10.0.170.71
+                      AS path: ?, validation-state: unverified
+                    > via gr-0/0/0.32778, Push 36
+                    [BGP/170] 00:53:48, localpref 200, from 10.0.170.72
+                      AS path: ?, validation-state: unverified
+                    > via gr-0/0/0.32782, Push 20
+                    [BGP/170] 00:53:31, localpref 200, from 10.0.170.72
+                      AS path: ?, validation-state: unverified
+                    > via gr-0/0/0.32778, Push 36
+                   #[Multipath/255] 00:53:48, metric2 0
+                    > via gr-0/0/0.32782, Push 20
+                      via gr-0/0/0.32778, Push 36
+</pre>
+</div>
+</div>
+<h2>Conclusion</h2>
+<p>We have proved that you can use single SDN solution for OpenStack, Kubernetes, Bare metal and VMware vCenter. The more important thing is that this use case can be actually used for production environments.</p>
+<p>If you are more interested in this topic, you can vote for our session <a class="reference external" href="https://www.openstack.org/summit/austin-2016/vote-for-speakers/Presentation/8688">Multi-cloud Networking for OpenStack Summit at Austin</a>.</p>
+<p>Currently we are working on requirements for Kubernetes networking stacks and then provide detailed comparison between different Kubernetes network plugins like Weave, Calico, OpenVSwitch, Flannel and Contrail at scale of 250 bare metal servers.</p>
+<p>We are also working on OpenStack Magnum with Kubernetes backend to bring developers self-service portal for simple testing and development. Then they will be able to prepare application manifests inside of OpenStack VMs, a then push changes of final production definitions into git and at the end use them at production.</p>
+<p>Special thanks go to Pedro Marques from Juniper for his support and contribution during testing.</p>
+<p>Jakub Pavlik &amp; tcp cloud team</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Kube-O-Contrail – get your hands dirty with Kubernetes and OpenContrail</title>
+		<link>https://tungsten.io/kube-o-contrail-get-your-hands-dirty-with-kubernetes-and-opencontrail/</link>
+		
+		<dc:creator><![CDATA[Aniket Daptari]]></dc:creator>
+		<pubDate>Tue, 17 Nov 2015 21:37:32 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[Orchestration]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6859</guid>
+
+					<description><![CDATA[This blog is co-authored by Sanju Abraham and Aniket Daptari from Juniper Networks. The OpenContrail team participated in the recently concluded KubeCon 2015. It was the inaugural conference for the Kubernetes...]]></description>
+										<content:encoded><![CDATA[<p><em>This blog is co-authored by <strong>Sanju Abraham</strong> and <strong>Aniket Daptari</strong> from Juniper Networks. </em></p>
+<p>The OpenContrail team participated in the recently concluded <a href="https://kubecon.io/">KubeCon 2015</a>. It was the inaugural conference for the Kubernetes ecosystem. At the conference, we helped the attendees with a hands-on <a href="http://sched.co/4Wc8">workshop</a>.</p>
+<p>In the past we have demonstrated the integration of OpenContrail with OpenStack, CloudStack, VMware vCenter, IBM Cloud Orchestrator and some other orchestrators. With the growing acceptance of Containers as the compute vehicle of choice to deploy modern applications, the OpenContrail team extended the overlay virtual networking to Containers.</p>
+<p>As Kubernetes came along, groups of containers deployed together to implement a logical piece of functionality started being managed together as Pods and multiple Pods as Services.</p>
+<p>The OpenContrail team extended the same networking primitives and constructs to the Kubernetes entities like Pods and Services &#8211; providing not just security via isolation for Pods, and interconnecting them based on app tier interrelationships specified in the app deployment manifest, but also providing load balancing across the various Pods that implement a particular service behind the service’s “ClusterIP”.</p>
+<p>OpenContrail also creates the construct of Virtual Networks for every collection of Pods along with a CIDR block allocated for that Virtual Network. Then, as Pods are spawned, OpenContrail assigns an IP for every new Pod created.</p>
+<p>When entities like Webservers need to be accessed from across the internet and need to have a public facing IP address, OpenContrail also provides NATting in a fully distributed fashion.</p>
+<p>In summary, OpenContrail provides all the following functionalities in a fully distributed fashion:</p>
+<p>IPAM, DHCP, DNS, Load balancing, NAT and Firewalling.</p>
+<p>All the above sounds pretty cool and the next thing on anyone’s mind is, “Fine, how do I see these in action for myself?”</p>
+<p>In order to reap all the above benefits from OpenContrail, we have committed all the necessary OpenContrail code to Kubernetes mainline &#8211; well almost. Our <a href="https://github.com/kubernetes/kubernetes/pull/16682">pull request</a> to merge our changes with Kubernetes mainline is open and we anticipate it getting approved within the next few weeks.</p>
+<p>What that allows is that whenever any one deploys Kubernetes:</p>
+<p>1) On baremetal servers in an on-prem private cloud,<br />
+2) On top of OpenStack perhaps using Murano in an on-prem private cloud,<br />
+3) On a public cloud like GCE,<br />
+4) Or a public cloud like AWS,</p>
+<p>All the OpenContrail goodness is right there along with Kubernetes. All that needs to be done to leverage the OpenContrail goodness is to set the value of an environment variable “NETWORK_PROVIDER” to “opencontrail” before Kubernetes is installed.</p>
+<p>So let’s go through the steps to first deploy Kubernetes in a public cloud, say GCE, that includes and enables OpenContrail, and then deploy a sample application and see what benefits OpenContrail brings along.</p>
+<p><strong>Step 1:</strong> Deploying Kubernetes in GCE along with OpenContrail.</p>
+<p>In order to do this, we will build Kubernetes and deploy it:</p>
+<p style="padding-left: 30px;">a) git clone -b opencontrail-integration <a href="https://github.com/Juniper/kubernetes/kubernetes.git">https://github.com/Juniper/kubernetes/kubernetes.git</a></p>
+<p style="padding-left: 30px;">b) ~/build/release.sh</p>
+<p style="padding-left: 30px;">c) export NETWORK_PROVIDER=opencontrail</p>
+<p style="padding-left: 30px;">d) ./cluster/kube-up.sh</p>
+<p>&#8230;Starting cluster using provider: gce<br />
+&#8230;</p>
+<p>Kubernetes cluster is running.  The master is running at:</p>
+<p><a href="https://104.197.128.44/">https://104.197.128.44</a></p>
+<p>The user name and password to use is located in /Users/adaptari/.kube/config.</p>
+<pre><span style="font-family: 'courier new', courier;">
+... calling validate-cluster
+Found 3 node(s).
+NAME                    LABELS                                         STATUS                     AGE
+kube-oc-2-master        <a href="http://kubernetes.io/hostname=kube-oc-2-master">kubernetes.io/hostname=kube-oc-2-master</a>        Ready,SchedulingDisabled   1m
+kube-oc-2-minion-59ws   <a href="http://kubernetes.io/hostname=kube-oc-2-minion-59ws">kubernetes.io/hostname=kube-oc-2-minion-59ws</a>   Ready                      1m
+kube-oc-2-minion-htl8   <a href="http://kubernetes.io/hostname=kube-oc-2-minion-htl8">kubernetes.io/hostname=kube-oc-2-minion-htl8</a>   Ready                      1m
+Validate output:
+NAME                 STATUS    MESSAGE              ERROR
+controller-manager   Healthy   ok                   nil
+scheduler            Healthy   ok                   nil
+etcd-0               Healthy   {"health": "true"}   nil
+etcd-1               Healthy   {"health": "true"}   nil
+Cluster validation succeeded
+Done, listing cluster services:
+
+ 
+
+Kubernetes master is running at <a href="https://104.197.128.44/">https://104.197.128.44</a>
+
+GLBCDefaultBackend is running at <a href="https://104.197.128.44/api/v1/proxy/namespaces/kube-system/services/default-http-backend">https://104.197.128.44/api/v1/proxy/namespaces/kube-system/services/default-http-backend</a>
+Heapster is running at <a href="https://104.197.128.44/api/v1/proxy/namespaces/kube-system/services/heapster">https://104.197.128.44/api/v1/proxy/namespaces/kube-system/services/heapster</a>
+KubeDNS is running at <a href="https://104.197.128.44/api/v1/proxy/namespaces/kube-system/services/kube-dns">https://104.197.128.44/api/v1/proxy/namespaces/kube-system/services/kube-dns</a>
+KubeUI is running at <a href="https://104.197.128.44/api/v1/proxy/namespaces/kube-system/services/kube-ui">https://104.197.128.44/api/v1/proxy/namespaces/kube-system/services/kube-ui</a>
+Grafana is running at <a href="https://104.197.128.44/api/v1/proxy/namespaces/kube-system/services/monitoring-grafana">https://104.197.128.44/api/v1/proxy/namespaces/kube-system/services/monitoring-grafana</a>
+InfluxDB is running at <a href="https://104.197.128.44/api/v1/proxy/namespaces/kube-system/services/monitoring-influxdb">https://104.197.128.44/api/v1/proxy/namespaces/kube-system/services/monitoring-influxdb</a></span></pre>
+<p style="padding-left: 30px;">d) To view the Contrail components, you can issue:</p>
+<pre><span style="font-family: 'courier new', courier;">docker ps | grep contrail | grep -v pause</span></pre>
+<p><strong>Step 2:</strong> Now that we have Kubernetes running with OpenContrail, let’s find and prepare an app.</p>
+<p>The main forte of OpenContrail lies in abstraction. Abstraction is necessary for the speed and agility that developers care most about. This abstraction is accomplished by letting developers specify app tier inter-relationships in the form of annotations in the app deployment manifests. OpenContrail controller will then infer the policy requirements based on the inter-relationships specified in the app manifests and program corresponding security policies into the vRouters for fully distributed enforcement.</p>
+<p>Therefore, the existing app manifests of applications need to be patched with the annotations.</p>
+<p>So, patch the existing app, guestbook-go.</p>
+<p><a href="https://github.com/Juniper/contrail-kubernetes/blob/vrouter-manifest/cluster/patch_guest_book">https://github.com/Juniper/contrail-kubernetes/blob/vrouter-manifest/cluster/patch_guest_book</a><br />
+The patch above introduces the labels “name” and “uses” that help specify the app tier inter-relationships.<br />
+To apply the patch,</p>
+<pre><span style="font-family: 'courier new', courier;">git apply –stat patch
+git apply –check patch
+git apply patch</span></pre>
+<p><strong>Step 3:</strong> Now that the app is ready, let’s go ahead and deploy it:</p>
+<pre><span style="font-family: 'courier new', courier;">kubectl create -f guestbook-go/redis-master-controller.json
+kubectl create -f guestbook-go/redis-master-service.json
+kubectl create -f guestbook-go/redis-slave-controller.json
+kubectl create -f guestbook-go/redis-slave-service.json
+kubectl create -f guestbook-go/guestbook-controller.json
+kubectl create -f guestbook-go/guestbook-service.json</span></pre>
+<p>Notice here that the way Kubernetes was installed or the way apps are deployed has not changed one bit. The only thing that has changed is the introduction of an environment variable and the introduction of annotations in the form of labels &#8211; “name” and “uses”.</p>
+<p>Finally, to view the replication controllers and service pods created from the above commands, use:</p>
+<p>kubectl get rc<br />
+kubectl get pods</p>
+<p><strong>Step 4:</strong> Establish ssh tunnel into the public IP allocated to the guestbook webserver from localhost. Then point browser to <a href="http://localhost:3000">http://localhost:3000</a> (or port used in port forwarding).</p>
+<p>This completes the hands-on exercise for OpenContrail with Kubernetes.</p>
+<p>In the next part of this blog, we will continue the ride deeper into OpenContrail and look closely at what components OpenContrail has introduced and what benefits those components provide.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Installing Kubernetes &#038; Opencontrail</title>
+		<link>https://tungsten.io/installing-kubernetes-opencontrail/</link>
+		
+		<dc:creator><![CDATA[Pedro Marques]]></dc:creator>
+		<pubDate>Thu, 12 Nov 2015 07:06:25 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[Orchestration]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6855</guid>
+
+					<description><![CDATA[In this post we walk through the steps required to install a 2 node cluster running Kubernetes that uses OpenContrail as the network provider. In addition to the 2 compute...]]></description>
+										<content:encoded><![CDATA[<p>In this post we walk through the steps required to install a 2 node cluster running Kubernetes that uses OpenContrail as the network provider. In addition to the 2 compute nodes, we use a master and a gateway node. The master runs both the kubernetes api server and scheduler as well as the opencontrail configuration management and control plane.</p>
+<p>OpenContrail implements an overlay network using standards based network protocols:</p>
+<ul>
+<li><a href="https://tools.ietf.org/html/rfc4364">BGP/MPLS L3VPN</a> is used as the control-plane;</li>
+<li><a href="https://tools.ietf.org/html/rfc7510">MPLS over UDP</a> or <a href="https://tools.ietf.org/html/rfc4023">MPLS over GRE</a> are used as encapsulations;</li>
+</ul>
+<p>This means that, in production environments, it is possible to use existing network appliances from multiple vendors that can serve as the gateway between the un-encapsulated network (a.k.a. underlay) and the network overlay. However for the purposes of a test cluster we will use an extra node (the gateway) whose job is to provide access between the underlay and overlay networks.</p>
+<p>For this exercise, I decided to use my MacBookPro which has 16G of RAM. However all the tools used are supported on Linux also; it should be relativly simple to reproduce the same steps on a Linux machine or on a cloud such as AWS or GCE.</p>
+<p>The first step in the process is to obtain binaries for kubernetes <a href="https://github.com/kubernetes/kubernetes/releases/download/v1.1.1/kubernetes.tar.gz">release-1.1.1</a>. I then unpacked the tar file into the <code>~/tmp</code> and then extracted the linux binaries required to run the cluster using the command:</p>
+<pre><span style="font-family: 'courier new', courier;">cd ~/tmp;tar zxvf kubernetes/server/kubernetes-server-linux-amd64.tar.gz</span></pre>
+<p>In order to create the 4 virtual-machines required for this scenario I used virtual-box and vagrant. Both are trivial to install on OSX.</p>
+<p>In order to provision the virtual-machines we use ansible. Ansible can be installed via “pip install ansible”. I then created a default ansible.cfg that enables the pipelining option and disables ssh connection sharing. The later was required to work around failures on tasks that use “delegate_to” and run concurrently (i.e. run_once is false). From a cursory internet search, it appears that the openssh server that ships with ubuntu 14.04 has a concurrency issue when handling multi-session.</p>
+<pre><span style="font-family: 'courier new', courier;">
+~/.ansible.cfg
+[default]
+pipelining=True
+ 
+[ssh_connection]
+ssh_args = -o ControlMaster=no -o ControlPersist=60s</span></pre>
+<p>With ansible and vagrant installed, we can proceed to create the VMs used by this testbed. The vagrant configuration for this example is available in <a href="https://github.com/pedro-r-marques/examples/tree/master/vagrant">github</a>. The <code>servers.yaml</code> file lists the names and resource requirements for the 4 VMs. Please note that if you are adjusting this example to run in a different vagrant provider the Vagrantfile needs to be edited to specify the resource requirements for that provider.<br />
+After checking out this directory (or copying over the files) the VMs can be created by executing the command:</p>
+<pre><code>vagrant up</code></pre>
+<p>Vagrant will automatically execute</p>
+<pre><code>config.yaml</code></pre>
+<p>which will configure the hostname on the VMs.</p>
+<p>The Vagranfile used int this example will cause vagrant to create VMs with 2 interfaces: a NAT interface (eth0) used for by the ssh management sessions and external access and a private network<br />
+interface (eth1) providing a private network between the host and the VMs. OpenContrail will use the private network interface; the management interface is optional and may not exist in other<br />
+configurations (e.g. AWS, GCE).</p>
+<p>After <code>vagrant up</code> completes, it is useful to add entries to /etc/hosts on all the VMs so that names can be resolved. For this purpose i used another ansible script invoked as:</p>
+<pre><span style="font-family: 'courier new', courier;">ansible-playbook -u vagrant -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory resolution.yaml</span></pre>
+<p>This step must be executed independently of the ansible configuration performed by vagrant since vagrant invokes ansible for each VM at a time, while this playbook expects to be invoked for all hosts.</p>
+<p>The command above dependens on the inventory file that vagrant creates automatically when configuring the VMs. We will use the contents of this inventory file in order to provision kubernetes and OpenContrail also.</p>
+<p>With the VMs running, we need to checkout the ansible playbooks that configure kubernetes + opencontrail. While an earlier version of the playbook is available upstream in the kubernetes <a href="https://github.com/kubernetes/contrib">contrib</a> repository, the most recent version of the playbook is in a development <a href="https://github.com/pedro-r-marques/contrib/tree/opencontrail">branch</a> on a fork of that repository. Checkout the repository via:</p>
+<pre><span style="font-family: 'courier new', courier;">git clone https://github.com/pedro-r-marques/contrib/tree/opencontrail</span></pre>
+<p>The branch HEAD commit id, at the time of this post, is <a class="commit-tease-sha" href="https://github.com/pedro-r-marques/contrib/commit/15ddfd531d568ae3eedb026834f78ff1f081851a">15ddfd5</a>.</p>
+<p>I will work to upstream the updated opencontrail playbook to both the kubernetes and openshift provisioning repositories as soon as possible.</p>
+<p>With the ansible playbook available on the contrib/ansible directory it is necessary to edit the file ansible/group_vars/all.yml replace the network provider:</p>
+<pre><span style="font-family: 'courier new', courier;"># Network implementation (flannel|opencontrail)
+networking: opencontrail</span></pre>
+<p>We then need to create an inventory file:</p>
+<pre><span style="font-family: 'courier new', courier;">[opencontrail:children]
+masters
+nodes
+gateways
+ 
+[opencontrail:vars]
+localBuildOutput=/Users/roque/src/golang/src/k8s.io/kubernetes/_output/dockerized
+opencontrail_public_subnet=100.64.0.0/16
+opencontrail_interface=eth1
+ 
+[masters]
+k8s-master ansible_ssh_user=vagrant ansible_ssh_host=127.0.0.1 ansible_ssh_port=2222 ansible_ssh_private_key_file=/Users/roque/k8s-provision/.vagrant/machines/k8s-master/virtualbox/private_key
+ 
+[etcd]
+k8s-master ansible_ssh_user=vagrant ansible_ssh_host=127.0.0.1 ansible_ssh_port=2222 ansible_ssh_private_key_file=/Users/roque/k8s-provision/.vagrant/machines/k8s-master/virtualbox/private_key
+ 
+[gateways]
+k8s-gateway ansible_ssh_user=vagrant ansible_ssh_host=127.0.0.1 ansible_ssh_port=2200 ansible_ssh_private_key_file=/Users/roque/k8s-provision/.vagrant/machines/k8s-gateway/virtualbox/private_key
+ 
+[nodes]
+k8s-node-01 ansible_ssh_user=vagrant ansible_ssh_host=127.0.0.1 ansible_ssh_port=2201 ansible_ssh_private_key_file=/Users/roque/k8s-provision/.vagrant/machines/k8s-node-01/virtualbox/private_key
+k8s-node-02 ansible_ssh_user=vagrant ansible_ssh_host=127.0.0.1 ansible_ssh_port=</span></pre>
+<p>This inventory file does the following:</p>
+<ul>
+<li>Declares that hosts for the roles: masters, gateways, etcd, nodes;The ssh information is derived from the inventory created by vagrant.</li>
+<li>Declares the location of the kubernetes binaries downloaded from the github release;</li>
+<li>Defines the IP address prefix used for ‘External IPs’ by kubernetes services that require external access;</li>
+<li>Instructs opencontrail to use the private network interface (eth1); without this setting the opencontrail playbook defaults to eth0.</li>
+</ul>
+<p>Once this file is created, we can execute the ansible playbook by running the script<code>"setup.sh"</code> in the contrib/ansible directory.</p>
+<p>This script will run through all the steps required to provision kubernetes and opencontrail; it is not unusual for the script to fail to perform some of network based operations (downloading the repository keys for docker for instance or downloading a file from github); the ansible playbook is ment to be declarative (i.e. define the end state of the system) and it is supposed to be re-run if a network based failure is encountered.</p>
+<p>At the end of the script we should be able to login to the master via the command “vagrant ssh k8s-master” and observe the following:</p>
+<ul>
+<li><code>kubectl get nodes</code><br />
+This should show two nodes: k8s-node-01 and k8s-node-02.</li>
+<li><code>kubectl --namespace=kube-system get pods</code>This command should show that the kube-dns pod is running; if this pod is in a restart loop that usually means that the kube2sky container is not able to reach the kube-apiserver.</li>
+<li><code>curl <a href="http://localhost:8082/virtual-networks" rel="nofollow">http://localhost:8082/virtual-networks</a> | python -m json.tool</code>This should display a list of virtual-networks created in the opencontrail api</li>
+<li><code>netstat -nt | grep 5269</code><br />
+We expect 3 established TCP sessions for the control channel (xmpp) between the master and the nodes/gateway.</li>
+</ul>
+<p>On the host (OSX) one should be able to access the diagnostic web interface of the vrouter agent running on the compute nodes:</p>
+<ul>
+<li><a href="http://192.168.1.3:8085/Snh_ItfReq" rel="nofollow">http://192.168.1.3:8085/Snh_ItfReq</a></li>
+<li><a href="http://192.168.1.4:8085/Snh_ItfReq" rel="nofollow">http://192.168.1.4:8085/Snh_ItfReq</a></li>
+</ul>
+<p>These commands show display the information regarding the interfaces attached to each pod.</p>
+<p>Once the cluster is operational, one can start an example application such as “guestbook-go”. This example can be found in the kubernetes examples directory. In order for it to run successfully the following modifications are necessary:</p>
+<ul>
+<ul>
+<li>Edit guestbook-controller.json, in order to add the labels “name” and “uses” as in:</li>
+</ul>
+</ul>
+<pre><span style="font-family: 'courier new', courier;">
+"spec":{
+  [...]
+  "template":{
+    "metadata":{
+      "labels":{
+        "app":"guestbook",
+        "name":"guestbook",
+        "uses":"redis"
+      }
+    },
+  [...]
+}</span></pre>
+<ul>
+<ul>
+<li>Edit redis-master-service.json and redis-slave-service.json in order to add a service name. The following is the configuration for the master:</li>
+</ul>
+</ul>
+<pre><span style="font-family: 'courier new', courier;">"metadata": {
+  [...]
+  "labels" {
+         "app":"redis",
+         "role": "master",
+         "name":"redis"
+  }
+}</span></pre>
+<ul>
+<li>Edit redis-master-controller.json and redis-slave-controller.json in order to add the “name” label to the pods. As in:
+<pre><span style="font-family: 'courier new', courier;">"spec":{
+   [...]
+   "template":{
+      "metadata":{
+         "labels":{
+            "app":"redis",
+            "role":"master",
+            "name":"redis"
+         }
+      },
+   [...]
+ }</span></pre>
+</li>
+</ul>
+<p>After the example is started the guestbook service will be allocated an ExternalIP on the external subnet (e.g. 100.64.255.252).</p>
+<p>In order to access the external IP network from the host one needs to add a route to 192.168.1.254 (the gateway address). Once that is done you should be able to access the application via a web browser via <a href="http://100.64.255.252:3000/" rel="nofollow">http://100.64.255.252:3000</a>.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Billing for Contrail network services using Openbook</title>
+		<link>https://tungsten.io/billing-for-contrail-network-services-using-openbook/</link>
+		
+		<dc:creator><![CDATA[John Meadows]]></dc:creator>
+		<pubDate>Thu, 22 Oct 2015 19:51:22 +0000</pubDate>
+				<category><![CDATA[Orchestration]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6746</guid>
+
+					<description><![CDATA[Talligent Openbook now supports Contrail metrics for enhanced network billing in OpenStack cloud. OpenContrail Analytics provides a deep set of network statistics related to the operations of virtual instances, virtual...]]></description>
+										<content:encoded><![CDATA[<h4>Talligent Openbook now supports Contrail metrics for enhanced network billing in OpenStack cloud.</h4>
+<p>OpenContrail Analytics provides a deep set of network statistics related to the operations of virtual instances, virtual networks, and floating IPs and pushes them to Ceilometer via a new service plug-in.  Because Openbook currently integrates with Ceilometer, Openbook will be able to directly consume this set of detailed and accurate bandwidth measurements for billing, chargeback, capacity planning, and other management reporting.  Service providers can now bill on bandwidth leaving the datacenter, as well as detailed metrics at the instance, floating IP, and virtual network level.</p>
+<p>Openbook by Talligent enables cloud providers to create and track on demand cloud services based on the OpenStack platform.  Service providers and enterprises are deploying ever more complex cloud solutions to meet customer demand.  It is important that the Openbook platform expand to include SDN metrics and products as they become available from solutions like OpenContrail, whether through the Ceilometer service or directly via Openbook’s API.  These metrics can be packaged by tiers, metered and sold by the GB, delivered on-site or as part of a shared infrastructure, and reported on by tenant, customer, cost center, or business unit.</p>
+[pullquote align=&#8221;left&#8221;]&#8221;It is imperative for Wingu to be able to measure and bill customers on their proper bandwidth usage.  Talligent and OpenContrail are providing the key bandwidth metrics and have a platform that allows us to create new, high value network offerings&#8230;&#8221;<br />
+– <strong>Thomas Lee</strong>, General Manager Cloud Services, <a href="http://www.wingu.co.za">Wingu</a> [/pullquote]
+<p>The Ceilometer driver from OpenContrail provides traffic statistics for instances, floating IPs, and virtual networks.  From the description:</p>
+<p>“For the floating IPs meters, the driver will query neutron to obtain the list of floating IPs and extract the virtual machines/instances associated with the floating IPs. It will then query the OpenContrail analytics REST API server to extract the floating IP statistics associated with those virtual machines and floating IPs and populate the meters. Similarly for the virtual network meters, the driver will query neutron/nova to obtain the list of networks and then query the OpenContrail analytics REST API server to extract the inter and intra virtual network statistics and populate the meters.”</p>
+<p>More detail about the plug-in is available from the github wiki:</p>
+<p><a href="https://github.com/Juniper/contrail-controller/wiki/Ceilometer-and-OpenContrail-Driver-Enhancements">https://github.com/Juniper/contrail-controller/wiki/Ceilometer-and-OpenContrail-Driver-Enhancements</a></p>
+<p>Talligent supports the decision of the Contrail team to integrate with Ceilometer for a couple of key reasons:</p>
+<p>1) This plug-in extends the value of Ceilometer as a funnel for key metrics about the OpenStack environment; and</p>
+<p>2) the community benefits from being able to use the common Ceilometer API to pick up this new information.  This initiative is additional validation that Ceilometer will be the primary telemetry module for OpenStack.</p>
+<p>Openbook v2.5 is tested to work with the Juniper Networks Contrail Cloud and the OpenContrail Ceilometer Driver.</p>
+<p>If you are interested in learning more about the use of OpenContrail and the OpenContrail Ceilometer Driver to bill and report on bandwidth metrics in Openstack, please contact Talligent at <a href="mailto:openbook@talligent.com">openbook@talligent.com</a> for more information.</p>
+<p><strong>About Talligent</strong></p>
+<p>Talligent empowers enterprises and service providers to deploy production ready OpenStack clouds by dramatically improving the visibility and control of cloud infrastructure consumption. We are OpenStack experts – we know its capabilities and are developing solutions that take advantage of OpenStack’s key benefits without vendor lock-in. Talligent OpenBook provides the functionality to turn your private or public cloud into an efficient and automated multi-tenant environment.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Kubernetes networking with OpenContrail</title>
+		<link>https://tungsten.io/kubernetes-networking-with-opencontrail/</link>
+		
+		<dc:creator><![CDATA[Pedro Marques]]></dc:creator>
+		<pubDate>Mon, 27 Jul 2015 01:51:04 +0000</pubDate>
+				<category><![CDATA[Orchestration]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6394</guid>
+
+					<description><![CDATA[OpenContrail can be used to provide network micro-segmentation to kubernetes, providing both network isolation as well as the ability to attach a pod to a network that may have endpoints in...]]></description>
+										<content:encoded><![CDATA[<p><a href="http://opencontrail.org/">OpenContrail</a> can be used to provide network micro-segmentation to <a href="http://kubernetes.io/">kubernetes</a>, providing both network isolation as well as the ability to attach a pod to a network that may have endpoints in using different technologies  (e.g. bare-metal servers on VLANs or OpenStack VMs).</p>
+<p><em>Watch <a href="https://twitter.com/lachlanevenson" target="_blank">Lachlan Evenson</a> from Lithium talk about using OpenContrail with Kubernetes at the Kubernetes 1.0 Launch.</em></p>
+[video_lightbox_youtube video_id=&#8221;pZjNFcyC6Uo&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]
+<p>&nbsp;</p>
+<p>This post describes how the current prototype works and how packets flow between pods. For illustration purposes we will focus on 2 tiers of the k8petstore example on kubernetes: the web frontend and the redis-master tier that the frontend uses as a data store.</p>
+<p>The OpenContrail integration works without modifications to the kubernetes code base (as off v1.0.0 RC2). An additional daemon, by the name of kube-network-manager, is started on the master. The kubelets are executed with the option: “–network_plugin=opencontrail”, which instructs the kubelet to execute the command:</p>
+<p>/usr/libexec/kubernetes/kubelet-plugins/net/exec/opencontrail/opencontrail. The <a href="https://github.com/Juniper/contrail-kubernetes">source code</a> for both the network-manager and the kubelet plugin are publicly available.</p>
+<p>When using OpenContrail as the network implementation the kube-proxy process is disabled and all pod connectivity is implemented via the OpenContrail vrouter module which implements an overlay network using <a href="https://tools.ietf.org/html/rfc7510">MPLS over UDP</a> as encapsulation. OpenContrail uses a standards based <a href="https://tools.ietf.org/html/rfc4364">control plane</a> in order to distribute the mapping between endpoint (i.e. pod) and location (k8s node). The fact that the implementation is standards compliant means that it can interoperate with existing network devices (from multiple vendors).</p>
+<p>The kube-network-manager process uses the kubernetes controller framework to listening to changes in objects that are defined in the API and add annotations to some of these objects. It then creates a network solution for the application using the OpenContrail API to define objects such as virtual-networks, network interfaces and access control policies.</p>
+<p>The kubernetes deployment configuration for this example application consists of a replication controller (RC) and a service object for the web-server and a pod and service object for the redis-master.</p>
+<p>The web frontend RC contains the following metadata:</p>
+<div>
+<div id="highlighter_872253" class="syntaxhighlighter nogutter  jscript">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><span style="color: #0000ff;"><code class="jscript string">"labels"</code><code class="jscript plain">: {</code></span></div>
+<div class="line number2 index1 alt1"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript string">"name"</code><code class="jscript plain">: </code><code class="jscript string">"frontend"</code><code class="jscript plain">,</code></span></div>
+<div class="line number3 index2 alt2"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript string">"uses"</code><code class="jscript plain">: </code><code class="jscript string">"redis-master"</code></span></div>
+<div class="line number4 index3 alt1"><span style="color: #0000ff;"><code class="jscript plain">}</code></span></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>This metadata information is copied to each pod replica created by the kube-controller-manager. When the network-manager sees these pods it will:</p>
+<ul>
+<li>Create a virtual-network with the name &lt;namespace:frontend&gt;</li>
+<li>Connect this network with the network for the service &lt;namespace:redis-master&gt;</li>
+<li>Create an interface per pod replica with a unique private IP address from a cluster-wide address block (e.g. 10.0/16).</li>
+</ul>
+<p>The kube-network-manager also annotates the pods with the interface uuid created by OpenContrail as well as the allocated private IP address (and a mac-address). These annotations are then read by the kubelet.</p>
+<p>When the pods are started by the respective kubelet invokes the plugin script. This script removes the veth-pair associated with the docker0 bridge and assigns it to the OpenContrail vrouter kernel module, executing on each node. The same script notifies the contrail-vrouter-agent of the interface uuid associated with the veth interface and configures the IP address inside the pod’s network namespace.</p>
+<p>At this stage each pod has an unique IP address in the cluster but can only communicate with other pods within the same virtual-network. Subnet broadcast and IP link-local multicast packets will be forwarded to the group of pods that are present in the same virtual-network (defined by the “labels.name” tag).</p>
+<p>OpenContrail assigns a private forwarding table to each pod interface. The veth-pair associated with the network namespace used by docker is mapped into a table which has routing entries for each of the other pod instances that are defined within the same network or networks this pod has authorized access to. The routing tables are computed centrally by the OpenContrail control-node(s) and distributed to each of the compute nodes where the vrouter is running.</p>
+<p>The deployment defines a service associated with web frontend pods:</p>
+<div>
+<div id="highlighter_523962" class="syntaxhighlighter nogutter  jscript">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><span style="color: #0000ff;"><code class="jscript string">"kind"</code><code class="jscript plain">: </code><code class="jscript string">"Service"</code><code class="jscript plain">,</code></span></div>
+<div class="line number2 index1 alt1"><span style="color: #0000ff;"><code class="jscript string">"metadata"</code><code class="jscript plain">: {</code></span></div>
+<div class="line number3 index2 alt2"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript string">"name"</code><code class="jscript plain">: </code><code class="jscript string">"frontend"</code><code class="jscript plain">,</code></span></div>
+<div class="line number4 index3 alt1"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript string">"labels"</code><code class="jscript plain">: {</code></span></div>
+<div class="line number5 index4 alt2"><span style="color: #0000ff;"><code class="jscript spaces">    </code><code class="jscript string">"name"</code><code class="jscript plain">: </code><code class="jscript string">"frontend"</code></span></div>
+<div class="line number6 index5 alt1"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript plain">}</code></span></div>
+<div class="line number7 index6 alt2"><span style="color: #0000ff;"><code class="jscript plain">},</code></span></div>
+<div class="line number8 index7 alt1"><span style="color: #0000ff;"><code class="jscript string">"spec"</code><code class="jscript plain">: {</code></span></div>
+<div class="line number9 index8 alt2"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript string">"ports"</code><code class="jscript plain">: [{</code></span></div>
+<div class="line number10 index9 alt1"><span style="color: #0000ff;"><code class="jscript spaces">    </code><code class="jscript string">"port"</code><code class="jscript plain">: 3000</code></span></div>
+<div class="line number11 index10 alt2"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript plain">}],</code></span></div>
+<div class="line number12 index11 alt1"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript string">"deprecatedPublicIPs"</code><code class="jscript plain">:[</code><code class="jscript string">"10.1.4.89"</code><code class="jscript plain">],</code></span></div>
+<div class="line number13 index12 alt2"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript string">"selector"</code><code class="jscript plain">: {</code></span></div>
+<div class="line number14 index13 alt1"><span style="color: #0000ff;"><code class="jscript spaces">    </code><code class="jscript string">"name"</code><code class="jscript plain">: </code><code class="jscript string">"frontend"</code></span></div>
+<div class="line number15 index14 alt2"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript plain">}</code></span></div>
+<div class="line number16 index15 alt1"><span style="color: #0000ff;"><code class="jscript plain">}</code></span></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The “selector” tag specifies the pods that belong to the service. The service is then assigned a “ClusterIP” address by the kube-controller-manager. The ClusterIP is an unique IP address that can be used by other pods to consume the service. This particular service also allocates a PublicIP address that is accessible outside the cluster.</p>
+<p>When the service is defined, the kube-network-manager creates a virtual-network for the service (with the name of &lt;namespace:service-frontend&gt;) and allocates a floating-ip address with the ClusterIP specified by kubernetes. The floating-ip address is then associated with each of the replicas.</p>
+<p>In the k8petstore example, there is a load-generator tier defined by an RC with the following metadata:</p>
+<div>
+<div id="highlighter_172032" class="syntaxhighlighter nogutter  jscript">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><span style="color: #0000ff;"><code class="jscript string">"labels"</code><code class="jscript plain">: {</code></span></div>
+<div class="line number2 index1 alt1"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript string">"name"</code><code class="jscript plain">: </code><code class="jscript string">"bps"</code><code class="jscript plain">,</code></span></div>
+<div class="line number3 index2 alt2"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript string">"uses"</code><code class="jscript plain">: </code><code class="jscript string">"frontend"</code></span></div>
+<div class="line number4 index3 alt1"><span style="color: #0000ff;"><code class="jscript plain">}</code></span></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The network-manager process interprets the “uses” tag as an implicit authorization for the “bps” network to access the “service-frontend” network which contains the ClusterIP. That is the mechanism that causes the ClusterIP address to be visible in the private routing tables that are associated with the load-generator pods.</p>
+<p>When traffic is sent to this ClusterIP address, the sender has multiple feasible paths available (one per replica). It chooses one of these based on a hash on the 5-tuple of the packet (IP source, IP destination, protocol,  source port, destination port). Traffic is sent encapsulated to the destination node such that the destination IP address of the inner packet is the ClusterIP. The vrouter kernel module in destination node then performs a destination NAT operation on the ClusterIP and translates this address to the private IP of the specific pod.</p>
+<p>A packet sent by a load-generator pod to the ClusterIP of the web frontend goes through the following steps:</p>
+<ol>
+<li>Packet is sent by the IP stack in the container with SourceIP=”load-gen private IP”, DestinationIP=ClusterIP. This packet is send to eth0 inside the container network namespace, which is a Linux veth-pair interface.</li>
+<li>The packet is delivered to the vrouter kernel module; a route lookup is performed for the destination IP address (ClusterIP) in the private forwarding table “bps”.</li>
+<li>This route lookup returns an equal cost load balancing next-hop (i.e. list of available path). The ECMP algorithm selects one of the available paths and encapsulates the traffic such that and additional IP header is added to the packet with SourceIP=”sender node address”, DestinationIP=”destination node address”; additionally an MPLS label is added to the packet corresponding to the destination pod.</li>
+<li>Packet travels in the underlay to the destination node.</li>
+<li>The destination node strips the outer headers and performs a lookup on the MPLS label and determines that the destination IP address is a “floating-ip” address and requires NAT translation.</li>
+<li>The destination node creates a flow-pair with the NAT mapping of the ClusterIP to the private IP of the destination pod and modifies the destination IP of the payload.</li>
+<li>Packet is delivered to the pod such that the source IP is the unique private IP of the source pod and the destination IP is the private IP of the local pod.</li>
+</ol>
+<p>The service definition for the web front-end also specified a PublicIP. This address is implemented as a floating-ip address like the ClusterIP, except that the floating-ip is associated with a network that spans across the cluster and the outside world. Typically, OpenContrail deployments configure one or more “external” networks that map to virtual  network on external network devices such as a data-center router.</p>
+<p>Traffic from the external network is also equal cost load balanced to the pod replicas of the    web frontend. The mechanism is the same as described above except that the ingress device is a router rather than a kubernetes node.</p>
+<p>To finalize the walk-through of the k8petstore example, the redis-master service defines:</p>
+<div>
+<div id="highlighter_801568" class="syntaxhighlighter nogutter  jscript">
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td class="code">
+<div class="container">
+<div class="line number1 index0 alt2"><span style="color: #0000ff;"><code class="jscript string">"kind"</code><code class="jscript plain">: </code><code class="jscript string">"Service"</code><code class="jscript plain">,</code></span></div>
+<div class="line number2 index1 alt1"><span style="color: #0000ff;"> </span></div>
+<div class="line number3 index2 alt2"><span style="color: #0000ff;"><code class="jscript string">"metadata"</code><code class="jscript plain">: {</code></span></div>
+<div class="line number4 index3 alt1"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript string">"name"</code><code class="jscript plain">: </code><code class="jscript string">"redismaster"</code><code class="jscript plain">,</code></span></div>
+<div class="line number5 index4 alt2"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript string">"labels"</code><code class="jscript plain">: {</code></span></div>
+<div class="line number6 index5 alt1"><span style="color: #0000ff;"><code class="jscript spaces">    </code><code class="jscript string">"name"</code><code class="jscript plain">: </code><code class="jscript string">"redis-master"</code></span></div>
+<div class="line number7 index6 alt2"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript plain">}</code></span></div>
+<div class="line number8 index7 alt1"><span style="color: #0000ff;"><code class="jscript plain">},</code></span></div>
+<div class="line number9 index8 alt2"><span style="color: #0000ff;"><code class="jscript string">"spec"</code><code class="jscript plain">: {</code></span></div>
+<div class="line number10 index9 alt1"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript string">"ports"</code><code class="jscript plain">: [{</code></span></div>
+<div class="line number11 index10 alt2"><span style="color: #0000ff;"><code class="jscript spaces">    </code><code class="jscript string">"port"</code><code class="jscript plain">: 6379</code></span></div>
+<div class="line number12 index11 alt1"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript plain">}],</code></span></div>
+<div class="line number13 index12 alt2"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript string">"selector"</code><code class="jscript plain">: {</code></span></div>
+<div class="line number14 index13 alt1"><span style="color: #0000ff;"><code class="jscript spaces">    </code><code class="jscript string">"name"</code><code class="jscript plain">: </code><code class="jscript string">"redis-master"</code></span></div>
+<div class="line number15 index14 alt2"><span style="color: #0000ff;"><code class="jscript spaces">  </code><code class="jscript plain">}</code></span></div>
+<div class="line number16 index15 alt1"><span style="color: #0000ff;"><code class="jscript plain">}</code></span></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Since the web frontend pods contain the label <code>"uses": "redis-master"</code> the network-manager creates a policy that connects the clients (frontend pods) to the service ClusterIP. This policy can also limit the traffic to allow access to the ports specified in the service definition only.</p>
+<p>There remains additional of work to be done in this integration, but i do believe that the existing prototype shows how OpenContrail can be used to provide an elegant solution for  micro-segmentation that can both provide connectivity outside the cluster as well as pass a security audit.</p>
+<p>From an OpenContrail perspective, the delta between a kubernetes and an OpenStack deployment is that in OpenStack the Neutron plugin provides the mapping between Neutron and OpenContrail API objects while in kubernetes the network-manager translates the pod and service definitions into the same objects. The core functionality of the networking solution remains unchanged.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>OpenContrail &#8211; Kubernetes Integration</title>
+		<link>https://tungsten.io/opencontrail-kubernetes-integration/</link>
+		
+		<dc:creator><![CDATA[Sreelakshmi Sarva]]></dc:creator>
+		<pubDate>Fri, 10 Jul 2015 23:18:14 +0000</pubDate>
+				<category><![CDATA[Orchestration]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6359</guid>
+
+					<description><![CDATA[Kubernetes is rapidly gaining momentum as an efficient way to manage containerized applications in a clustered environment. As applications become more dynamic and based on highly distributed and portable application...]]></description>
+										<content:encoded><![CDATA[<p>Kubernetes is rapidly gaining momentum as an efficient way to manage containerized applications in a clustered environment. As applications become more dynamic and based on highly distributed and portable application components, Kubernetes helps ease the management of related distributed components across heterogeneous infrastructure.</p>
+<p>OpenContrail developers have been working on a kubernetes-contrail plugin designed to stitch the cluster management capabilities of Kubernetes with the network service automation capabilities of OpenContrail.   Given the event-driven abstractions of pods and services inherent in Kubernetes, it is a simple extension to address network service enforcement by leveraging OpenContrail’s Virtual Network policy approach and programmatic API’s.</p>
+<p>This eliminates unnecessary proxies and ensures a resilient, scale-out networking implementation that addresses the access control requirements and simplifies the inter-operability with existing mixed vendor IP network services.</p>
+<p>The initial OpenContrail – Kubernetes prototype was captured in this <a href="https://goo.gl/96iKWK">blog post</a> and a brief demo video of the evolved Kubernetes + OpenContrail plugin integration (based on the initial prototype) is available here:</p>
+[video_lightbox_youtube video_id=&#8221;zD4G_7bheJg&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]
+<p><em>Demo: OpenContrail-Kubernetes</em></p>
+<p>In this Kubernetes setup, kube-network-manager plugin runs in kubernetes master node, registers to kube-apiserver, listens to creation/deletion/update events for pods and services, generates appropriate virtual-networks and policies configuration automatically from the kubernetes objects configuration (pods, services, etc.), and applies/injects them into OpenContrail API server.</p>
+<p>In the nodes, there is a small plugin as well which is invoked directly by kubelet during docker container networking setup.This opencontrail-kubernetes plugin removes docker interface out of the docker bridge and remaps it into vrouter (OpenContrail forwarding kernel module). From there, all networking is handled by OpenContrail and hence, obviates kube-proxy entirely (the Kubernetes component which provides networking to pods using iptables-NAT and port redirection)</p>
+<p>Note: This plugin development is in trials, but can be applied to any model designed to integrate Kubernetes like interface with OpenContrail.</p>
+<p><a href="https://github.com/juniper/contrail-kubernetes">https://github.com/juniper/contrail-kubernetes</a></p>
+<p>Congratulations to the Kubernetes community on the Kubernetes 1.0 launch this week. We have already seen many OpenContrail community members following this open source project with anticipation, and we look forward to working together to scale, automate and simplify cloud application deployments across dynamic networked environments.</p>
+<p><em>&#8212;&#8211; Thanks to Ananth Suryanarayana in helping with enabling this integration</em></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

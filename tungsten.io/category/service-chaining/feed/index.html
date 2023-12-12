@@ -1,0 +1,1524 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Service Chaining Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/service-chaining/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/service-chaining/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Tue, 01 Nov 2016 17:45:31 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>Service Chaining Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/service-chaining/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Elastic Service Chaining (AutoScaling) using OpenContrail</title>
+		<link>https://tungsten.io/elastic-service-chaining-autoscaling-using-opencontrail/</link>
+		
+		<dc:creator><![CDATA[Savithru Lokanath]]></dc:creator>
+		<pubDate>Tue, 01 Nov 2016 17:45:31 +0000</pubDate>
+				<category><![CDATA[Service Chaining]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7243</guid>
+
+					<description><![CDATA[Requirements: OpenContrail with OpenStack What if you have an environment which needs to scale up during periods of peak loads &#38; scale down during normal operations (Eg. Black-Friday). Can you have...]]></description>
+										<content:encoded><![CDATA[<p><iframe src="https://www.youtube.com/embed/IAoPFW8r4tU" width="600" height="380" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p><em><strong>Requirements: </strong></em>OpenContrail with OpenStack</p>
+<p>What if you have an environment which needs to scale up during periods of peak loads &amp; scale down during normal operations (Eg. Black-Friday). Can you have an automated solution which can handle this kind of scenario to save OpEx/CapEx?</p>
+<p>The answer is YES! OpenContrail as the SDN controller provides a robust solution which will intelligently scale up &amp; scale down the cloud-stack based on user-defined metrics. With this solution, cloud administrators define trigger points &amp; the decision to scale is left to the cloud, thus resulting in an intelligent &amp; elastic cloud.</p>
+<p>In the previous <a href="http://www.opencontrail.org/port-tuples-service-chain-redundancy/">blog</a>, you have seen how we deploy a service chain using OpenContrail. In this blog, we will see how to enhance the existing service chain to implement the autoscaling feature which will scale up/down service-instances (Eg. Load-Balancers, Firewalls, etc.) using OpenContrail. An OpenStack project called as <em>“Ceilometer<strong>”</strong></em> is used to generate alarms which will in turn trigger the scale up/down policies that are defined in the Heat Orchestration Template (HOT).</p>
+<p><strong>NOTE:</strong> OpenStack Heat is an OpenStack project which is used to orchestrate composite cloud applications using a declarative template format written in YAML through an OpenStack REST API.</p>
+<p>OpenStack Ceilometer is an OpenStack project which provides metering, monitoring &amp; alarming features that can be consumed by other OpenStack projects such as Heat.</p>
+<p>Below, the video demonstrates how the resources from OpenContrail, Heat &amp; Ceilometer work together to scale up/down service-instances belonging to a service chain. In theory, the process works as described below,</p>
+<ul>
+<li>Once a service-instance is created, Ceilometer constantly polls the virtual-machine for key performance metrics that are defined in the template. In our case, we specify the metric <em>“average CPU utilization (avg, cpu_util)”</em> of the service-instance cluster. The template also defines thresholds (low &amp; high) to implement the autoscaling feature.</li>
+</ul>
+<ul>
+<li>Whenever the CPU utilization (load) of the service-instance in the cluster is greater than the upper-threshold value, Ceilometer raises an alarm (<em>Alarm-High</em>) &amp; indicates Heat to instantiate &amp; add a new service-instance to the cluster. Therefore, we now have two service-instances in the chain deployed in Active-Active configuration. This reduces the CPU utilization of the first service-instance since the load is now distributed across <strong>TWO</strong> service-instances in the cluster. If the average CPU utilization of the cluster is still greater than the upper-threshold value, the autoscaling policy adds another service-instance to the cluster. This autoscaling feature is indicated in the template by the “<em>scaleup_policy”</em>.Alternatively, if the average CPU utilization of the entire cluster is less than the lower-threshold value, Ceilometer raises an alarm (<em>Alarm-Low</em>) &amp; indicates Heat to remove the newly added instances from the service-instance cluster. This is indicated in the template by the “<em>scaledown_policy”</em>.</li>
+</ul>
+<ul>
+<li>Therefore, we now have an intelligent elastic service-chain that can scale up/down based on a certain user-defined metric. This provides a higher scalability index along with low OpEx.</li>
+</ul>
+<ol>
+<li>Some of the key resources &amp; their properties used in the HOT are listed below,OS::ContrailV2::VirtualNetwork – A resource to create a Virtual Network<br />
+OS::ContrailV2::VirtualMachineInterface – A resource to create a Virtual Machine Interface<br />
+OS::ContrailV2::InstanceIp – A resource to allocate an IP address to an instance<br />
+OS::ContrailV2::ServiceTemplate – A resource to create a Service Template<br />
+OS::ContrailV2::ServiceInstance – A resource to create a Service Instance<br />
+OS::ContrailV2::PortTuple – A resource to create a Service-Instance port tuple<br />
+OS::ContrailV2::NetworkPolicy &#8211; A resource to create a Virtual-Network Policy<br />
+OS::Heat::AutoScalingGroup – A resource that allows to create a desired number of similar resources.</p>
+<p>Properties:</p>
+<p>1.<strong> Max_size</strong>: Maximum number of resources (Service-Instances) in the group<br />
+2. <strong>Min_size</strong>: Minimum number of resources (Service-Instances) in the group<br />
+3. <strong>Desired_capacity</strong>: Desired initial number of resources</p>
+<p>OS::Heat::ScalingPolicy – A resource to manage scaling of OS::Heat::AutoScalingGroup</p>
+<p>Properties:</p>
+<p>1. <strong>Adjustement_type</strong>: Type of adjustement (Percentage or Absolute)<br />
+2. <strong>Auto_scaling_group_id</strong>: Group ID to which the autoscaling policy is applied<br />
+3. <strong>Scaling_adjustment</strong>: Size of adjustment (+N for scale-up by N, -N for scale-down by N)</p>
+<p>OS::Ceilometer::Alarm – A resource used to raise an alarm</p>
+<p>Properties:</p>
+<p>1. <strong>Meter_name</strong>: The name of the meter. (cpu_util, image, memory)<br />
+2. <strong>Statistic</strong>: Meter statistic to evaluate (avg, sum, min, max, count)<br />
+3. <strong>Period</strong>: Period to evaluate over (in seconds)<br />
+4. <strong>Evaluation_periods</strong>: Number of periods to evaluate over<br />
+5. <strong>Threshold:</strong> Threshold to evaluate against<br />
+6. <strong>Comparison_operator</strong>: Operator used to compare specified statistic with threshold (gt, lt, eq)</li>
+</ol>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Tracing Flows through Virtual Networks and Service Instances in OpenStack and OpenContrail</title>
+		<link>https://tungsten.io/tracing-flows-through-virtual-networks-and-service-instances-in-openstack-and-opencontrail/</link>
+		
+		<dc:creator><![CDATA[Johnny Chen]]></dc:creator>
+		<pubDate>Thu, 21 Jul 2016 00:25:54 +0000</pubDate>
+				<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[KVM]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[Service Chaining]]></category>
+		<category><![CDATA[Service Instance]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7134</guid>
+
+					<description><![CDATA[This is a guest blog by Johnny Chen from AT&#38;T with contributions by Qasim Arham, Henon Huang, Vijay Kamisetty from Juniper Networks. Overview The purpose of this is to lay out a...]]></description>
+										<content:encoded><![CDATA[<p><strong><em>This is a guest blog by Johnny Chen from AT&amp;T with contributions by Qasim Arham, Henon Huang, Vijay Kamisetty from Juniper Networks.</em></strong></p>
+<h2 id="Overview">Overview</h2>
+<p>The purpose of this is to lay out a method of tracing flows through OpenStack &amp; Contrail environment with a scaled-out Service Instance (virtual firewall) in the path.</p>
+<p>Environment Versions:<br />
+OpenStack == Juno (2014.2.4)<br />
+Contrail == 3.0.0</p>
+<p>&nbsp;</p>
+<hr />
+<h2 id="Contents">Table of Contents</h2>
+<p><a href="#Overview">Overview</a></p>
+<p><a href="#Contents">Table of Contents</a></p>
+<p><a href="#Background_Drawings">Background &amp; Drawings</a></p>
+<p><a href="#Tracing_Outside_In">Tracing: Outside =&gt; In</a></p>
+<p><a href="#TOI_Step_1">Step 1: On the SDNGW, find the NEXT-HOP (NH) to the vFW VM in the routing table</a><br />
+<a href="#TOI_Step_2">Step 2: Verify Traffic to vFW Service Instance VM Compute</a><br />
+<a href="#TOI_Step_3">Step 3: Trace Flow into vFW Service Instance VM</a><br />
+<a href="#TOI_Step_4">Step 4: Verify Traffic is leaving vFW towards DST VM</a><br />
+<a href="#TOI_Step_5">Step 5: Verify Traffic is getting to DST VM TAP Interface</a><br />
+<a href="#TOI_Step_6">Step 6: On DST VM, Verify Traffic Inbound</a></p>
+<p><a href="#Tracing_Inside_Out">Tracing: Inside =&gt; Out</a></p>
+<p><a href="#TIO_Step_1">Step 1: On DST VM Compute, Trace Return Flow</a><br />
+<a href="#TIO_Step_2">Step 2: Verify Return Traffic hitting same vFW as Inbound Path</a></p>
+<p><a href="#References">References</a></p>
+<hr />
+<h2 id="Background_Drawings">Background &amp; Drawings</h2>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/07/Tracing-Flows-through-Virtual-Networks-and-Service-Instances_background-drawings.jpg"><img fetchpriority="high" decoding="async" class="alignnone size-full wp-image-7141" src="http://www.opencontrail.org/wp-content/uploads/2016/07/Tracing-Flows-through-Virtual-Networks-and-Service-Instances_background-drawings.jpg" alt="Tracing Flows through Virtual Networks and Service Instances_background drawings" width="982" height="731" data-id="7141" /></a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr />
+<h4>Access to some useful elements for this exercise:</h4>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div>RESOURCE</div>
+</td>
+<td>
+<div>DESCRIPTION</div>
+</td>
+</tr>
+<tr>
+<td>
+<div>OpenStack Horizon</div>
+</td>
+<td>
+<div>OpenStack Horizon Web GUI</div>
+</td>
+</tr>
+<tr>
+<td>
+<div>Juniper Contrail</div>
+</td>
+<td>
+<div>Contrail Web GUI</div>
+</td>
+</tr>
+<tr>
+<td>
+<div>SDNGW</div>
+</td>
+<td>
+<div>SDN Gateway</div>
+</td>
+</tr>
+<tr>
+<td>
+<div>Compute</div>
+</td>
+<td>
+<div>Contrail vRouter Commands and tcpdump</div>
+</td>
+</tr>
+<tr>
+<td>
+<div>Splunk or Juniper JSA/STRM Console</div>
+</td>
+<td>
+<div>SEIM Log and Correlation (Optional)</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Caveat: There is often more than one way to get to the end result so while this is an attempt to document one method, there could be other ways of achieving to a diagnosis. For this example, we will use a lab network depicted in the drawing below as a reference and trace the packet flow between 12.12.0.102 (SRC) and 10.10.0.100 (DST) where the destination is a VM in the Overlay Network.</p>
+<p>The flow path is as follows:<br />
+12.12.0.102 &lt;&gt; Physical Network &lt;&gt; SDN-GW &lt;&gt; VN_A &lt;&gt; FW Service Instance &lt;&gt; VN_B &lt;&gt; 10.10.0.100</p>
+<p>&nbsp;</p>
+<hr />
+<h2 id="Tracing_Outside_In">Tracing: Outside =&gt; In</h2>
+<hr />
+<h3 id="TOI_Step_1">STEP 1: On the SDNGW, find the NEXT-HOP (NH) to the vFW VM in the routing table.</h3>
+<h4>1a. Single VM or Compute (Single Next-Hop)</h4>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div><mark>In a single VM architecture for FW, you would see a single next-hop in the table for that routing-instance. However, in the case of a scaled-out service instance, there might be multiple next-hops pointing to the computes where the FW VM’s instantiated on. When dealing with Composite Next-Hop, identifying which FW on which Compute can get tricky (either log into all the FW’s and look through the session tables for the flow in question or use a SEIM or Log Correlator like Splunk or STRM/JSA). Here, we will focus on Single VM or Compute (Single Next-Hop).</mark></div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<p>On SDNGW:</p>
+<pre>SDNGW&gt; show route <span style="color: #ff0000;"><em><strong>10.10.0.100</strong></em></span>
+
+<span class="skimlinks-unlinked">vntest.inet.0</span>: 50 destinations, 150 routes (50 active, 0 holddown, 0 hidden)
+ @ = Routing Use Only, # = Forwarding Use Only
+ + = Active Route, - = Last Active, * = Both
+
+10.10.0.0/24 *[BGP/170] 1w1d 21:30:43, MED 100, localpref 200, from 172.20.0.5
+ AS path: ?, validation-state: unverified
+ &gt; via <span style="color: #ff0000;"><em><strong>gr-0/1/0.19283, Push 31</strong></em></span>
+ [BGP/170] 1w1d 21:30:43, MED 100, localpref 200, from 172.20.0.6
+ AS path: ?, validation-state: unverified
+ &gt; via gr-0/1/0.19283, Push 31
+
+SDNGW&gt; show interfaces <span style="color: #ff0000;"><em><strong>gr-0/1/0.19283</strong></em></span>
+ Logical interface gr-0/1/0.19283 (Index 345) (SNMP ifIndex 526)
+ Flags: Up Point-To-Point SNMP-Traps 0x4000 IP-Header <span style="color: #ff0000;"><strong><em>172.20.0.23</em></strong></span>:10.10.10.10:47:df:64:0000000800000000 Encapsulation: GRE-NULL
+ Gre keepalives configured: Off, Gre keepalives adjacency state: down
+ Input packets : 4332961
+ Output packets: 7699862
+ Protocol inet, MTU: 9062
+ Flags: None
+ Protocol mpls, MTU: 9050, Maximum labels: 3
+ Flags: None</pre>
+<p>Useful Information from Output:<br />
+– <span style="color: #ff0000;"><em><strong>172.20.0.23</strong></em></span>: NEXT-HOP Compute<br />
+– <span style="color: #ff0000;"><em><strong>31</strong></em></span>: Label of NEXT-HOP on Compute</p>
+<p>What we find is the GRE interface (Label 31) for the NEXT-HOP points to the COMPUTE at <span style="color: #ff0000;"><em><strong>172.20.0.23</strong></em></span>. You can find which COMPUTE this is via the Contrail WebGUI (Monitor =&gt; Virtual Routers =&gt; [Search Field]<span style="color: #ff0000;"><em><strong>172.20.0.23</strong></em></span> or search for the VHOST0 IP’s of your computes. In this case, the COMPUTE “Hostname” matches with the NEXT-HOP IP <span style="color: #ff0000;"><em><strong>172.20.0.23 </strong></em></span>matches with COMPUTE<span style="color: #ff0000;"> <em><strong>cmpt001</strong></em>. <em><strong>cmpt001 </strong></em></span>hosts the VM of the vFW Service Instance that is the next element in the path to the DST VM. From here, go to Step 2.</p>
+<h4>1b. Multiple VM / Compute (Composite Next-Hop)</h4>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div><mark>Here, we will focus on Multiple VM’s or Computes (Composite Next-Hop).</mark></div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>On SDNGW:</p>
+<pre>SDNGW&gt; show route <span style="color: #ff0000;"><em><strong>10.10.0.100</strong></em></span>
+
+<span class="skimlinks-unlinked">vntest.inet.0</span>: 70 destinations, 150 routes (70 active, 0 holddown, 0 hidden)
+ @ = Routing Use Only, # = Forwarding Use Only
+ + = Active Route, - = Last Active, * = Both
+
+10.10.0.0/24 @[BGP/170] 1w1d 21:11:22, MED 100, localpref 200, from 172.20.0.4
+ AS path: ?, validation-state: unverified
+ &gt; via gr-0/1/0.74659, Push 62
+ [BGP/170] 1w1d 21:14:54, MED 100, localpref 200, from 172.20.0.5
+ AS path: ?, validation-state: unverified
+ &gt; via gr-0/1/0.19283, Push 31
+ [BGP/170] 1w1d 21:11:22, MED 100, localpref 200, from 172.20.0.6
+ AS path: ?, validation-state: unverified
+ &gt; via gr-0/1/0.74659, Push 62
+ [BGP/170] 1w1d 21:14:54, MED 100, localpref 200, from 172.20.0.6
+ AS path: ?, validation-state: unverified
+ &gt; via gr-0/1/0.19283, Push 31
+ #[Multipath/255] 1w1d 21:13:23, metric 100, metric2 0
+ via gr-0/1/0.74659, Push 62
+ &gt; via gr-0/1/0.19283, Push 31
+
+SDNGW&gt; show interfaces <span style="color: #ff0000;"><em><strong>gr-0/1/0.19283</strong></em></span>
+ Logical interface gr-0/1/0.19283 (Index 345) (SNMP ifIndex 526)
+ Flags: Up Point-To-Point SNMP-Traps 0x4000 IP-Header <span style="color: #ff0000;"><em><strong>172.20.0.23</strong></em></span>:10.10.10.10:47:df:64:0000000800000000 Encapsulation: GRE-NULL
+ Gre keepalives configured: Off, Gre keepalives adjacency state: down
+ Input packets : 4332961
+ Output packets: 7699862
+ Protocol inet, MTU: 9062
+ Flags: None
+ Protocol mpls, MTU: 9050, Maximum labels: 3
+ Flags: None</pre>
+<p>If your environment utilizes logging correlation software like the Splunk or Juniper JSA/STRM, that tool would be useful to figure out which “next-hop” scaled-out service instance vFW. Otherwise, we will have to log into each vFW and look at the flow or session table entries to figure out which compute is next in path.</p>
+<p>Based on the above information, we can see the traffic transit a particular vFW in the scaled-out Service Instance and we can go directly to Compute where that vFW VM resides. If you know which vFW is taking the traffic (we will assume <span style="color: #ff0000;"><em><strong>VFW001</strong> </em></span>in this case), you can look up with COMPUTE that VM is instantiated on and go from there.</p>
+<p>Figure out which COMPUTE the ServiceInstance vFW is on:</p>
+<pre>toolsvm:~$ nova list | grep -i vfw
+ | <span style="color: #ff0000;"><em><strong>a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q</strong></em></span> | <span style="color: #ff0000;"><em><strong>VFW001 </strong></em></span>| ACTIVE | - | Running | ADMIN=192.168.0.194; VN_A=11.11.0.64; LOGNET=192.168.11.65; VN_B=10.10.0.64 |
+ | z1y2x3w4v5u6t-7s8r-9q0p-1o2n3m4l5k6j | VFW002 | ACTIVE | - | Running | ADMIN=192.168.0.196; VN_A=11.11.0.66; LOGNET=192.168.11.67; VN_B=10.10.0.65 |
+
+toolsvm:~$ nova show <span style="color: #ff0000;"><em><strong>a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q</strong></em></span>
+ +------------------------------------------+------------------------------------------------------------+
+ | Property | Value |
+ +------------------------------------------+------------------------------------------------------------+
+ | VN_A network | 11.11.0.64 |
+ | LOGNET network | 192.168.11.65 |
+ | ADMIN network | 192.168.0.194 |
+ | VN_B network | 10.10.0.64 |
+ | OS-DCF:diskConfig | MANUAL |
+ | OS-EXT-AZ:availability_zone | default |
+ | OS-EXT-SRV-ATTR:host | <span style="color: #ff0000;"><em><strong>cmpt001 </strong></em></span>|
+ | OS-EXT-SRV-ATTR:hypervisor_hostname | cmpt001.<span class="skimlinks-unlinked">test.net</span> |
+ | OS-EXT-SRV-ATTR:instance_name | instance-00000eef |
+ | OS-EXT-STS:power_state | 1 |
+ | OS-EXT-STS:task_state | - |
+ | OS-EXT-STS:vm_state | active |
+ | OS-SRV-USG:launched_at | 2016-06-01T00:35:36.000000 |
+ | OS-SRV-USG:terminated_at | - |
+ | accessIPv4 | |
+ | accessIPv6 | |
+ | config_drive | |
+ | created | 2016-06-01T00:35:36Z |
+ | flavor | flv_vsrx (12345678-012a-3bcd-e4f5-6789g01h2345) |
+ | hostId | asdflkijhbalk1h23k132427896r98a7asfhio1u241234iuhewnoafs |
+ | id | <span style="color: #ff0000;"><em><strong>a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q</strong></em></span> |
+ | image | vsrx15.1x49d30.3 (6baishdu-ewiu-9238-sibh-02394isfoayx) |
+ | key_name | - |
+ | name | <span style="color: #ff0000;"><em><strong>VFW001</strong> </em></span>|
+ | os-extended-volumes:volumes_attached | [] |
+ | progress | 0 |
+ | security_groups | default |
+ | status | ACTIVE |
+ | tenant_id | 9asdf2983riahdf9987sdf9ya9sya9sy |
+ | updated | 2016-06-01T00:35:36Z |
+ | user_id | d8923923hisuadfhf893923h2hfdasfh |
+ +------------------------------------------+------------------------------------------------------------+
+
+toolsvm:~$ for x in $(nova list | grep -i foam | awk {'print $4'}); do nova show $x | sed -n '10p;24p;28p' | awk {'print $4'} | xargs | sed 's/ / || /g'; done
+<span style="color: #ff0000;"><em><strong> cmpt001 </strong></em></span>|| <span style="color: #ff0000;"><em><strong>a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q</strong></em></span> || <span style="color: #ff0000;"><em><strong>VFW001</strong></em></span>
+ cmpt003 || z1y2x3w4v5u6t-7s8r-9q0p-1o2n3m4l5k6j || VFW002</pre>
+<p>We see that <span style="color: #ff0000;"><em><strong>VFW001 </strong></em></span>with ID <span style="color: #ff0000;"><em><strong>a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q</strong></em></span> is on COMPUTE <span style="color: #ff0000;"><em><strong>cmpt001</strong></em></span>.</p>
+<p><a href="https://packetsio.wordpress.com/#Overview">TOP</a></p>
+<hr />
+<h3 id="TOI_Step_2">STEP 2: Verify Traffic is making it into vFW ServiceInstance VM Compute</h3>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/07/27440195245_4ffd43cd65_b.jpg"><img decoding="async" class="alignnone size-full wp-image-7139" src="http://www.opencontrail.org/wp-content/uploads/2016/07/27440195245_4ffd43cd65_b.jpg" alt="27440195245_4ffd43cd65_b" width="674" height="731" data-id="7139" /></a></p>
+<p>&nbsp;</p>
+<h4>2a. Go to COMPUTE</h4>
+<pre>toolsvm ~]$ ssh user@cmpt001
+ password for [user]:
+ Welcome to Ubuntu 14.04.2 LTS (GNU/Linux 3.13.0-61-generic x86_64)</pre>
+<h4>2b. Find COMPUTE interfaces</h4>
+<pre>cmpt001:~# cat /etc/contrail/<span class="skimlinks-unlinked">contrail-vrouter-agent.conf</span> | grep -A13 -i virtual-host-interface
+ [VIRTUAL-HOST-INTERFACE]
+ # Everything in this section is mandatory
+
+# name of virtual host interface
+ name=vhost0
+
+# IP address and prefix in ip/prefix_len format
+ ip=172.20.0.23/32
+
+# Gateway IP address for virtual host
+ gateway=172.20.0.1
+
+# Physical interface name to which virtual host interface maps to
+ physical_interface=p1p1
+
+cmpt001:~# ifconfig vhost0
+ vhost0 Link encap:Ethernet HWaddr b0:ob:ab:ba:0a:a0
+ inet addr:172.20.0.23 Bcast:172.20.0.31 Mask:255.255.255.240
+ UP BROADCAST RUNNING MULTICAST MTU:9000 Metric:1
+ RX packets:84487487 errors:0 dropped:182627 overruns:0 frame:0
+ TX packets:82063519 errors:0 dropped:0 overruns:0 carrier:0
+ collisions:0 txqueuelen:1000
+ RX bytes:253984497954 (253.9 GB) TX bytes:67502412941 (67.5 GB)
+
+cmpt001:~# ifconfig p1p1
+ p1p1 Link encap:Ethernet HWaddr b0:ob:ab:ba:0a:a0
+ UP BROADCAST RUNNING MULTICAST MTU:9000 Metric:1
+ RX packets:194126327 errors:0 dropped:0 overruns:0 frame:0
+ TX packets:125130748 errors:0 dropped:0 overruns:0 carrier:0
+ collisions:0 txqueuelen:1000
+ RX bytes:286638778868 (286.6 GB) TX bytes:94956347917 (94.9 GB)
+ Interrupt:40 Memory:f3000000-f37fffff</pre>
+<h4>2c. Verify vRouter is exchanging XMPP information with the CONTRAIL CONTROLLER(s)</h4>
+<pre>cmpt001:~# tcpdump -D | grep -i vhost0
+ 1.vhost0
+
+cmpt001:~# tcpdump -nei 1 port xmpp-server
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on vhost0, link-type EN10MB (Ethernet), capture size 65535 bytes
+ 12:04:23.420090 c9:36:dd:24:po:p0 &gt; b0:ob:ab:ba:0a:a0, ethertype IPv4 (0x0800), length 66: 172.20.0.5.5269 &gt; 172.20.0.23.58699: Flags [.], ack 3731677826, win 8748, options [nop,nop,TS val 1268013680 ecr 1267113680], length 0
+ 12:04:23.420120 b0:ob:ab:ba:0a:a0 &gt; c9:36:dd:24:po:p0, ethertype IPv4 (0x0800), length 66: 172.20.0.23.58699 &gt; 172.20.0.5.5269: Flags [.], ack 1, win 6792, options [nop,nop,TS val 1267114931 ecr 1268012429], length 0
+ ^C
+ 2 packets captured
+ 4 packets received by filter
+ 0 packets dropped by kernel</pre>
+<h4>2d. Verify ICMP packets from example (12.12.0.102 =&gt; 10.10.0.100) is making it into the COMPUTE cmpt001</h4>
+<pre>cmpt001:~# tcpdump -D | grep p1p1
+ 7.p1p1
+
+cmpt001:~# tcpdump -nei 7 proto 47 | grep 11.11.0.60
+ tcpdump: WARNING: bond0.2004: no IPv4 address assigned
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on bond0.2004, link-type EN10MB (Ethernet), capture size 65535 bytes
+ 12:07:02.093007 00:1d:c2:8f:22:db &gt; 0a:36:cc:61:aa:l0, ethertype IPv4 (0x0800), length 126: 172.20.0.25 &gt; 172.20.0.23: GREv0, proto MPLS unicast (0x8847), length 92: MPLS (label 31, exp 0, [S], ttl 255) 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 15119, seq 20030, length 64
+ 12:07:03.094702 00:1d:c2:8f:22:db &gt; 0a:36:cc:61:aa:l0, ethertype IPv4 (0x0800), length 126: 172.20.0.25 &gt; 172.20.0.23: GREv0, proto MPLS unicast (0x8847), length 92: MPLS (label 31, exp 0, [S], ttl 255) 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 15119, seq 20031, length 64
+ ^C
+ 2 packets captured
+ 4 packets received by filter
+ 0 packets dropped by kernel</pre>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div><mark>We see that ICMP is making it into the Compute in the above TCPDUMP output. (TCPDUMP can process PROTO 47 for MPLSoGRE but if the tunnels are MPLSoUDP, you’ll have to decode this in another packet analyzer like WireShark).</mark></div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a href="#Overview">TOP</a></p>
+<hr />
+<h3 id="TOI_Step_3">STEP 3: Trace the flow into vFW Service Instance VM</h3>
+<h4>3a. Find NEXT-HOP (mpls –dump will output the entire Label =&gt; NextHop table) – we found the MPLS Label 31 from the Next-Hop from the SDNGW</h4>
+<pre>cmpt001:~# mpls --get <span style="color: #ff0000;"><em><strong>31</strong></em></span>
+ MPLS Input Label Map
+
+Label NextHop
+ -------------------
+ 31 <span style="color: #ff0000;"><em><strong>49</strong></em></span></pre>
+<h4>3b. Find NEXT-HOP Interface and VRF that the FW VM interface that is created on for this flow on VN_A.</h4>
+<pre>cmpt001:~# nh --get <span style="color: #ff0000;"><em><strong>49</strong></em></span>
+ Id:49 Type:Encap Fmly: AF_INET Rid:0 Ref_cnt:8 Vrf:11
+ Flags:Valid, Policy,
+ EncapFmly:0806 Oif:<span style="color: #ff0000;"><em><strong>24 </strong></em></span>Len:14
+ Encap Data: 02 95 3d 1d c9 69 00 00 5e 00 01 00 08 00
+
+cmpt001:~# vif --get <span style="color: #ff0000;"><em><strong>24</strong></em></span>
+ Vrouter Interface Table
+
+Flags: P=Policy, X=Cross Connect, S=Service Chain, Mr=Receive Mirror
+ Mt=Transmit Mirror, Tc=Transmit Checksum Offload, L3=Layer 3, L2=Layer 2
+ D=DHCP, Vp=Vhost Physical, Pr=Promiscuous, Vnt=Native Vlan Tagged
+ Mnp=No MAC Proxy, Dpdk=DPDK PMD Interface, Rfl=Receive Filtering Offload, Mon=Interface is Monitored
+ Uuf=Unknown Unicast Flood, Vof=VLAN insert/strip offload
+
+vif0/24 OS: <span style="color: #ff0000;"><em><strong>tap93d2dja8-22</strong></em></span>
+ Type:Virtual HWaddr:bk:2a:n6:00:02:00 IPaddr:0
+ Vrf:11 Flags:PL3L2D MTU:9160 Ref:6
+ RX packets:728634 bytes:71113479 errors:0
+ TX packets:756736 bytes:89113687 errors:0</pre>
+<h4>3c. [IGNORE FOR NOW] On Vrf:11 (VN_A), we see the routing-table point to the FW’s “RIGHT” interface as the NEXT-HOP to 10.10.0.0/24 Network (VN_B)</h4>
+<pre>cmpt001:~# rt --dump 11 | grep 10.10.0
+ Vrouter inet4 routing table 0/13/unicast
+ Flags: L=Label Valid, P=Proxy ARP, T=Trap ARP, F=Flood ARP
+
+Destination PPL Flags Label Nexthop Stitched MAC(Index)
+ 10.10.0.0/24 24 P - 164 -
+
+cmpt001:~# nh --get 164
+ Id:164 Type:Composite Fmly: AF_INET Rid:0 Ref_cnt:2 Vrf:11
+ Flags:Valid, Policy, Ecmp,
+ Sub NH(label): 95(31) -1 14(62)
+
+root@cmpt001:~# nh --get 95
+ Id:95 Type:Encap Fmly: AF_INET Rid:0 Ref_cnt:25 Vrf:11
+ Flags:Valid,
+ EncapFmly:0806 Oif:24 Len:14
+ Encap Data: 02 95 3d 1d c9 69 00 00 5e 00 01 00 08 00
+
+cmpt001:~# vif --get 24
+ Vrouter Interface Table
+
+Flags: P=Policy, X=Cross Connect, S=Service Chain, Mr=Receive Mirror
+ Mt=Transmit Mirror, Tc=Transmit Checksum Offload, L3=Layer 3, L2=Layer 2
+ D=DHCP, Vp=Vhost Physical, Pr=Promiscuous, Vnt=Native Vlan Tagged
+ Mnp=No MAC Proxy, Dpdk=DPDK PMD Interface, Rfl=Receive Filtering Offload, Mon=Interface is Monitored
+ Uuf=Unknown Unicast Flood, Vof=VLAN insert/strip offload
+
+vif0/24 OS: tap93d2dja8-22
+ Type:Virtual HWaddr:bk:2a:n6:00:02:00 IPaddr:0
+ Vrf:11 Flags:PL3L2D MTU:9160 Ref:6
+ RX packets:733959 bytes:71635018 errors:0
+ TX packets:762144 bytes:89646655 errors:0
+
+cmpt001:~# cat /var/lib/nova/instances/a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q/<span class="skimlinks-unlinked">libvirt.xml</span> | grep -i tap
+ &lt;target dev="tapc218da9d-32"/&gt;
+ &lt;target dev="tap13a2d42c-5d"/&gt;
+ &lt;target dev="tap93d2dja8-22"/&gt;
+ &lt;target dev="tapa8d2gf3a-k4"/&gt;</pre>
+<p>(Interfaces are enumerated in the order MGMT, LEFT, RIGHT, OTHER… so the TAP interface above it the “RIGHT” interface in VN_A)</p>
+<h4>3d. Check for “Discards” on Vrf:11</h4>
+<pre>cmpt001:~# watch vrfstats --get 11
+
+Every 2.0s: vrfstats --get 11 Fri Jun 03 19:13:13 2016
+
+Vrf: 11
+<span style="color: #ff0000;"><em><strong> Discards 0</strong></em></span>, Resolves 0, Receives 0, L2 Receives 7783, Vrf Translates 0, Unknown Unicast Floods 0
+ Ecmp Composites 0, L2 Mcast Composites 26818, Fabric Composites 24593, Encap Composites 24593, Evpn Composites 0
+ Udp Tunnels 0, Udp Mpls Tunnels 4000360, Gre Mpls Tunnels 7780, Vxlan Tunnels 0
+ L2 Encaps 3321946, Encaps 32480
+ GROs 2662900, Diags 0
+ Arp Virtual Proxys 654, Arp Virtual Stitchs 1539, Arp Virtual Floods 600, Arp Physical Stitchs 0, Arp Tor Proxys 0, Arp Physical Flo
+ ods 0</pre>
+<p>Based on the above output, it does not appear that there are any discards on Vrf:11 that would be causing the connectivity failure (Counter at “0” and not incrementing).</p>
+<h4>3e. Look for “Discards” via dropstats and check relevant counters (“Flow Action Drop” &amp; “Discards” in this case) to see if they increment</h4>
+<pre>cmpt001:~# watch dropstats
+
+Every 2.0s: dropstats Fri Jun 03 19:16:59 2016
+
+GARP 0
+ ARP no where to go 0
+ Invalid ARPs 0
+
+Invalid IF 0
+ Trap No IF 0
+ IF TX Discard 0
+ IF Drop 0
+ IF RX Discard 0
+
+Flow Unusable 0
+ Flow No Memory 0
+ Flow Table Full 0
+ Flow NAT no rflow 0
+<span style="color: #ff0000;"><em><strong> Flow Action Drop 12040</strong></em></span>
+ Flow Action Invalid 0
+ Flow Invalid Protocol 0
+ Flow Queue Limit Exceeded 132
+
+<span style="color: #ff0000;"><em><strong>Discards 8372</strong></em></span>
+ TTL Exceeded 0
+ Mcast Clone Fail 0
+ Cloned Original 348762341
+
+Invalid NH 20637113
+ Invalid Label 0
+ Invalid Protocol 0
+ Rewrite Fail 0
+ Invalid Mcast Source 0
+
+Push Fails 0
+ Pull Fails 0
+ Duplicated 0
+ Head Alloc Fails 0
+ Head Space Reserve Fails 0
+ PCOW fails 0
+ Invalid Packets 0
+
+Misc 764
+ Nowhere to go 0
+ Checksum errors 0
+ No Fmd 0
+ Invalid VNID 0
+ Fragment errors 0
+ Invalid Source 12
+ Jumbo Mcast Pkt with DF Bit 0
+ ARP No Route 0
+ ARP Reply No Route 0
+ No L2 Route 136423</pre>
+<p>“Discards” and “Flow Action Drop” counters stayed steady at “<span style="color: #ff0000;"><em><strong>12040</strong></em></span>” and “<span style="color: #ff0000;"><em><strong>8372</strong></em></span>” respectively and did not increment.</p>
+<h4>3f. Find which VM is associated with TAP Interface tap93d2dja8-22 (there is more than one way to get this information)</h4>
+<p>CLI Method:</p>
+<p>– From previous discovery, we know that the ID of the VM VFW001 on cmpt001 is <span style="color: #ff0000;"><em><strong>a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q</strong></em></span>. Map the TAP Interface to the VM:</p>
+<pre>cmpt001:~# cat /var/lib/nova/instances/<span style="color: #ff0000;"><em><strong>a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q</strong></em></span>/<span class="skimlinks-unlinked">libvirt.xml</span> | grep -i tap
+ &lt;target dev="tapc218da9d-32"/&gt;
+ &lt;target dev="tap13a2d42c-5d"/&gt;
+ &lt;target dev="<span style="color: #ff0000;"><em><strong>tap93d2dja8-22</strong></em></span>"/&gt;
+ &lt;target dev="tapa8d2gf3a-k4"/&gt;</pre>
+<p>Contrail GUI Method: Find the Compute where the VM resides (cmpt001) via Monitor =&gt; Virtual Routers = cmpt001 // Interfaces. From there, do a search for the interface tap93d2dja8-22. From there, you should be able to find which VM the TAP Interface is mapped to.</p>
+<h4>3g. From the above information, we know that this is mapped to the vFW”RIGHT” interface which is on the VN_A Network. We can do a TCPDUMP to verify if the traffic is making it to the FW’s Ingress/VN_A interface:</h4>
+<pre>cmpt001:~# tcpdump -nei tap93d2dja8-22
+ tcpdump: WARNING: tap93d2dja8-22: no IPv4 address assigned
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on tap93d2dja8-22, link-type EN10MB (Ethernet), capture size 65535 bytes
+ 12:09:41.995714 bk:2a:n6:00:02:00 &gt; 02:95:3d:1d:c9:69, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 61, seq 10575, length 40
+ 12:09:42.995769 bk:2a:n6:00:02:00 &gt; 02:95:3d:1d:c9:69, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 61, seq 10593, length 40
+^C
+2 packets captured
+4 packets received by filter
+ 0 packets dropped by kernel</pre>
+<h4>3h. From the above, we see ICMP echo requests going into the FW, but no replies. Let’s check for what the vFW sees:</h4>
+<pre>toolsvm:~$ ssh 192.168.0.194
+
+Password:
+ --- JUNOS 15.1X49-D30.3 built 2015-12-17 04:39:24 UTC
+ VFW001&gt;
+
+VFW001&gt; show security flow session destination-prefix 10.10.0.100
+ Session ID: 206346, Policy name: allow_restricted/6, Timeout: 2, Valid
+ In: 12.12.0.102/34054 --&gt; 10.10.0.100/61;icmp, If: ge-0/0/1.0, Pkts: 1, Bytes: 60,
+ Out: 10.10.0.100/61 --&gt; 12.12.0.102/34054;icmp, If: ge-0/0/0.0, Pkts: 1, Bytes: 0,
+
+Session ID: 206347, Policy name: allow_restricted/6, Timeout: 4, Valid
+ In: 12.12.0.102/34058 --&gt; 10.10.0.100/61;icmp, If: ge-0/0/1.0, Pkts: 1, Bytes: 60,
+ Out: 10.10.0.100/61 --&gt; 12.12.0.102/34058;icmp, If: ge-0/0/0.0, Pkts: 1, Bytes: 0,
+
+Session ID: 206350, Policy name: allow_restricted/6, Timeout: 2, Valid
+ In: 12.12.0.102/34057 --&gt; 10.10.0.100/61;icmp, If: ge-0/0/1.0, Pkts: 1, Bytes: 60,
+ Out: 10.10.0.100/61 --&gt; 12.12.0.102/34057;icmp, If: ge-0/0/0.0, Pkts: 1, Bytes: 0,
+ Total sessions: 3</pre>
+<p>The vFW sees packets inbound through it to the VM 10.10.0.100 but no return traffic (which matches what we see on the TCPDUMP on the FW’s GE-0/0/1 or “RIGHT” interface). At this point, we need to look at the traffic leaving the FW on the “LEFT”/VN_B interface.</p>
+<h4>3i. Check the COMPUTE vRouter Flow Table to see if the traffic is being forwarded.</h4>
+<pre>cmpt001:~# flow --match 10.10.0.100
+ Flow table(size 68157440, entries 542386)
+
+Entries: Created 898146 Added 898144 Processed 898146 Used Overflow entries 0
+ (Created Flows/CPU: 368496 140472 62462 39956 28374 22527 25634 19742 20169 15999 6767 6693 6514 6322 7041 6249 6200 6272 6324 6235 7985 9035 7329 9146 6741 6608 5981 7374 10025 8246 663 941 721 734 700 671 771 837 1120 4070)(oflows 0)
+
+Action:F=Forward, D=Drop N=NAT(S=SNAT, D=DNAT, Ps=SPAT, Pd=DPAT, L=Link Local Port)
+ Other:K(nh)=Key_Nexthop, S(nh)=RPF_Nexthop
+ Flags:E=Evicted, Ec=Evict Candidate, N=New Flow, M=Modified
+ TCP(r=reverse):S=SYN, F=FIN, R=RST, C=HalfClose, E=Established, D=Dead
+
+Listing flows matching ([10.10.0.100]:*)
+
+Index Source:Port/Destination:Port Proto(V)
+ -----------------------------------------------------------------------------------
+
+168624&lt;=&gt;23140 12.12.0.102:1393 1 (2-&gt;3)
+ 10.10.0.100:0
+ (Gen: 5, K(nh):33, Action:F, Flags:, S(nh):94, Stats:257760/25260480, SPort 53824)
+ --
+ 430164&lt;=&gt;119628 12.12.0.102:1393 1 (13-&gt;5)
+ 10.10.0.100:0
+ (Gen: 11, K(nh):49, Action:F, Flags:, S(nh):88, Stats:257760/21651840, SPort 60610)
+ --</pre>
+<p><a href="#Overview">TOP</a></p>
+<hr />
+<h3 id="TOI_Step_4">STEP 4: Verify traffic is leaving vFW Service Instance VM towards 10.10.0.100</h3>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/07/28163632680_7f52eebbe3_b.jpg"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-7142" src="http://www.opencontrail.org/wp-content/uploads/2016/07/28163632680_7f52eebbe3_b.jpg" alt="28163632680_7f52eebbe3_b" width="674" height="731" data-id="7142" /></a></p>
+<p>&nbsp;</p>
+<h4>4a. Verify next TAP Interface for FW (“LEFT” / VN_B) sees traffic exit the vFW destined for the VM at 10.10.0.100</h4>
+<pre>cmpt001:~# nh --get 33
+ Id:93 Type:Encap Fmly: AF_INET Rid:0 Ref_cnt:5 Vrf:12
+ Flags:Valid, Policy,
+ EncapFmly:0806 Oif:12 Len:14
+ Encap Data: 02 31 e6 d2 4c 7d 00 00 5e 00 01 00 08 00
+
+cmpt001:~# vif --get 12
+ Vrouter Interface Table
+
+Flags: P=Policy, X=Cross Connect, S=Service Chain, Mr=Receive Mirror
+ Mt=Transmit Mirror, Tc=Transmit Checksum Offload, L3=Layer 3, L2=Layer 2
+ D=DHCP, Vp=Vhost Physical, Pr=Promiscuous, Vnt=Native Vlan Tagged
+ Mnp=No MAC Proxy, Dpdk=DPDK PMD Interface, Rfl=Receive Filtering Offload, Mon=Interface is Monitored
+ Uuf=Unknown Unicast Flood, Vof=VLAN insert/strip offload
+
+vif0/12 OS: tap13a2d42c-5d
+ Type:Virtual HWaddr:bk:2a:n6:00:02:00 IPaddr:0
+ Vrf:12 Flags:PL3L2D MTU:9160 Ref:6
+ RX packets:1236404 bytes:135113415 errors:0
+ TX packets:1231952 bytes:120251878 errors:0
+
+cmpt001:~# cat /var/lib/nova/instances/a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q/<span class="skimlinks-unlinked">libvirt.xml</span> | grep -i tap
+ &lt;target dev="tapc218da9d-32"/&gt;
+ &lt;target dev="tap13a2d42c-5d"/&gt;
+ &lt;target dev="tap93d2dja8-22"/&gt;
+ &lt;target dev="tapa8d2gf3a-k4"/&gt;
+
+cmpt001:~# tcpdump -nei tap13a2d42c-5d
+ tcpdump: WARNING: tap13a2d42c-5d: no IPv4 address assigned
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on tap13a2d42c-5d, link-type EN10MB (Ethernet), capture size 65535 bytes
+ 12:24:31.175890 02:dd:26:2b:24:p2 &gt; 7b:23:a9:tu:c3:p0, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 61, seq 11410, length 40
+ 12:24:32.176227 02:dd:26:2b:24:p2 &gt; 7b:23:a9:tu:c3:p0, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 61, seq 11413, length 40
+ ^C
+ 2 packets captured
+ 4 packets received by filter
+ 0 packets dropped by kernel</pre>
+<h4>4b. Traffic (ICMP echo requests) is leaving vFW egress interface (GE-0/0/0) “LEFT” or VN_B interface destined towards the VM 10.10.0.100. Check to see if there are any discards on the VRF.</h4>
+<pre>cmpt001:~# watch vrfstats --get 12
+
+Every 2.0s: vrfstats --get 12 Fri Jun 03 19:13:13 2016
+
+Vrf: 12
+<span style="color: #ff0000;"><em><strong> Discards 0</strong></em></span>, Resolves 0, Receives 0, L2 Receives 12369, Vrf Translates 0, Unknown Unicast Floods 0
+ Ecmp Composites 0, L2 Mcast Composites 18742, Fabric Composites 12190, Encap Composites 12168, Evpn Composites 0
+ Udp Tunnels 0, Udp Mpls Tunnels 17, Gre Mpls Tunnels 4010, Vxlan Tunnels 0
+ L2 Encaps 71982, Encaps 1302371
+ GROs 2687, Diags 0
+ Arp Virtual Proxys 8658, Arp Virtual Stitchs 4858, Arp Virtual Floods 3748, Arp Physical Stitchs 0, Arp Tor Proxys 0, Arp Physical Floods 30</pre>
+<p>No discards.</p>
+<h4>4c. Verify routing on Vrf:10 (VN_B) FIB table for 10.10.0.100</h4>
+<pre>cmpt001:~# rt --dump 12 | grep 10.10.0.100
+ Vrouter inet4 routing table 0/2/unicast
+ Flags: L=Label Valid, P=Proxy ARP, T=Trap ARP, F=Flood ARP
+
+Destination PPL Flags Label Nexthop Stitched MAC(Index)
+ 10.10.0.100/32 32 LP 31 <span style="color: #ff0000;"><em><strong>88 </strong></em></span>2:38:c8:ea:9a:21(211664)</pre>
+<h4>4d. Find the NEXT-HOP COMPUTE to get to the VM on VN_B at 10.10.0.100</h4>
+<pre>cmpt001:~# nh --get 88
+ Id:88 Type:Tunnel Fmly: AF_INET Rid:0 Ref_cnt:144 Vrf:0
+ Flags:Valid, MPLSoUDP,
+ Oif:0 Len:14 Flags Valid, MPLSoUDP, Data:8c dc d4 10 74 c0 8c dc d4 10 75 a0 08 00
+ Vrf:0 Sip:172.20.0.23 Dip:172.20.0.24</pre>
+<p>Next-Hop 88 points to a destination IP of 172.20.0.24 (vhost0 Interface IP of the destination Compute on Default Vrf0) with MPLS Label 31</p>
+<p><a href="#Overview">TOP</a></p>
+<hr />
+<h3 id="TOI_Step_5">STEP 5: Verify traffic is getting to Destination VM at 10.10.0.100 on TAP Interface</h3>
+<h4>5a. Find NEXT-HOP COMPUTE at 172.29.2.82</h4>
+<p>CLI Method (From toolsvm – use the IP of the Destination VM to find Compute):</p>
+<pre>toolsvm:~$ for x in $(nova list | grep -i 10.10.0.100 | awk {'print $4'}); do nova show $x | sed -n '7p;21p;25p' | awk {'print $4'}; done
+<span style="color: #ff0000;"><em><strong> cmpt002</strong></em>
+<em><strong> 98asdfhjkn213-sdai-ncxv-3421987kjlsm</strong></em>
+<em><strong> testvm-VN_B_1</strong></em></span>
+
+toolsvm:~$ nova show 98asdfhjkn213-sdai-ncxv-3421987kjlsm
+ +------------------------------------------+-------------------------------------------------------------+
+ | Property | Value |
+ +------------------------------------------+-------------------------------------------------------------+
+ | MNS_shared_OAM_PROTECTED_NET_1_1 network | 10.10.0.100 |
+ | OS-DCF:diskConfig | AUTO |
+ | OS-EXT-AZ:availability_zone | nova |
+ | OS-EXT-SRV-ATTR:host | <span style="color: #ff0000;"><em><strong>cmpt002</strong> </em></span>|
+ | OS-EXT-SRV-ATTR:hypervisor_hostname | cmpt002.<span class="skimlinks-unlinked">test.net</span> |
+ | OS-EXT-SRV-ATTR:instance_name | instance-00000f28 |
+ | OS-EXT-STS:power_state | 1 |
+ | OS-EXT-STS:task_state | - |
+ | OS-EXT-STS:vm_state | active |
+ | OS-SRV-USG:launched_at | 2016-06-01T00:35:36.000000 |
+ | OS-SRV-USG:terminated_at | - |
+ | accessIPv4 | |
+ | accessIPv6 | |
+ | config_drive | |
+ | created | 2016-06-01T00:35:36Z |
+ | flavor | m1.tiny (2) |
+ | hostId | a0s9dfuwqehrlkqwerl89ydfkj1394874329y2nlkadfasygas98ydfs |
+ | id | <span style="color: #ff0000;"><em><strong>98asdfhjkn213-sdai-ncxv-3421987kjlsm</strong></em></span> |
+ | image | ubuntu-14 (1f062a45-4a90-437d-a2b8-b2b5a565d95a) |
+ | key_name | - |
+ | metadata | {} |
+ | name | testvm-VN_B_1 |
+ | os-extended-volumes:volumes_attached | [] |
+ | progress | 0 |
+ | security_groups | default |
+ | status | ACTIVE |
+ | tenant_id | 9asdf2983riahdf9987sdf9ya9sya9sy |
+ | updated | 2016-06-01T00:35:36Z |
+ | user_id | d8923923hisuadfhf893923h2hfdasfh |
+ +------------------------------------------+-------------------------------------------------------------+</pre>
+<p>GUI Method (From Contrail GUI)</p>
+<p>Monitor =&gt; Infrastructure =&gt; Virtual Routers =&gt; Search</p>
+<h4>5b. Go to COMPUTE <em><strong>cmpt002</strong></em>. Based on Label <em><strong>31 </strong></em>for NEXT-HOP on this COMPUTE, we can find where the traffic is destined to.</h4>
+<pre>cmpt002:~# mpls --get <span style="color: #ff0000;"><em><strong>31</strong></em></span>
+ MPLS Input Label Map
+
+Label NextHop
+ -------------------
+ 31 <span style="color: #ff0000;"><em><strong>73</strong></em></span>
+ root@cmpt002:~# nh --get <span style="color: #ff0000;"><em><strong>73</strong></em></span>
+ Id:73 Type:Encap Fmly: AF_INET Rid:0 Ref_cnt:6 Vrf:13
+ Flags:Valid, Policy,
+ EncapFmly:0806 Oif:<span style="color: #ff0000;"><em><strong>14 </strong></em></span>Len:14
+ Encap Data: 02 38 c8 ea 9a 21 00 00 5e 00 01 00 08 00
+
+cmpt002:~# vif --get <span style="color: #ff0000;"><em><strong>14</strong></em></span>
+ Vrouter Interface Table
+
+Flags: P=Policy, X=Cross Connect, S=Service Chain, Mr=Receive Mirror
+ Mt=Transmit Mirror, Tc=Transmit Checksum Offload, L3=Layer 3, L2=Layer 2
+ D=DHCP, Vp=Vhost Physical, Pr=Promiscuous, Vnt=Native Vlan Tagged
+ Mnp=No MAC Proxy, Dpdk=DPDK PMD Interface, Rfl=Receive Filtering Offload, Mon=Interface is Monitored
+ Uuf=Unknown Unicast Flood, Vof=VLAN insert/strip offload
+
+vif0/14 OS: <span style="color: #ff0000;"><em><strong>tap83f2ki4w-72</strong></em></span>
+ Type:Virtual HWaddr:bk:2a:n6:00:02:00 IPaddr:0
+ Vrf:13 Flags:PL3L2D MTU:9160 Ref:6
+ RX packets:2272968 bytes:214007093 errors:0
+ TX packets:2294863 bytes:287437540 errors:0</pre>
+<h4>5c. Verify the above output matches the VM libvert.xml</h4>
+<pre>cmpt002:~# cat /var/lib/nova/instances/<strong><span style="color: #ff0000;">9<em>8asdfhjkn213-sdai-ncxv-3421987kjlsm</em></span></strong>/<span class="skimlinks-unlinked">libvirt.xml</span> | grep -i tap83f2ki4w-72
+ &lt;target dev="<span style="color: #ff0000;"><em><strong>tap83f2ki4w-72</strong></em></span>"/&gt;</pre>
+<h4>5d. Check for Vrf:13 discards</h4>
+<pre>cmpt002:~# watch vrfstats --get 13
+
+Every 2.0s: vrfstats --get 13 Fri Jun 03 19:33:33 2016
+
+Vrf: 13
+<span style="color: #ff0000;"><em><strong> Discards 0</strong></em></span>, Resolves 0, Receives 0, L2 Receives 3299, Vrf Translates 0, Unknown Unicast Floods 0
+ Ecmp Composites 0, L2 Mcast Composites 3364, Fabric Composites 330, Encap Composites 739, Evpn Composites 0
+ Udp Tunnels 0, Udp Mpls Tunnels 4, Gre Mpls Tunnels 0, Vxlan Tunnels 0
+ L2 Encaps 3338, Encaps 2421364
+ GROs 40513, Diags 0
+ Arp Virtual Proxys 2906, Arp Virtual Stitchs 0, Arp Virtual Floods 0, Arp Physical Stitchs 0, Arp Tor Proxys 0, Arp Physical Floods 0</pre>
+<h4>5e. Check vRouter Flow Table for “Action:F”</h4>
+<pre>cmpt002:~# flow --match 10.10.0.100
+ Flow table(size 68157440, entries 532480)
+
+Entries: Created 2101736 Added 2100485 Processed 2101736 Used Overflow entries 0
+ (Created Flows/CPU: 367906 175642 111664 82241 69167 55275 51234 46499 43885 43268 16593 19378 19266 18389 18108 17846 17739 18159 17939 18510 31225 119065 99542 54060 37515 32004 30342 31058 41341 28021 7123 86430 156010 50283 20184 11714 9180 8086 7844 12001)(oflows 0)
+
+Action:F=Forward, D=Drop N=NAT(S=SNAT, D=DNAT, Ps=SPAT, Pd=DPAT, L=Link Local Port)
+ Other:K(nh)=Key_Nexthop, S(nh)=RPF_Nexthop
+ Flags:E=Evicted, Ec=Evict Candidate, N=New Flow, M=Modified
+ TCP(r=reverse):S=SYN, F=FIN, R=RST, C=HalfClose, E=Established, D=Dead
+
+Listing flows matching ([10.10.0.100]:*)
+
+Index Source:Port/Destination:Port Proto(V)
+ -----------------------------------------------------------------------------------
+ 14325&lt;=&gt;438965 12.12.0.102:61 1 (6-&gt;5)
+ 10.10.0.100:0
+ (Gen: 10, K(nh):73, <span style="color: #ff0000;"><em><strong>Action:F</strong></em></span>, Flags:, S(nh):22, Stats:1166/69960, SPort 61800)
+ --</pre>
+<h4>5f. Verify Traffic is being forwarded on TAP Interface on the VM</h4>
+<pre>cmpt002:~# tcpdump -nei tap83f2ki4w-72
+ tcpdump: WARNING: tap83f2ki4w-72: no IPv4 address assigned
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on tap83f2ki4w-72, link-type EN10MB (Ethernet), capture size 65535 bytes
+ 13:02:32.939608 bk:2a:n6:00:02:00 &gt; 7b:23:a9:tu:c3:p0, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 64, seq 59313, length 40
+ 13:02:33.935583 bk:2a:n6:00:02:00 &gt; 7b:23:a9:tu:c3:p0, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 64, seq 59317, length 40
+ 13:02:34.952637 bk:2a:n6:00:02:00 &gt; 7b:23:a9:tu:c3:p0, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 64, seq 59321, length 40
+ 13:02:35.960168 bk:2a:n6:00:02:00 &gt; 7b:23:a9:tu:c3:p0, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 64, seq 59322, length 40
+ ^C
+ 4 packets captured
+ 6 packets received by filter
+ 0 packets dropped by kernel</pre>
+<p>The traffic flow packets are making it all the to the TAP Interface on the vRouter of the Compute that is assigned to the VM 10.10.0.100. We need to get the DST VM owner to verify that they can see the traffic and at this point it could be any number of problems:<br />
+– VM Host Routing Table<br />
+– VM IPTables or similar service filtering inbound/outbound traffic<br />
+– OpenStack Security Group applied to VM<br />
+– Controller/Compute Routing Issue<br />
+– Etc.,</p>
+<p><a href="#Overview">TOP</a></p>
+<hr />
+<h3 id="TOI_Step_6">STEP 6: On VM, run TCPDUMP to inspect inbound traffic</h3>
+<h4>6a. Access VM (this example will utilize Link-Local Address from Compute)<br />
+Find Link-Local Address of TAP interface of VM via Contrail Web GUI</h4>
+<p>On Compute, SSH to Link-Local Address 169.254.0.14</p>
+<pre>cmpt002:/etc# ssh 169.254.0.14
+ 169.254.0.14's password:
+ Welcome to Ubuntu 14.04.1 LTS (GNU/Linux 3.13.0-32-generic x86_64)
+
+testvm-vn_b:~$</pre>
+<h4>6b. Verify Traffic is making it to the VM</h4>
+<pre>testvm-vn_b:~$ ifconfig
+ eth0 Link encap:Ethernet HWaddr 7b:23:a9:tu:c3:p0
+ inet addr:10.10.0.100 Bcast:172.20.50.255 Mask:255.255.255.0
+ UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
+ RX packets:2298122 errors:0 dropped:0 overruns:0 frame:0
+ TX packets:2276178 errors:0 dropped:0 overruns:0 carrier:0
+ collisions:0 txqueuelen:1000
+ RX bytes:287697225 (287.6 MB) TX bytes:214259840 (214.2 MB)
+
+eth1 Link encap:Ethernet HWaddr 02:8a:db:64:fb:45
+ inet addr:192.168.0.58 Bcast:192.168.0.255 Mask:255.255.255.0
+ UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
+ RX packets:2298122 errors:0 dropped:0 overruns:0 frame:0
+ TX packets:2276178 errors:0 dropped:0 overruns:0 carrier:0
+ collisions:0 txqueuelen:1000
+ RX bytes:287697225 (287.6 MB) TX bytes:214259840 (214.2 MB)
+
+lo Link encap:Local Loopback
+ inet addr:127.0.0.1 Mask:255.0.0.0
+ UP LOOPBACK RUNNING MTU:65536 Metric:1
+ RX packets:34 errors:0 dropped:0 overruns:0 frame:0
+ TX packets:34 errors:0 dropped:0 overruns:0 carrier:0
+ collisions:0 txqueuelen:0
+ RX bytes:7130 (7.1 KB) TX bytes:7130 (7.1 KB)
+
+testvm-vn_b:~# tcpdump -D
+ 1.eth0
+ 2.eth1
+ 3.any (Pseudo-device that captures on all interfaces)
+ 4.lo
+
+testvm-vn_b:~$ tcpdump -nei 1 proto 1
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on eth0, link-type EN10MB (Ethernet), capture size 65535 bytes
+ 13:16:15.056859 bk:2a:n6:00:02:00 &gt; 7b:23:a9:tu:c3:p0, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 65, seq 109, length 40
+ 13:16:15.056963 7b:23:a9:tu:c3:p0 &gt; bk:2a:n6:00:02:00, ethertype IPv4 (0x0800), length 74: 10.10.0.100 &gt; 12.12.0.102: ICMP echo reply, id 65, seq 109, length 40
+ ^C
+ 2 packets captured
+ 4 packets received by filter
+ 0 packets dropped by kernel
+
+testvm-vn_b:~$</pre>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div><mark>At this point, we can safely say that the traffic flow packets are making it all the to the TAP Interface on the vRouter of the Compute that is assigned to the VM 10.10.0.100. There are any number of reasons why traffic may fail to/from a VM:</mark></div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>– VM Host Routing Table<br />
+– VM IPTables or similar service filtering inbound/outbound traffic<br />
+– OpenStack Security Group applied to VM<br />
+– Controller/Compute Routing Issue<br />
+– Etc.,</p>
+<p><a href="#Overview">TOP</a></p>
+<hr />
+<h2 id="Tracing_Inside_Out">Tracing: Inside =&gt; Out</h2>
+<hr />
+<h3 id="TIO_Step_1">STEP 1: On Compute where VM is being hosted on, Trace flow back out to Source Host</h3>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/07/29831101064_328e78b9ee_b.jpg"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-7143" src="http://www.opencontrail.org/wp-content/uploads/2016/07/29831101064_328e78b9ee_b.jpg" alt="29831101064_328e78b9ee_b" width="674" height="731" data-id="7143" /></a><br />
+&gt;&gt;*Assume traffic is fixed on the DST VM and now we are tracing the return flow back to the SRC IP</p>
+<h4>1a. Get vRouter Flow Table information for return traffic from 10.10.0.100 to 12.12.0.102</h4>
+<pre>cmpt002:~# flow --match 12.12.0.102
+ Flow table(size 68157440, entries 532480)
+
+Entries: Created 2105344 Added 2104093 Processed 2105344 Used Overflow entries 0
+ (Created Flows/CPU: 368319 176011 111801 82325 69226 55341 51282 46532 43914 43306 16597 19384 19280 18394 18114 17851 17745 18169 17948 18521 31269 119556 99662 54124 37564 32051 30401 31112 41397 28061 7134 86678 156797 50372 20220 11723 9190 8099 7854 12020)(oflows 0)
+
+Action:F=Forward, D=Drop N=NAT(S=SNAT, D=DNAT, Ps=SPAT, Pd=DPAT, L=Link Local Port)
+ Other:K(nh)=Key_Nexthop, S(nh)=RPF_Nexthop
+ Flags:E=Evicted, Ec=Evict Candidate, N=New Flow, M=Modified
+ TCP(r=reverse):S=SYN, F=FIN, R=RST, C=HalfClose, E=Established, D=Dead
+
+Listing flows matching ([12.12.0.102]:*)
+
+Index Source:Port/Destination:Port Proto(V)
+ -----------------------------------------------------------------------------------
+ 463620&lt;=&gt;89580 10.10.0.100:65 1 (6-&gt;5)
+ 12.12.0.102:0
+ (Gen: 14, K(nh):<span style="color: #ff0000;"><em><strong>73</strong></em></span>, Action:F, Flags:, <span style="color: #ff0000;"><em><strong>E:0</strong></em></span>, S(nh):73, Stats:3/222, SPort 51745)
+ --</pre>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div><em><mark>E:0</mark></em> == ECMP Index 0 (for ECMP Multi-Path, Next-Hop starts and increments from 0)</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>1b. Find Return Next-Hop Information</h4>
+<pre>cmpt002:~# nh --get <span style="color: #ff0000;"><em><strong>73</strong></em></span>
+ Id:73 Type:Encap Fmly: AF_INET Rid:0 Ref_cnt:6 Vrf:13
+ Flags:Valid, Policy,
+ EncapFmly:0806 Oif:<span style="color: #ff0000;"><em><strong>14</strong> </em></span>Len:14
+ Encap Data: 02 38 c8 ea 9a 21 00 00 5e 00 01 00 08 00
+
+cmpt002:/etc# rt --dump 13 | grep 172.20.212
+ Vrouter inet4 routing table 0/6/unicast
+ Flags: L=Label Valid, P=Proxy ARP, T=Trap ARP, F=Flood ARP
+
+Destination PPL Flags Label Nexthop Stitched MAC(Index)
+ 172.20.212.0/24 0 P - <span style="color: #ff0000;"><em><strong>102</strong> </em></span>-
+
+cmpt002:~# nh --get 102
+ Id:102 Type:Composite Fmly: AF_INET Rid:0 Ref_cnt:6601 Vrf:13
+ Flags:Valid, Policy, Ecmp,
+ Sub NH(label): <span style="color: #ff0000;"><em><strong>22</strong></em></span>(27) 22(31)</pre>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div><mark>Here we see 2 Next-Hops and since we saw <em>E:0</em> in the vRouter Flow Table, it means we will take the first Next-Hop(Label) of <em>22</em>(27). Remember this MPLS Label <em>22 </em>as we will need this to get the VHOST0 IP of the Compute where the vFW resides on.</mark></div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<pre>cmpt002:/etc# nh --get <span style="color: #ff0000;"><em><strong>22</strong></em></span>
+ Id:22 Type:Tunnel Fmly: AF_INET Rid:0 Ref_cnt:100 Vrf:0
+ Flags:Valid, MPLSoUDP,
+ Oif:0 Len:14 Flags Valid, MPLSoUDP, Data:8c dc d4 10 75 a0 8c dc d4 10 74 c0 08 00
+ Vrf:0 Sip:172.20.0.24 Dip:<span style="color: #ff0000;"><em><strong>172.20.0.23</strong></em></span></pre>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div><span style="color: #ff0000;"><strong><em><mark>172.20.0.23</mark></em></strong> (<em>cmpt001</em>)</span> is the Compute where the vFW VM resides.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a href="#Overview">TOP</a></p>
+<hr />
+<h3 id="TIO_Step_2">STEP 2: On Compute where Next-Hop vFW VM is being hosted on, verify return flow is hitting same egress vFW as ingress</h3>
+<h4>2a. Trace path of return flow back (MPLS Label 27) to vFWand verify it is the same vFW that was utilized for the inbound traffic.</h4>
+<p>The COMPUTE with Vhost0 IP of 172.20.0.23 == cmpt001 and VFW001 has a ID of a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q from previous discovery.</p>
+<pre>cmpt001:~# mpls --get <span style="color: #ff0000;"><em><strong>27</strong></em></span>
+ MPLS Input Label Map
+
+Label NextHop
+ -------------------
+ 27 <span style="color: #ff0000;"><em><strong>65</strong></em></span>
+ root@cmpt001:~# nh --get <span style="color: #ff0000;"><em><strong>65</strong></em></span>
+ Id:65 Type:Encap Fmly: AF_INET Rid:0 Ref_cnt:5 Vrf:12
+ Flags:Valid, Policy,
+ EncapFmly:0806 Oif:<span style="color: #ff0000;"><em><strong>29</strong></em></span> Len:14
+ Encap Data: 02 31 e6 d2 4c 7d 00 00 5e 00 01 00 08 00
+
+cmpt001:~# vif --get <span style="color: #ff0000;"><em><strong>29</strong></em></span>
+ Vrouter Interface Table
+
+Flags: P=Policy, X=Cross Connect, S=Service Chain, Mr=Receive Mirror
+ Mt=Transmit Mirror, Tc=Transmit Checksum Offload, L3=Layer 3, L2=Layer 2
+ D=DHCP, Vp=Vhost Physical, Pr=Promiscuous, Vnt=Native Vlan Tagged
+ Mnp=No MAC Proxy, Dpdk=DPDK PMD Interface, Rfl=Receive Filtering Offload, Mon=Interface is Monitored
+ Uuf=Unknown Unicast Flood, Vof=VLAN insert/strip offload
+
+vif0/29 OS: <span style="color: #ff0000;"><em><strong>tap13a2d42c-5d</strong></em></span>
+ Type:Virtual HWaddr:bk:2a:n6:00:02:00 IPaddr:0
+ Vrf:12 Flags:PL3L2D MTU:9160 Ref:6
+ RX packets:1311527 bytes:145819268 errors:0
+ TX packets:1305396 bytes:125789289 errors:0
+
+cmpt001:~# cat /var/lib/nova/instances/a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q/<span class="skimlinks-unlinked">libvirt.xml</span> | grep -i tap
+ &lt;target dev="tapc218da9d-32"/&gt;
+ &lt;target dev="<span style="color: #ff0000;"><em><strong>tap13a2d42c-5d</strong></em></span>"/&gt;
+ &lt;target dev="tap93d2dja8-22"/&gt;
+ &lt;target dev="tapa8d2gf3a-k4"/&gt;</pre>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div><mark>This is the same vFWas was used for the Ingress flow so this symmetric flow is now verified. If traffic was SOURCED from VM out, then you would follow the same procedure outbound the rest of the way as we used to trace the flow inbound into the VM 10.10.0.100.</mark></div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Continue the same process to trace the flows outbound from the vFW to the VM.</p>
+<p><a href="#Overview">TOP</a></p>
+<hr />
+<h2 id="References">References</h2>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div>RESOURCE</div>
+</td>
+<td>
+<div>DESCRIPTION</div>
+</td>
+</tr>
+<tr>
+<td><a href="http://www.opencontrail.org/a-journey-of-a-packet-within-opencontrail/">Juniper Contrail – Life of Packet</a></td>
+<td>Life of packet Blog</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Juniper/contrail-controller/wiki/A-guide-to-'vRouter'-command-line-utilities-(work-in-progress)">Juniper vRouter Commands</a></td>
+<td>Juniper GitHub for vRouter CLI Commands</td>
+</tr>
+<tr>
+<td><a href="https://www.juniper.net/techpubs/en_US/contrail2.21/topics/task/configuration/vrouter-cli-utilities-vnc.html">Juniper vRouter Utilities</a></td>
+<td>
+<div>Juniper TechPubs vRouter CLI Utilities</div>
+</td>
+</tr>
+<tr>
+<td><a href="http://docs.openstack.org/cli-reference/content/">OpenStack CLI Reference</a></td>
+<td>
+<div>OpenStack CLI Reference</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p><a href="#Overview">TOP</a></p>
+<hr />
+<p>&nbsp;</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Physical Network Function (PNF) service chaining with Contrail</title>
+		<link>https://tungsten.io/physical-network-function-service-chaining-with-contrail/</link>
+		
+		<dc:creator><![CDATA[Graeme Robertson]]></dc:creator>
+		<pubDate>Thu, 16 Jun 2016 19:35:37 +0000</pubDate>
+				<category><![CDATA[Service Chaining]]></category>
+		<category><![CDATA[Service Provider]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7058</guid>
+
+					<description><![CDATA[When it comes to service functions there is a huge amount of focus on making the shift to virtualization or NFV. Virtual Network Functions (VNF) can be Firewalls, Load Balancers,...]]></description>
+										<content:encoded><![CDATA[<p>When it comes to service functions there is a huge amount of focus on making the shift to virtualization or NFV. Virtual Network Functions (VNF) can be Firewalls, Load Balancers, routers, route reflectors, BNGs, EPCs, the list goes on. This is not without good reason as virtualization comes with many benefits such as increased agility, simpler automation, more granular scaling, licensing models that allow a true “pay as you grow” business model and in general the opportunity for Service Providers to revolutionize how they offer services to their customers. So why would we want to keep using physical network functions (PNF) and develop SDN solutions that support these PNF? Well, there are actually some pretty good reasons. Firstly, many service providers have made huge investments in these appliance based solutions and quite rightly expect to continue to realize the benefit of these investments for some years into the future. Secondly, when it come to raw throughput performance ASIC based forwarding is still far superior compared to x86 powered forwarding.  Serious improvements have been made but the gap is still wide.</p>
+<p>As you probably know, Contrail provides the capability to insert network functions providing network services like those described above in the traffic path between two different virtual networks on demand and in a dynamic way.  There is no explicit dependency on the network function itself to allow service stitching to happen. As of the most recent Contrail releases PNF service chaining is also supported, we can now create service chains that are PNF only, VNF only or a hybrid of PNF and VNF with multiple instances of both physical and virtual in a single service chain. These PNF and VNF are included as part of network policy definition that is applied between two virtual networks as has always been the case for VNF service chaining. While using slightly different mechanisms under the hood to realize the correct route-leaking and next-hop updates that ensure traffic between the two virtual networks is correctly directed through the service appliances, the logic for PNF service chaining is the same as that used in the VNF service chaining approach. The main difference is that in the case of PNF service chaining Contrail pushes the required configuration to the MX router via Netconf rather than installing forwarding state on the vrouters running on the compute nodes. What’s really nice is that you can add many distinct chains running over the same physical appliance using the same interfaces, with each chain using different VLAN tag in order to maintain traffic segregation on the PNF.</p>
+<p>Below is an example workflow of traffic flowing between two virtual networks/zones that is subject to a physical and/or virtual network services and an additional service chain between two different virtual networks that uses the same appliance. Some of this is covered in the video below.</p>
+<p><iframe loading="lazy" src="https://www.youtube.com/embed/zlpdtqxgqQU" width="600" height="340" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p>This is an attempt to show how to unleash the power of automation by leveraging existing network services as well as virtual services for Cloud environments!</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Service Chaining Enhancements in OpenContrail 3.0</title>
+		<link>https://tungsten.io/port-tuples-service-chain-redundancy/</link>
+		
+		<dc:creator><![CDATA[Antonio Sanchez-Monge]]></dc:creator>
+		<pubDate>Thu, 09 Jun 2016 00:10:22 +0000</pubDate>
+				<category><![CDATA[Service Chaining]]></category>
+		<category><![CDATA[Service Provider]]></category>
+		<category><![CDATA[Use Case]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7048</guid>
+
+					<description><![CDATA[OpenContrail 3.0 brings to the table an impressive series of new features and enhancements. Some of them are especially useful for Service Chaining – and not only for Virtual Network...]]></description>
+										<content:encoded><![CDATA[<p>OpenContrail 3.0 brings to the table an impressive series of new features and enhancements. Some of them are especially useful for Service Chaining – and not only for Virtual Network Functions (VNF), but also for Physical Network Functions (PNF). This article describes a subset of these new features.</p>
+<h2><strong>Decoupling Network from Compute in Service Chaining</strong></h2>
+<p>In previous OpenContrail versions, Contrail acts like a Nova client and triggers the spawning of VNFs in OpenStack. We call this model v1 service chaining. Now, OpenContrail 3.0 supports both v1 and v2 (new!) service chaining. In the new model Contrail only takes care of the networking piece, which makes it easier to chain network functions implemented on a variety of compute flavors (VMs, containers, physical appliances).</p>
+<p>The way we implement v2 service chaining is through Port Tuples. Let’s introduce one key concept (the VMI) and then discuss what Port Tuples are and their motivation.</p>
+<p>One of the reasons why OpenContrail is so flexible in adopting new compute flavors (different typical hypervisors, containers, bare metal servers, etc.) is the VM Interface (VMI) concept. OpenContrail uses the VMI object abstraction as a means to interconnect a heterogeneous compute environment to the overlay network. Thanks to this abstraction layer, many of the features that were originally made to work for VMs also work seamlessly for other compute flavors.</p>
+<p>In OpenContrail 3.0 we go one step further and define a Port Tuple as an ordered set of VM Interfaces. A given Port Tuple is an ordered list of network interfaces connected to the same VM, or container, or physical appliance. By chaining port tuples, it possible to build a service chain out of heterogeneous network functions, some of them virtual (VMs, containers) and others physical. In summary, Port Tuples are to NFV what VM Interfaces are to overlay networking.</p>
+<p>Disclaimer: One of the scenarios displayed in the video (bare metal servers connected to vrouter CPE) is not supported at the time of this writing. It is shown as a way to illustrate the power of the port tuple concept and a possibly upcoming feature.</p>
+<p><iframe loading="lazy" src="https://www.youtube.com/embed/wDRQq0pmln4" width="600" height="400" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<h2><strong>Service Chain Redundancy in Contrail</strong></h2>
+<p>OpenContrail has recently boosted its control plane feature set in several ways. One of them is routing policies. If you are familiar with network operating systems like Junos or IOS XR, you have certainly experienced routing policies more than once. Well, in OpenContrail this feature works exactly in the same way. Thanks to routing policies, it is possible to filter and modify routes in a fine-grained manner, adding a much greater control plane flexibility within OpenContrail itself.</p>
+<p>At the time of publication of this post, the infrastructure has been completely developed and routing policies can be applied to Service Instance interfaces (left, right). In other words, it is currently possible to do fine-grained route leaking through a Service Chain. And the same infrastructure can be used in the future for other purposes too.</p>
+<p>Among other use cases, the currently available routing policy feature set allows for Service Chain Redundancy. You can have a primary service chain in data center #1 and the backup service chain in data center #2. Combined with the Service Health Check feature, Service Providers can easily implement HA on their NFV offerings.</p>
+<p><iframe loading="lazy" src="https://www.youtube.com/embed/RhcT8IcvCxo" width="600" height="400" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Hybrid service chaining across multiple Hypervisors</title>
+		<link>https://tungsten.io/hybrid-service-chaining-across-multiple-hypervisors/</link>
+		
+		<dc:creator><![CDATA[Antonio Sanchez-Monge]]></dc:creator>
+		<pubDate>Sat, 30 Jan 2016 01:38:06 +0000</pubDate>
+				<category><![CDATA[DataCenter]]></category>
+		<category><![CDATA[Service Chaining]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6907</guid>
+
+					<description><![CDATA[OpenContrail supports multiple types of hypervisors and containers. These can spawn simple tenant VMs and also more complex service instances implementing a Virtualized Network Function (NFV). [video_lightbox_youtube video_id=&#8221;baUfXmiA5Qs&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243;...]]></description>
+										<content:encoded><![CDATA[<p>OpenContrail supports multiple types of hypervisors and containers. These can spawn simple tenant VMs and also more complex service instances implementing a Virtualized Network Function (NFV).</p>
+[video_lightbox_youtube video_id=&#8221;baUfXmiA5Qs&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]
+<p>This video demonstrates a service chain composed of two service instances. One is running on a KVM host, and the other on an ESXi host.</p>
+<p>This hybrid service chain enables value-added services for tenant VMs which are also spread across KVM and ESXi hypervisors.</p>
+<p>Also, check out how to <a href="http://www.opencontrail.org/integrating-opencontrail-with-vcenteresxi-virtualization-platform/">introduce secure multi-tenancy</a> to VMware/vCenter clusters via open source network virtualization.</p>
+<p>&nbsp;</p>
+<p><em>Acknowledgements: Thanks to Sachchidanand Vaidya from Juniper Networks for building, sharing and explaining the Contrail-vCenter scenario.</em></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>OpenContrail for NFV applications</title>
+		<link>https://tungsten.io/opencontrail-for-nfv-applications/</link>
+		
+		<dc:creator><![CDATA[Rajagopalan Sivaramakrishnan]]></dc:creator>
+		<pubDate>Mon, 24 Nov 2014 21:48:36 +0000</pubDate>
+				<category><![CDATA[Service Chaining]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=5902</guid>
+
+					<description><![CDATA[The OpenContrail solution uses overlays for network virtualization. An earlier blog evaluated the performance of the OpenContrail virtual router (vrouter) when run as a kernel module on Linux. As described there,...]]></description>
+										<content:encoded><![CDATA[<p>The OpenContrail solution uses overlays for network virtualization.</p>
+<p>An <a href="http://www.opencontrail.org/evaluating-opencontrail-virtual-router-performance">earlier blog</a> evaluated the performance of the OpenContrail virtual router (vrouter) when run as a kernel module on Linux. As described there, the vrouter module is able to fill a 10G link with TCP traffic from a virtual machine (VM) on one server to a VM on another server without making any assumptions about hardware capabilities in the server NICs. Also, in order to support interoperability and use a standards-based approach, vrouter does not use new protocols/encapsulations. However, in network function virtualization (NFV) scenarios, other performance metrics such as packets-per-second (pps) and latency are as important as TCP bandwidth. With a kernel module, the pps number is limited by various factors such as the number of VM exits, memory copies and the overhead of processing interrupts. In order to optimize performance for NFV use cases, vrouter has now been integrated with the Intel DPDK (Data Plane Development Kit).</p>
+<p>DPDK is a set of libraries and drivers that perform fast packet processing by allowing NICs to DMA packets directly into an application’s address space and having the application poll for packets, thereby avoiding the overhead of interrupts from the NIC. To integrate with DPDK, the vrouter can now run in a user process instead of a kernel module. This process links with the DPDK libraries and communicates with the vrouter host agent, which runs as a separate process. Figure 1 compares the architecture when vrouter runs as a kernel module versus running as a user process. The application inside the guest VM can be written to use the DPDK API or it can use the traditional socket API. However, for NFV applications such as vMX, which require high performance, it would be preferable to use the DPDK API inside the VM.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter wp-image-5903" src="http://www.opencontrail.org/wp-content/uploads/2014/11/OC_for_NFV_applications_blogpost_image1.png" alt="OC_for_NFV_applications_blogpost_image1" width="655" height="400" data-id="5903" /></p>
+<p style="text-align: center;"><strong>Vrouter running as a kernel module</strong></p>
+<p style="text-align: center;"><img loading="lazy" decoding="async" class="aligncenter wp-image-5904" src="http://www.opencontrail.org/wp-content/uploads/2014/11/OC_for_NFV_applications_blogpost_image2.png" alt="OC_for_NFV_applications_blogpost_image2" width="697" height="400" data-id="5904" /></p>
+<p style="text-align: center;"><strong>Vrouter running in user space &#8211;</strong> <strong>Figure 1</strong></p>
+<p>To evaluate the performance of vrouter running in user space, a setup with 2 servers connected back to back by an Intel 10G interface was used. The servers have 2 CPU sockets each, with 6 cores per socket and 2 threads per core. The processor is an Intel Xeon running at 2.5GHz. The servers have 128GB of memory each and run Ubuntu 12.4.3 as the host operating system. A virtual network is created and a VM is instantiated on each server in this virtual network. Each VM has 4 VCPUs, 8GB of memory and runs Ubuntu 12.04 as the guest operating system. VM1 runs an application (pktgen), which continuously sends 64 byte packets to VM2. VM2 also runs pktgen, which consumes the packet and displays the number of packets thus received. Figure 2 illustrates the setup used to measure performance.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-5907" src="http://www.opencontrail.org/wp-content/uploads/2014/11/OC_for_NFV_applications_blogpost_image31.png" alt="OC_for_NFV_applications_blogpost_image3" width="728" height="411" data-id="5907" /></p>
+<p style="text-align: center;"><strong>Figure 2</strong></p>
+<p>On this setup, vrouter running in user space is able to forward 4.15 million packets per second from VM1 to VM2. Packets sent by VM1 are encapsulated by vrouter in MPLS-over-UDP before they are sent on the wire. On the receiving server, vrouter decapsulates the packets and sends them to VM2. On the same setup, VMs connected by Linux bridge are able to forward about 500,000 packets per second using the netperf application, so the performance is significantly higher when using vrouter integrated with DPDK. Another benefit of integrating vrouter with DPDK is that a kernel module is not required any more to perform the overlay function. The use of a user-space vrouter is oblivious to other components of the OpenContrail solution, so the control plane, analytics and UI function the same as before. Also, the VMs can communicate with any hardware gateway router (such as the Juniper MX) as before. The only change required is to specify that DPDK based vrouter should be used on the compute servers when a cluster is provisioned. A video of the above performance test can be found below and also on the <a title="OpenContrail Videos" href="http://www.opencontrail.org/videos/">videos</a> section.</p>
+[video_lightbox_youtube video_id=&#8221;ZGiQJrKoDQM&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]
+<p>&nbsp;</p>
+<p>In summary, the OpenContrail solution achieves significantly better packets-per-second numbers when vrouter is integrated with DPDK, thereby enabling NFV applications with high performance requirements.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Automated deployment of OpenContrail with SaltStack</title>
+		<link>https://tungsten.io/automated-deployment-of-opencontrail-with-saltstack/</link>
+		
+		<dc:creator><![CDATA[Jakub Pavlik]]></dc:creator>
+		<pubDate>Sat, 11 Oct 2014 23:13:33 +0000</pubDate>
+				<category><![CDATA[Service Chaining]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://23.253.246.131/?p=5165</guid>
+
+					<description><![CDATA[Note: This is a post taken from tcpcloud blog. Click here for the original post. This week, tcp cloud® launched a new version of TCP Virtual Private Cloud built on OpenContrail as SDN /...]]></description>
+										<content:encoded><![CDATA[<p><strong>Note</strong>: This is a post taken from tcpcloud blog. <a href="http://tcpcloud.eu/blog/2014/07/21/automation-deployment-opencontrail-saltstack/">Click here</a> for the original post.</p>
+<p id="magicdomid161" class="ace-line" style="color: #3c3d42;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">This week, tcp cloud® launched a new version of <a style="font-weight: inherit; font-style: inherit; color: #666666;" href="http://tcpcloud.eu/en/sluzby/virtual-private-cloud/">TCP Virtual Private Cloud</a> buil</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">t</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;"> on OpenContrail as SDN / NFV Controller. We decided for this </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">network setup</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">neutron plugin after spending more than 6 month of development and 2 month of production environment running </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">v</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">anilla OpenStack implementation with High Availability Neutron L3 Agent. We have worked at installation, development, testing and measuring </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">of</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">OpenContrail </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">networking </span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">since OpenStack Summit at Atlanta, where we saw it for </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">the </span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">first time. Our main contribution to this project was develop</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">ment of</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;"> automat</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">ed</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;"> deployment f</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">or </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">complete </span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">OpenStack </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">infrastrucute </span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">with OpenContrail as neutron plugin. </span></p>
+<p><span id="more-5165"></span></p>
+<p id="magicdomid189" class="ace-line" style="color: #3c3d42;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">OpenContrail is released under an Apache 2.0 License by Juniper. To understand </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">how it works</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;"> you should read the <a style="font-weight: inherit; font-style: inherit; color: #666666;" href="http://opencontrail.org/network-virtualization-architecture-deep-dive/">slides</a> and overview at <a style="font-weight: inherit; font-style: inherit; color: #666666;" href="http://opencontrail.org/">opencontrail.org</a>, as well as the documentation available at juniper.net or the book <a style="font-weight: inherit; font-style: inherit; color: #666666;" href="http://opencontrail.org/ebook/">Day One Understanding OpenContrail</a></span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">.</span></p>
+<p id="magicdomid24" class="ace-line" style="color: #3c3d42;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">This will be a mostly technical, but I will not talk about what OpenContrail actually does or how to deploy whole OpenStack or how powerful this solution really is. I am going to explain how to use our <a style="font-weight: inherit; font-style: inherit; color: #666666;" href="https://github.com/tcpcloud/salt-opencontrail-formula">salt-opencontrail-formula</a> for integration with an arbitrary OpenStack. </span></p>
+<p id="magicdomid337" class="ace-line" style="color: #3c3d42;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">I have to say that it was a little bit challenge for us, because it is not common vendor plugin </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">that</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;"> we are used to</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;"> work with</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;"> and it is not actually </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">par</span><span class="author-g-q2r655an0iz122zk19nr" style="font-weight: inherit; font-style: inherit;">t</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;"> of the </span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">official OpenStack community</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;"> repositories?</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;"> (maybe in Juno release Contrail will be included </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">as</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;"> official vendor plugin</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">)</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">. As John Deatherage wrote at his <a style="font-weight: inherit; font-style: inherit; color: #666666;" href="http://workflowsherpas.com/tag/saltstack/">blog</a>, there </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">are </span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">several ways how you can deploy Contrail, but if you want to deploy it as production system you</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">should </span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">not use any </span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">o</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">f these</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">. The reason is that </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">the </span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">default deployment is done by </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">F</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">abric and installs whole Openstack environment</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;"> along the Contrail services</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">. You do not have possibility to customi</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">s</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">e t</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">he OpenStack part</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;"> and you do not know </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">how it</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;"> is actually configured. There is no official documentation for manual deployment except </span><a style="font-weight: inherit; font-style: inherit; color: #666666;" href="https://github.com/Juniper/contrail-controller/wiki/OpenContrail-bring-up-and-provisioning"><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">G</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">it</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">H</span></a><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;"><a style="font-weight: inherit; font-style: inherit; color: #666666;" href="https://github.com/Juniper/contrail-controller/wiki/OpenContrail-bring-up-and-provisioning">ub</a>. OpenStack is modular system with various architectures and components. Therefore you should have possibility to</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">define properties. This is the reason why we refactored </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">the installation </span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">code from </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">F</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">abric and created a</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;"> new</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;"> S</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">alt</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">S</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">tack formula.</span></p>
+<h4 id="magicdomid375" class="ace-line" style="font-weight: 400; color: #666666;"><strong><span class="author-g-uhee7ueykti1un5p b" style="font-weight: inherit; font-style: inherit;">PREPARE ENVIRONMENT</span></strong></h4>
+<p id="magicdomid355" class="ace-line" style="color: #3c3d42;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">We use RedHat based OpenStack Havana running on CentOS 6.4 and <a style="font-weight: inherit; font-style: inherit; color: #666666;" href="http://www.juniper.net/support/downloads/?p=contrail#sw">OpenContrail 1.05</a>. Download rpm package from juniper website and create local</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;"> YUM</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;"> repository for all nodes in infrastructure. Do not use RDO OpenStack Havana, because </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">Open</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Contrail </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">contains modified n</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">ova and </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">n</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">eutron</span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;"> packages</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">. Basically you can prepare these </span><span class="author-g-uuy56mu79filmshn" style="font-weight: inherit; font-style: inherit;">control nodes</span><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;"> with CentOS 6.4:</span></p>
+<div id="magicdomid28" class="ace-line" style="color: #3c3d42;">
+<ul style="font-weight: inherit; font-style: inherit;">
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">OpenStack Controller – Keystone, Glance, Cinder, Nova, Dashboard, Swift, Heat, Ceilometer, etc.</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">OpenContrail Controller – Control node, Config node, Collector node, Neutron.</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">OpenStack Compute node – Nova compute, OpenContrail compute (vRouter).</span></li>
+</ul>
+</div>
+<p id="magicdomid31" class="ace-line" style="color: #3c3d42;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Default Fabric automation runs setup_all with following set of tasks:</span></p>
+<div id="magicdomid32" class="ace-line" style="color: #3c3d42;">
+<ul style="font-weight: inherit; font-style: inherit;">
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Executing task ‘setup_all’</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Executing task ‘bash_autocomplete_systemd’</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Executing task ‘setup_database’</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Executing task ‘setup_openstack’</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Executing task ‘setup_cfgm’</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Executing task ‘setup_control’</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Executing task ‘setup_collector’</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Executing task ‘setup_webui’</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Executing task ‘setup_vrouter’</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Executing task ‘prov_control_bgp’</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Executing task ‘prov_external_bgp’</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Executing task ‘compute_reboot’</span></li>
+</ul>
+</div>
+<p id="magicdomid356" class="ace-line" style="color: #3c3d42;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Against them we have created these sls roles, which can be use independently and even redundantly for high availability (e.g. 2 control nodes):</span></p>
+<div id="magicdomid45" class="ace-line" style="color: #3c3d42;">
+<ul style="font-weight: inherit; font-style: inherit;">
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">common.sls – common configuration for all roles.</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">database.sls – configuration of the OpenContrail database.</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">config.sls – install and configure config node.</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">control.sls – install and configure control node.</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">collector.sls – install and configure collector node.</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">compute.sls – install and configure compute node.</span></li>
+<li style="font-style: inherit;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">web.sls – install modules into OpenStack Dashboard (Horizon).</span></li>
+</ul>
+</div>
+<p id="magicdomid1280" class="ace-line" style="color: #3c3d42;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">I cover just formula and installation for OpenContrail, but in tcp cloud we have created formulas for whole OpenStack environment including keystone, mysql, gla</span>nce, cinder, nova, heat with modular neutron, cinder and nova plugins. These formulas might <span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">be released in the future. They are included inside of product TCP Private Cloud. For this purpose I describe manual changes inside of OpenStack configuration files that are different from </span><span class="author-g-uhee7ueykti1un5p url" style="font-weight: inherit; font-style: inherit;"><a style="font-weight: inherit; font-style: inherit; color: #666666;" href="http://docs.openstack.org/">http://docs.openstack.org</a></span></p>
+<h4 id="magicdomid1560" class="ace-line" style="font-weight: 400; color: #666666;"><span class="author-g-uhee7ueykti1un5p b" style="font-weight: inherit; font-style: inherit;"><strong>DEPLOY OPENSTACK</strong></span></h4>
+<p id="magicdomid1127" class="ace-line" style="color: #3c3d42;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">You should install OpenStack environment (Contrail repository only) and customized these specific projects:</span></p>
+<p id="magicdomid729" class="ace-line" style="color: #666666;"><strong><span class="author-g-uhee7ueykti1un5p" style="font-style: inherit;">NOVA</span></strong></p>
+<p id="magicdomid1157" class="ace-line" style="color: #3c3d42;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">set libvirt vif driver in /etc/nova.conf at Controller and Compute node.</span></p>
+<pre><span style="font-family: 'courier new', courier;"><code>libvirt_vif_driver = nova_contrail_vif.contrailvif.VRouterVIFDriver </code></span></pre>
+<p id="magicdomid723" class="ace-line" style="color: #666666;"><strong><span class="author-g-uhee7ueykti1un5p" style="font-style: inherit;">NEUTRON</span></strong></p>
+<p id="magicdomid1153" class="ace-line" style="color: #3c3d42;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Install openstack-neutron-server and openstack-neutron-contrail at Controller node. There must be configured: </span></p>
+<p id="magicdomid560" class="ace-line" style="color: #3c3d42;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">neutron.conf</span></p>
+<pre><span style="font-family: 'courier new', courier;"><code>core_plugin = neutron.plugins.juniper.contrail.contrailplugin.ContrailPlugin</code></span></pre>
+<pre><span style="color: #3c3d42; font-family: 'courier new', courier;"> /etc/neutron/plugins/opencontrail/ContrailPlugin.ini </span>
+<span style="font-family: 'courier new', courier;"> <code>[APISERVER]
+ api_server_ip = 10.0.106.34
+ api_server_port = 8082
+ multi_tenancy = False</code></span></pre>
+<pre><span style="font-family: 'courier new', courier;"><code> [KEYSTONE]
+ admin_user=admin
+ admin_password=pswd
+ admin_tenant_name=admin</code></span></pre>
+<p id="magicdomid777" class="ace-line" style="color: #666666;"><strong><span class="author-g-uhee7ueykti1un5p" style="font-style: inherit;">HORIZON</span></strong></p>
+<p id="magicdomid1174" class="ace-line" style="color: #3c3d42;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Install contrail-openstack-dashboard and verify these modules /etc/openstack-dashboard/local_settings </span></p>
+<pre><span style="font-family: 'courier new', courier;"><code>HORIZON_CONFIG['customization_module'] = 'contrail_openstack_dashboard.overrides'</code></span></pre>
+<h4 id="magicdomid1309" class="ace-line" style="font-weight: 400; color: #666666;"><span class="author-g-uhee7ueykti1un5p b" style="font-weight: inherit; font-style: inherit;"><strong>PREPARE OPENCONTRAIL CONTROLLER</strong></span></h4>
+<p id="magicdomid1558" class="ace-line" style="color: #3c3d42;"><span class="author-g-uhee7ueykti1un5p" style="font-weight: inherit; font-style: inherit;">Because of standalone solution, you have to install basic rabbitmq-server and cassandra with default settings. Next there must be haproxy enabling options for HA. These are separate saltstack formulas, so manually configure haproxy.conf</span></p>
+<h4 id="magicdomid1180" class="ace-line" style="font-weight: 400; color: #666666;"><span class="author-g-uhee7ueykti1un5p b" style="font-weight: inherit; font-style: inherit;"><strong>CREATE PILLAR FOR ROLES</strong></span></h4>
+<p style="color: #3c3d42;">Now you have to create pillar with definition for all roles located at OpenContrail controller. As you can see, some definitions are repeated, because roles are independent and can run on different servers and scale up.</p>
+<pre><span style="font-family: 'courier new', courier;"><code> opencontrail:
+ common:
+ identity:
+ engine: keystone
+ host: 10.0.106.30
+ port: 35357
+ token: pwd
+ password: pwd
+ network:
+ engine: neutron
+ host: 10.0.106.34
+ port: 9696
+ config:
+ enabled: true
+ id: 1
+ network:
+ engine: neutron
+ host: 10.0.106.34
+ port: 9696
+ bind:
+ address: 10.0.106.34
+ database:
+ members:
+ - host: 10.0.106.34
+ port: 9160
+ cache:
+ host: 10.0.106.34
+ identity:
+ engine: keystone
+ region: RegionOne
+ host: 10.0.106.30
+ port: 35357
+ user: admin
+ password: pwd
+ token: pwd
+ tenant: admin
+ members:
+ - host: 10.0.106.34
+ id: 1
+ control:
+ enabled: true
+ bind:
+ address: 10.0.106.34
+ master:
+ host: 10.0.106.34
+ members:
+ - host: 10.0.106.34
+ id: 1
+ collector:
+ enabled: true
+ bind:
+ address: 10.0.106.34
+ master:
+ host: 10.0.106.34
+ database:
+ members:
+ - host: 10.0.106.34
+ port: 9160
+ database:
+ enabled: true
+ name: 'Contrail'
+ original_token: 0
+ data_dirs:
+ - /home/cassandra
+ bind:
+ host: 10.0.106.34
+ port: 9042
+ rpc_port: 9160
+ members:
+ - 10.0.106.34
+ web:
+ enabled: True
+ bind:
+ address: 10.0.106.34
+ master:
+ host: 10.0.106.34
+ cache:
+ engine: redis
+ host: 10.0.106.34
+ port: 6379
+ members:
+ - host: 10.0.106.34
+ id: 1
+ identity:
+ engine: keystone
+ host: 10.0.106.30
+ port: 35357
+ user: admin
+ password: pwd
+ token: pwd
+ tenant: admin</code></span></pre>
+<p>OpenStack Controller:</p>
+<pre><span style="font-family: 'courier new', courier;"><code> opencontrail:
+ common:
+ identity:
+ engine: keystone
+ host: 10.0.106.30
+ port: 35357
+ token: pwd
+ password: pwd
+ network:
+ engine: neutron
+ host: 10.0.106.34
+ port: 9696</code></span></pre>
+<p>OpenStack Compute</p>
+<pre><span style="font-family: 'courier new', courier;"><code> opencontrail:
+ common:
+ identity:
+ engine: keystone
+ host: 10.0.106.30
+ port: 35357
+ token: pwd
+ password: pwd
+ network:
+ engine: neutron
+ host: 10.0.106.34
+ port: 9697
+ compute:
+ enabled: True
+ hostname: compute1
+ discovery:
+ host: 10.0.106.34
+ interface:
+ dev: bond0
+ default_pmac: a0:36:9f:02:95:2c
+ address: 10.0.106.102
+ gateway: 10.0.106.1
+ mask: 24
+ dns: 8.8.8.8
+ mtu: 9000
+ control_instances: 1</code></span></pre>
+<h4>Deploy OpenContrail</h4>
+<p>Run this command at all infrastructure nodes:</p>
+<pre><span style="font-family: 'courier new', courier;"><code>salt-call state.sls opencontrail</code></span></pre>
+<h4>Deploy Compute nodes</h4>
+<p>Add virtual router</p>
+<pre><span style="font-family: 'courier new', courier;"><code>python /etc/contrail/provision_vrouter.py --host_name compute1 --host_ip 10.0.106.106
+ --api_server_ip 10.0.106.34 --oper add --admin_user admin --admin_password pwd --admin_tenant_name admin</code></span></pre>
+<h4>ADD CONTROL BGP</h4>
+<p>Finally you have to add control BGP through python script stored in /etc/contrail at OpenContrail Controller:</p>
+<pre><span style="font-family: 'courier new', courier;"><code>python /etc/contrail/provision_control.py --api_server_ip 10.0.106.34 --api_server_port
+ 8082 --host_name network1.contrail.domain.com --host_ip 10.0.106.34 --router_asn 64512</code></span></pre>
+<p>Now you should have OpenContrail deployed. Run your instance first instance and try the amazing network performance. For whole automation contact us for <a href="http://tcpcloud.eu/en/sluzby/private-cloud/#inquiry">Private Cloud</a></p>
+<p>Jakub Pavlík &#8211; @JakubPav<br />
+TCP Cloud platform engineer</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Service Chain Load Balancing with OpenContrail</title>
+		<link>https://tungsten.io/service-chain-load-balancing-with-opencontrail/</link>
+		
+		<dc:creator><![CDATA[Bruno Rijsman]]></dc:creator>
+		<pubDate>Fri, 02 May 2014 21:54:36 +0000</pubDate>
+				<category><![CDATA[Service Chaining]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://opencontrail.org/?p=1457</guid>
+
+					<description><![CDATA[1         Basic Concepts In this paper we discuss the concept of load balancing in a service chain which has multiple virtual machines for scale-out. Figure 1 introduces the concepts of...]]></description>
+										<content:encoded><![CDATA[<h5>1         Basic Concepts</h5>
+<p>In this paper we discuss the concept of load balancing in a service chain which has multiple virtual machines for scale-out.</p>
+<p>Figure 1 introduces the concepts of the length of a service chain and the width of a service chain.</p>
+<p><span id="more-1457"></span></p>
+<p>The length of the service chain determines the functionality; if we add more services to the service chain it becomes longer.</p>
+<p>The width of the service chain determines the capacity; if we add more capacity to the service chain it becomes wider.</p>
+<p>The width of the service chain is not necessarily uniform. In the example below we may have three firewalls (2 Gbps each) but only two caches (3 Gbps each) to implement a 6 Gbps service chain.</p>
+<p><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5727" src="http://www.opencontrail.org/wp-content/uploads/2014/05/5_2_2014_blogpost_image1.png" alt="5_2_2014_blogpost_image1" width="511" height="299" data-id="5727" /></p>
+<p>Figure 1: Width and Length of a Service Chain</p>
+<p>When there are multiple parallel instances of the same virtual service for scale-out reasons, there must be a load balancing function to spread the traffic across those multiple instances. That load balancing function can be implemented in three locations:</p>
+<ol>
+<li>On the physical router on which the service chain is anchored.</li>
+<li>In the OpenContrail vRouter in the hypervisor.</li>
+<li>In a virtual load balancer which runs in a virtual machine.</li>
+</ol>
+<h5>2         Load Balancing on the Physical Anchor Router</h5>
+<p>In many Network Function Virtualization (NFV) use cases, service chains are anchored on (i.e. connected to) a physical router. The anchor router is typically an edge router which sits between the access network to the customer and the core network. The anchor router is responsible for steering the customer traffic flows into the right service chain. This steering function needs to be subscriber aware and application aware. Subscriber awareness means that different subscribers are assigned to different service chains, depending on which services they subscribed to. Application awareness means that different types of applications (e.g. voice versus video steaming) are assigned to different service chains.</p>
+<p>Juniper routers such as the MX and the Service Control Gateway (SCG) can be the anchor for a service chain. They provide subscriber-awareness through integration with a policy server such as a RADIUS server or a PCRF server. They provide application-awareness using a built-in Deep Packet Inspection (DPI) function.</p>
+<p>If the first service in the service chain is scaled out, the physical anchor router needs to provide a load balancing function as shown in Figure 2 below. In this example the length of the service chain is 1 to keep things simple. We will consider longer service chains in the next section.</p>
+<p><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5728" src="http://www.opencontrail.org/wp-content/uploads/2014/05/5_2_2014_blogpost_image2.png" alt="5_2_2014_blogpost_image2" width="413" height="319" data-id="5728" /></p>
+<p>Figure 2: Load Balancing on the Physical Anchor Router</p>
+<p>We could use simple Equal Cost Multi Path (ECMP) to spread the traffic over the multiple parallel paths. However, using ECMP causes two problems: symmetry and stickiness. We use the Traffic Load Balancer (TLB) feature on the physical router to minimize (but not eliminate) both of these problems.</p>
+<p>&nbsp;</p>
+<p><em>Symmetry</em></p>
+<p>The first problem is symmetry. For every forward flow, the reverse flow must follow the same path. This is required because the services in the service chain are usually stateful and need to see both directions of the flow.</p>
+<p>Normal ECMP using the 5-typle hash does not provide symmetry. This is because for a typical hash function <em>hash</em>(A,B) ≠ <em>hash</em>(B,A).</p>
+<p>Symmetry is typically achieved by using special &#8220;symmetric hash function&#8221; which has the special property that <em>hash</em>(A,B) = <em>hash</em>(B,A). An example of a simple symmetric hash function is to hash on the source IP only in the forward direction and on the destination IP only in the reverse direction (this hash function has the additional nice benefit of keeping all flows for a given customer together).</p>
+<p>Symmetric hashing only works for closed service chains, i.e. for service chains which start and end on the same anchor router as in Figure 2 above. Symmetric hashing does not work for open service chains, i.e. for service chains which start and end on different routers.</p>
+<p>To understand why symmetric hashing does not work on open service chains we first need to understand the problem of polarization and the concept of seeds which are illustrated in Figure 3 below. If we use exactly the same hash function at every router, then every flow which goes left at the first router will also go left at the second router. As a result, some paths in the network don&#8217;t receive any traffic. This problem is called polarization. To avoid polarization, each router computes hash function not only over the fields in the header of the packet <em>P</em>, but also includes a seed value <em>S</em> (sometimes called a salt). The seed value is different at each router, it could be the router ID for example. This removes the polarization from the network: all paths are used.</p>
+<p><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5729" src="http://www.opencontrail.org/wp-content/uploads/2014/05/5_2_2014_blogpost_image3.png" alt="5_2_2014_blogpost_image3" width="543" height="343" data-id="5729" /></p>
+<p>Figure 3: The Problem of Polarization and its Solution using Seeds</p>
+<p>Now we can understand why symmetric hashing does not work with open service chains. Since the router at the start and at the end of the service chains use different seed values, they will map the same flow onto different paths in the service chain, even if the hash function is symmetric.</p>
+<p>We can achieve symmetry for open service chains using a flow table. We describe this mechanism below when we discuss load balancing in the OpenContrail vRouter.</p>
+<p><em>Stickiness</em></p>
+<p>The second problem is flow stickiness.</p>
+<p>Once a flow has been assigned to a particular path, we want the flow to remain assigned to that path for the entire duration of the flow. If we move the flow to a different path in the middle of the flow, the flow will typically die. This is because the service on the new path will only start seeing the flow in the middle of the flow and won&#8217;t know what to do with it &#8212; most stateful services need to see the entire flow.</p>
+<p>Normal ECMP does not provide flow stickiness.   This is because ECMP is implemented as a modulo-N division where N is the number of members in the load balancing group. If the number of members in the load balancing group changes from N to N+1 as a result of a scale-out event, all hashes will now be computed modulo N+1 instead of modulo N, and as a result most flows will be moved to a different path.</p>
+<p>Let&#8217;s take a concrete example. Let&#8217;s say that there are 5 members in the load balancing group and let&#8217;s say that the hash for flow F is 13. The flow will be assigned to path number (13 modulo 5) = 3. Now, let say that a scale-out event happens while flow F is in progress and the number of load balancing group members increases to 6. Now, flow F will be assigned to path number (13 modulo 6) = 1. Thus, flow F moved from path number 3 to path number 1 and will die.</p>
+<p>TLB solves this problem by using consistent hashing. See Wikipedia (<a href="http://en.wikipedia.org/wiki/Consistent_hashing">http://en.wikipedia.org/wiki/Consistent_hashing</a>) for the theory on consistent hashing.</p>
+<p>The short summary is that consistent hashing <em>minimizes</em> the number of flows that are moved when a scale-out or a scale-in event happens. For example, if the number of paths increases from 5 to 6, then the maximum number of flows which are moved is 1/6 of the flows &#8212; the minimum number needed to re-distribute all the flows equally over 6 members. In contrast, with ECMP approximately 4/5 of the flows will be moved.</p>
+<p>Thus, even with consistent hashing, some flows still get moved, which is why we said that TLB minimizes (but does not completely solve) the problem of stickiness.</p>
+<p>Note that flow moves can be completely eliminated with a flow table &#8212; this is what OpenContrail does (see below). Normal routers cannot do this because they do forwarding packet-by-packet without a flow table, but Juniper routers with flow-awareness such as the SCG and the SRX can do it.</p>
+<h5> 3         Load Balancing in the OpenContrail vRouter</h5>
+<p>Figure 4 shows load balancing in the OpenContrail vRouter.</p>
+<p><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5730" src="http://www.opencontrail.org/wp-content/uploads/2014/05/5_2_2014_blogpost_image4.png" alt="5_2_2014_blogpost_image4" width="572" height="428" data-id="5730" /></p>
+<p>Figure 4: Load Balancing in the OpenContrail vRouter</p>
+<p>We need to do load balancing to spread the traffic from service S<sub>i</sub> equally across all instances of service S<sub>i+1</sub> in the next step of the service chain.</p>
+<p>In Figure 4 above, the firewall service to which the arrow points needs to spread the traffic equally across all three instances of the cache service which is the next service in the service chain.</p>
+<p>Load balancing on the vRouter is based on the same mechanism as BGP multi-path. If there are multiple downstream instances of the next service in the service chain, then the vRouter will receive multiple XMPP routes towards the final destination. All the XMPP routes have the same destination prefix, but they have different Route Distinguishers (RDs) to keep them distinct, and they have different next-hops and MPLS labels to identify the different downstream service instances. This is illustrated in Figure 5 below.</p>
+<p><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5732" src="http://www.opencontrail.org/wp-content/uploads/2014/05/5_2_2014_blogpost_image5.png" alt="5_2_2014_blogpost_image5" width="664" height="345" data-id="5732" /></p>
+<p>Figure 5: &#8220;BGP Multi-Path&#8221; for Load Balancing on the vRouter</p>
+<p>The vRouter needs to solve the same two problems which were described in the previous section, namely symmetry and stickiness. In this case we discuss the stickiness problem first.</p>
+<p><em>Stickiness</em></p>
+<p>The OpenContrail vRouter uses flow tables to solve the flow stickiness problem. The OpenContrail vRouter has a flow table which contains one entry for each active flow.</p>
+<p>When the first packet of a flow arrives at the vRouter, there is no entry in the flow table yet. At this point, the vRouter performs an ECMP hash (using the &#8220;BGP multi-path&#8221; mechanism described above) to choose the downstream load balancing group member.</p>
+<p>The vRouter then creates an entry in the flow table. The next-hop for the flow table entry contains the chosen downstream load balancing group member. Subsequent packets for the same flow don&#8217;t perform ECMP hashes anymore &#8211; they allow use the already chosen load balancing group member which was stored in the flow table.</p>
+<p>As a result, the flow will never move, even when the number of load balancing group members changes as a result of scale-out or scale-in.</p>
+<p><em>Symmetry</em></p>
+<p>When the OpenContrail vRouter receives the first packet for a forward flow, it makes an initial ECMP decision and records that decision in the flow table to achieve stickiness as described above.</p>
+<p>At the same time, the OpenContrail vRouter also creates an entry for the reverse flow to achieve symmetry. This is done as follows:</p>
+<ol>
+<li>The OpenContrail vRouter does a lookup for the source IP address of the payload (i.e. the inner IP header) in the forwarding table of the routing-instance. This results in set of one or more next-hops. It will be more than one next-hop if there is ECMP. All of these reverse next-hops will be overlay tunnels to the previous service in the service-chain.</li>
+<li>The OpenContrail vRouter then observes over which overlay tunnel the traffic was actually received (i.e. the outer IP header).</li>
+<li>If the tunnel over which the traffic actually arrived is a member of the ECMP set computed in set 1, then the OpenContrail vRouter also creates a reverse flow entry (in addition to the forward flow entry).</li>
+<li>If the traffic starts arriving over a different tunnel, the OpenContrail vRouter updates the reverse flow entry, as long as it continues to meet the criteria of being a member of the reverse ECMP set.</li>
+</ol>
+<p>This process is conceptually similar to the Reverse Path Forwarding (RPF) check which is performance in multicast forwarding and in unicast RPF (uRPF).</p>
+<p><em>&#8220;Bleeding&#8221;</em></p>
+<p>A feature which has been requested but not yet implemented is the ability to &#8220;bleed&#8221; a service instance before it is taken out of service.</p>
+<p>What this means is that the customer wants to be able to remove a service instance from the load balancing group without shutting down the virtual machine just yet.</p>
+<p>No new flows must be assigned to the service instance.   But all existing flows which already go through the service instance must continue to go through the service instance.</p>
+<p>Eventually, all the existing flows will go away. When the last flow is gone (or when a time-out occurs) an event must be generated to remove the virtual machine.</p>
+<p>This feature is not yet supported. It is easy to achieve in the data plane with the OpenContrail flow tables, but the work-flow has not yet been implemented in the control plane and management plane.</p>
+<p><em>&#8220;Real&#8221; load balancer features</em></p>
+<p>The OpenContrail vRouter is not a general purpose load balancer. &#8220;Real&#8221; load balancers have all sorts of advanced features such as liveness checks, load monitoring, application-aware load balancing etc. The OpenContrail vRouter will, over time, implement some of these features, for example the ability to check the liveness of virtual machines.</p>
+<h5>4         Orchestration and Dynamic Scale-Out</h5>
+<p>When you create a service instance in OpenContrail, you can specify the number of virtual machines for that service instance. In that sense, OpenContrail supports statically scaled-out services.</p>
+<p>It is also possible to use the OpenContrail API to dynamically change the number of virtual machines for a service instance. In that sense, OpenContrail provides an API to implement dynamically scaled-out services.</p>
+<p>However, monitoring the load of a service and scaling out the service when certain Key Performance Indicators (KPIs) are exceeded is not the job of the OpenContrail vRouter. This function (monitoring, dynamic scale-out, dynamic scale-in, and failure handling) is typically performed by a so-called orchestration system or orchestrator for short.</p>
+<p>An orchestration system manages the life cycle of complex applications or complex Virtual Network Functions (VNFs) which consist of multiple virtual machines working together. The typical functions of an orchestrator include:</p>
+<ul>
+<li>Some sort of template language to describe the resources in such a complex application: virtual machines, virtual storage, virtual networks, virtual load balancers, virtual databases, etc.</li>
+<li>A mechanism to monitor the liveness of a virtual machine and to recover from failures by spinning up a new virtual machine.</li>
+<li>A mechanism to monitor the load on a virtual machine and the perform scale-out (or scale-in) when Keep Performance Indicators (KPIs) are exceeded. Often, there is an agent in the virtual machine to allow these KPIs to be application-aware (e.g. HTTP request latency for an Apache web server).</li>
+</ul>
+<p>All the major public clouds offer orchestration and monitoring as a service. For example Amazon Web Services (AWS) offers <a href="https://aws.amazon.com/cloudformation/">CloudFormation</a> and <a href="https://aws.amazon.com/cloudwatch/">CloudWatch</a>. OpenStack has <a href="https://wiki.openstack.org/wiki/Heat">Heat</a> and <a href="https://wiki.openstack.org/wiki/Ceilometer">Ceilometer</a> for orchestrator and monitoring. OpenContrail is being integrated with third-party orchestration systems such as IBM Smart Cloud Orchestrator (SCO), Amdocs Network Function Virtualization Orchestrator (NFVO), and Scarl.</p>
+<h5>5         Load Balancing in a Virtual Machine</h5>
+<p>In section 3 we mentioned that the OpenContrail vRouter has several load balancing features, but cannot be considered a &#8220;real&#8221; load balancer.</p>
+<p>There are several companies that offer real virtual load balancers. There are also some open source products such as HAProxy.</p>
+<p>It is possible to run a load balancer in a virtual machine and include it in the service chain as shown in Figure 6 below.</p>
+<p><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5733" src="http://www.opencontrail.org/wp-content/uploads/2014/05/5_2_2014_blogpost_image6.png" alt="5_2_2014_blogpost_image6" width="619" height="301" data-id="5733" /></p>
+<p>Figure 6: Load Balancing in a Virtual Machine</p>
+<p>The advantage of this method is that you can use a best-of-breed &#8220;real&#8221; load balancer.</p>
+<p>The disadvantage of this method is that the load balancer itself may become a bottleneck. In that case you have to create multiple instances of the load balancer which introduces a chicken-and-egg problem: how to you spread the traffic over the multiple instances of the load balancer.</p>
+<p>In practice, this is not so much a problem as you might think, because these load balancers (e.g. HAProxy) are very light-weight can a single load balancer virtual machine can handle many back-end virtual machines in the load balancing group. Also, for cloud based services Global Load Balancing (GLB) using the Domain Name Service (DNS) is used to spread the traffic across multiple load balancers (this technique does not apply to service chains).</p>
+<h5>6         Load Balancing in the Underlay</h5>
+<p>Everything we have discussed so far relates to load balancing in the overlay. There is a related but separate topic related to load balancing in the underlay.</p>
+<p>Figure 7 below shows a scenario where there are multiple equal-cost paths between the anchor point and the first service in the service chain, or between one service instance and the next service instance in the service chain.</p>
+<p><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5734" src="http://www.opencontrail.org/wp-content/uploads/2014/05/5_2_2014_blogpost_image7.png" alt="5_2_2014_blogpost_image7" width="568" height="255" data-id="5734" /></p>
+<p>Figure 7: Load Balancing in the Underlay</p>
+<p>The underlay uses normal multi-pathing techniques for load balancing. For layer-3 underlays, ECMP is used. For layer-2 underlays, various techniques are used including Multi-Chassis Link Aggregation (MC-LAG), Virtual Chassis (VC). Other techniques include various overlay flavors such as the Locator Identifier Separator Protocol (LISP), Transparent Interconnect of Lots of Links (TRILL), Provider Backbone Bridging (PBB) and proprietary protocols such as Cisco FabricPath.</p>
+<p>Overlay networking introduces some complications. The complication is caused by the fact that all packets are encapsulation in an overlay tunnel encapsulation. There are multiple such overlay tunnel encapsulations, including MPLS-over-GRE, MPLS-over-UDP, VX-LAN, NV-GRE, STT, etc. Some of these encapsulations are friendly towards multi-pathing in the underlay and others are not.</p>
+<p>One example of an overlay encapsulation which is <em>not </em>friendly towards multi-pathing in the underlay is MPLS-over-GRE which is shown in Figure 8 below.</p>
+<p><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5735" src="http://www.opencontrail.org/wp-content/uploads/2014/05/5_2_2014_blogpost_image8.png" alt="5_2_2014_blogpost_image8" width="582" height="226" data-id="5735" /></p>
+<p>Figure 8: GRE Overlay Encapsulation: Not Friendly towards Multi-Pathing in the Underlay</p>
+<p>The problem with GRE encapsulation is that all the encapsulated packets have the same 5-tuple in the outer header. This means that all traffic for all virtual machines between a given pair of physical servers will be hashed to the same path. This could be avoided by using different GRE keys for each flow (&#8220;putting entropy in the GRE key&#8221;) but not many underlay switches support hashing on the GRE key.</p>
+<p>This problem can be avoided by using a UDP-based encapsulation such as MPLS-over-UDP (shown in Figure 9 below) or VXLAN.</p>
+<p><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5736" src="http://www.opencontrail.org/wp-content/uploads/2014/05/5_2_2014_blogpost_image9.png" alt="5_2_2014_blogpost_image9" width="613" height="225" data-id="5736" /></p>
+<p>Figure 9: UDP-based Overlay Encapsulation: Friendly towards Multi-Pathing in the Underlay</p>
+<p>UDP-based encapsulations are friendlier towards multi-pathing in the underlay because they &#8220;put entropy in the UDP source port&#8221;. The UDP header contains a hash of the header of the encapsulated packet (or frame) in the UDP source port. As a result, different overlay flows will have different UDP source ports in the underlay. Since the underlay typically hashes on the complete 5-tuple, this results in efficient multi-pathing.</p>
+<p>A similar mechanism, using MPLS entropy labels, can use used with LSP transport tunnels, but at this stage it is not yet common to run MPLS in the switch fabric underlay: most switch fabrics are Ethernet-based or IP-based, not yet MPLS-based.</p>
+<p>OpenContrail uses MPLS-over-UDP by default for all vRouter to vRouter traffic. OpenContrail uses VXLAN by default for all traffic to gateway switches. Both of these encapsulations have good support for multipath in the underlay.</p>
+<p>OpenContrail can use MPLS-over-GRE for traffic to gateway routers which only support that encapsulation. This provides interoperability with existing routers.</p>
+<p>OpenContrail uses capability negotiation techniques to discover which encapsulations each end-point of a tunnel supports. OpenContrail will automatically pick an encapsulation which is supported by both end-points. If there are multiple choices, OpenContrail will prefer an encapsulation which has good support for multi-pathing. There is no requirement that all tunnels in a given virtual network use the same encapsulation.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

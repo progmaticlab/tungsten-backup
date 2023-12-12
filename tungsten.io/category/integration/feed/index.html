@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Integration Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/integration/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/integration/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Tue, 02 May 2017 01:05:17 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>Integration Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/integration/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Juniper &#038; Red Hat Serve Up an Open Double-Stack Cloud with an SDN Twist</title>
+		<link>https://tungsten.io/juniper-red-hat-serve-up-an-open-double-stack-cloud-with-an-sdn-twist/</link>
+		
+		<dc:creator><![CDATA[James Kelly]]></dc:creator>
+		<pubDate>Tue, 02 May 2017 01:05:17 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Integration]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenShift]]></category>
+		<category><![CDATA[SDN]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7490</guid>
+
+					<description><![CDATA[Juniper Networks Contrail Networking, developed in the OpenContrail open source project, has long been a part of Red Hat’s millinery. The partnership between Juniper and Red Hat goes back some...]]></description>
+										<content:encoded><![CDATA[<p><img fetchpriority="high" decoding="async" class="alignright size-full wp-image-7492" src="http://www.opencontrail.org/wp-content/uploads/2017/05/medium.jpg" alt="" width="288" height="400" data-id="7492" />Juniper Networks Contrail Networking, developed in the OpenContrail open source project, has long been a part of Red Hat’s millinery. The <a href="https://www.juniper.net/assets/us/en/local/pdf/solutionbriefs/3510554-en.pdf" target="_blank" rel="nofollow noopener noreferrer">partnership between Juniper and Red Hat</a> goes back some years now. Collaborating on OpenStack cloud and NFV infrastructure has won these partners success in supporting large enterprises and communications service providers like Orange Business Services.</p>
+<p>At the long list of open source festivities in Boston over the next 2 weeks, you will hear these partners in cloud building on their past successful OpenStack + Contrail integration and now putting the spotlight on new integrations to support cloud native. You’ve heard me blog about the OpenContrail integration with OpenShift back a year already (in its first alpha form that I <a href="http://jameskelly.net/blog/2016/4/7/getting-to-gifee-with-sdn-demo" target="_blank" rel="nofollow noopener noreferrer">demoed</a>), and more recently for CloudNativeCon and DockerCon <a href="http://jameskelly.net/blog/2017/3/27/the-best-sdn-for-openstack-now-for-kubernetes" target="_blank" rel="nofollow noopener noreferrer">talking</a> about how we evolved that work to make this integration enterprise-ready and up-to-date with all the innovation that’s happened in the fast-paced OpenShift releases.</p>
+<p><strong>But how do you get the best of OpenStack and OpenShift?</strong></p>
+<p>Red Hat has been helping customers to move faster with devops, continuous delivery, and containers using OpenShift for a long time. Naturally Red Hat often does this atop of Red Hat OpenStack Platform, where OpenStack creates clusters of virtual machine hosts for the Red Hat OpenShift Container Platform cluster.</p>
+<p>One latent hitch in this double stack is the software-defined networking (SDN). Like OpenStack, OpenShift and Kubernetes (on which OpenShift is based) have their opportunities for improvement. One area that is frequently fortified and improved is the software-defined networking (SDN), and the importance of doing this doubles when you’re running the double stack of OpenShift on top of OpenStack.</p>
+<p>Why can SDN be such a snag? Well, the network is a critical part of any cloud, and especially cloud-native, infrastructure because of the enormous volume of microservice-generated east-west traffic, along with load balancing, multi-tenancy, and security requirements; that’s just for starters. The good-enough SDN that is included but swappable in such open source cloud stacks is very often indeed good enough for small cloud setups, but it is common to see the SDN replaced with something more robust for clouds with more than 100 nodes or other advanced use cases like NFV.</p>
+<p><strong>Fast and Furious Clouds</strong></p>
+<p>I think of this 100-node edge like the 100mph edge of a car… As I make my way to Boston, I just took an Uber to SFO, and of course, it was a Prius. Like most cars nowadays they’re very efficient and great for A-to-B commuting. But also like most cars, when you approach or (hopefully don’t) pass 100mph mark, the thing feels like it is going to disintegrate! I was a little uneasy today flying down the 101 at just 80-something mph. Eeek!</p>
+<p>Now I love to drive, and drive fast, but I don’t do it in a bloody Prius! My speed-seeking readers will probably know, as I do, that if you go fast in a sports car, it is a way better experience. It’s smooth at high speeds, and the power feels awesome. Now let’s say you also aren’t just driving in a straight line, but you’re on the Laguna Seca Raceway. To handle cornering agility, gas and maintenance pit stops, and defense/offense versus the other drivers, you need more than just smooth handling. The requirements add up. I think you get my drift…</p>
+<p>My point is that, similarly, if you’re going to build a cloud, you need to consider that you’re going to need a lot more than good enough. Good enough might do you fine for some dev/test or basic scenarios, but if you need performance, elastic scale, resilience, F1-pit-crew speed and ease of maintenance, and a security defense/offense, then you need to invest in building the best. Juniper has been helping its customers build the best networks for over 20 years. It’s what Juniper is known for: high-performance and innovation. When you (or say NSS) compare security solutions, again, Juniper is on top for performance, effectivity (stopping the bad stuff) and value I might add.</p>
+<p><strong>When Compounding Good-enough Isn’t Great</strong></p>
+<p>Imagine the challenges you can run into with good-enough networking… now imagine you stack two such solutions on top of each other. That’s what happens with OpenShift or Kubernetes on top of OpenStack.</p>
+<p>In this kind of scenario, compounding the two stacks’ SDN, as you demand more from your cloud, you will double complexity and twice as quickly hit network disintegration!</p>
+<p><img decoding="async" class="aligncenter size-full wp-image-7491" src="http://www.opencontrail.org/wp-content/uploads/2017/05/large.jpg" alt="" width="565" height="267" data-id="7491" /></p>
+<p><strong>Ludacris Mode for Your Cloud</strong></p>
+<p>If you want to drive your cloud fast and furious, <em>and not crash</em>, you need some racing readiness. OpenContrail is designed for this, and proven in some of the largest most-demanding clouds. No need to recount the awesomeness here. It’s already well documented. Before you green-light it though, there is one thing we’ve needed to iron out: How does an OpenContrail <em>double stack</em> drive?</p>
+<p><strong>SDN Inception</strong></p>
+<p>When OpenContrail developers were in their first throws of SDN integration for Kubernetes and OpenShift, we often ran it inside of an OpenStack cloud. And what was the OpenStack SDN? OpenContrail of course. Yep, that’s right we have OpenContrail providing an IP overlay on top of the physical network for the OpenStack VM connectivity, and then inside of that overlay and those VMs we installed OpenShift (or Kubernetes) with another OpenContrail overlay. It turns out this SDN inception works just fine. There’s nothing special to it. OpenContrail just requires an IP network, and the OpenStack-level OpenContrail fits the bill perfectly.</p>
+<p>In fact, SDN inception is pretty common, but not usually with the same SDN at both levels. The main place this happens in practice is because we run cloud-native CaaS/PaaS stacks like Kubernetes, Mesos, OpenShift paired with OpenContrail on top of public clouds, and that public IaaS line AWS has its own underlying SDN. It provides the IP underlay that we need in those cases.</p>
+<p>What about when we control the SDN at the IaaS AND the CaaS/PaaS layers? Even if 2 SDNs (the same or different solution) work well stacked atop each other, it’s not ideal because there is still double the complexity of managing them. If only there was a better way…</p>
+<p><strong>A New Hat Stack Trick</strong></p>
+<p>This is where the OpenContrail community was inspired to raise the bar, and the Red Hat stack of OpenShift on OpenStack is the perfect motivation. What’s now possible today is to unwind the SDN inception and use one single control and data plane for OpenShift or Kubernetes on top of OpenStack when you run OpenContrail. The way this is realized is by having the OpenStack layer work as usual, and using OpenContrail in a different way with OpenShift or Kubernetes. In that instance, the OpenContrail plugin for OpenShift/Kubernetes master will speak directly to the OpenContrail controller used at the OpenStack layer. To collapse the data plane, we have a CNI plugin passthru that will not require the OpenContrail vRouter to sit inside the host VM for each OpenShift/Kubernetes minion (compute) node. Instead the traffic will be channeled from the container to the underlying vRouter that is sitting on the OpenStack nova compute node. We’ll save further technicalities and performance boost analysis for an OpenContrail engineering blog another day.</p>
+<p>Juniper and Red Hat work on this latest innovation of flattening the SDN stack is coming to fruition. It is available today in the <a href="http://www.opencontrail.org/" target="_blank" rel="nofollow noopener noreferrer">OpenContrail community</a> or Juniper <a href="https://www.juniper.net/us/en/products-services/sdn/contrail/contrail-networking/" target="_blank" rel="nofollow noopener noreferrer">Contrail Networking</a> beta, and slated for Juniper’s next Contrail release. As to that, stay tuned. As to catching this in action, visit Juniper and Red Hat at the Red Hat Summit this week and the OpenStack Summit next week. We’ll see you there, and I hope you hear about this and more OpenContrail community innovations ahead and in deployment at the <a href="http://www.opencontrail.org/event/ocug-boston-2017/">OpenContrail User Group</a> meeting next week.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Openstack Bare Metal server integration using Contrail SDN in a multi vendor DC fabric environment</title>
+		<link>https://tungsten.io/contrail-integration-with-arista-tors-with-cloud-vision/</link>
+		
+		<dc:creator><![CDATA[Vivekananda Shenoy]]></dc:creator>
+		<pubDate>Mon, 20 Jun 2016 19:48:08 +0000</pubDate>
+				<category><![CDATA[Gateway]]></category>
+		<category><![CDATA[Integration]]></category>
+		<category><![CDATA[Network Services]]></category>
+		<category><![CDATA[Routing/Switching]]></category>
+		<category><![CDATA[SDN]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7087</guid>
+
+					<description><![CDATA[Introduction: In this blog we are going to show a hands on lab demonstration of how Juniper Contrail SDN controller allows the cloud administrator to seamlessly integrate Bare-metal servers into a...]]></description>
+										<content:encoded><![CDATA[<h4>Introduction:</h4>
+<p>In this blog we are going to show a hands on lab demonstration of how Juniper Contrail SDN controller allows the cloud administrator to seamlessly integrate Bare-metal servers into a virtualized network environment that may consist of existing virtual machine workloads. The accompanying video shows the steps required to configure various features of this lab.</p>
+<p><iframe src="https://www.youtube.com/embed/PXHZAP1rXM0" width="650" height="370" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p>The solution uses standards based OVSDB protocol to program the Ethernet Ports, VLANS and the MAC table entries on the switches and hence any switch that supports OVSDB protocol can be used as the top of the rack switch to implement Contrail BMS solution and we have already demonstrated one such solution with Cumulus Linux Switches in this <a href="https://www.youtube.com/watch?v=PxG9Dfa1QkE">video.</a></p>
+<p>Specifically, in this blog we are going to use QFX5100 and ARISTA as the two top of rack switches.</p>
+<h4>Setup:</h4>
+<p>The figure below shows the physical topology which consists of an all in one Contrail controller and compute node (IP=10.84.30.34) where we are going to spin the VMs. The TSN node has a IP address of 10.84.30.33. The second server (10.84.30.33) is going to act as the TSN node which is going to run the TOR agent (OVSDB clients) for the two TOR switches and also going to provide the network services such as ARP/DHCP/DSN etc. to the bare-metal services through a service known as TOR services node. TSN node vRouter forwarder translates the OVSDB message exchanges done with the TOR switches to XMPP messages which is advertised to the Control node. This is done by vRouter forwarder agent running on the TSN node.</p>
+<p>The TWO switches QFX5100 (IP=10.84.30.44) &amp; Arista 7050 (IP=10.84.30.7.38) have one bare-metal servers connected to them on the 1G interfaces as shown in the figure. In the case of Arista, the OVSDB session is established not with the TOR but with the cloudvision VM. Cloudvision in turn is going to push the OVSDB state into the TOR switch using Arista&#8217;s cloudvision protocol. 10.84.0.0/16 is DC fabric underlay subnet. 10.84.63.144 is the loopback IP address of QFX5100 and for Arista switch it is 10.84.63.189.</p>
+<p>Finally, the MX SDN gateway (10.84.63.133) is also connected to the DC fabric. The MX gateway provides two main functionalities. 1. Public access to VMs and bare-metal servers and 2. required to provide inter-VN connectivity between the bare-metal servers.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/06/Contrail-integration-with-Arista-TORs_blog_image1.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-7088" src="http://www.opencontrail.org/wp-content/uploads/2016/06/Contrail-integration-with-Arista-TORs_blog_image1.png" alt="Contrail integration with Arista TORs_blog_image1" width="800" height="546" data-id="7088" /></a></p>
+<p>&nbsp;</p>
+<p>The MX gateway provides two main functionalities:1. Public access to VMs and bare-metal servers and 2. required to provide inter-VN connectivity between the bare-metal servers.</p>
+<p>1. Public access to VMs and bare-metal servers and 2. required to provide inter-VN connectivity between the bare-metal servers.</p>
+<p>2. required to provide inter-VN connectivity between the bare-metal servers.</p>
+<h4>Provisioning &amp; control-plane:</h4>
+<p>The TOR switches can be added to the cluster during provisioning of the cluster itself or can be added to an existing cluster using fab tasks. The TSN and the TOR agent roles are configured under &#8216;tsn&#8217; and &#8216;toragent&#8217; roles in the env.roledefs section of testbed.py. All the TOR switch related parameters such as the TOR switch loopback address (VXLAN VTEP source), OVSDB transport type (PSSL vs TCP), OVSDB TCP port etc. is defined under the env.tor_agent section of testbed.py. Please refer the github link provided at in the references section for more details.</p>
+<p>Once the cluster is provisioned along with the TOR switches the only other thing that is required is to configure the TOR switches with the required configurations for OVSDB, VXLAN etc. Once all these are configured properly this should result in the control plane protocols being established between the various nodes, TOR switches and the MX gateway. The configurations for the TOR switches and the MX gateway is provided below.</p>
+<p>TSN has OVSDB sessions to QFX5100 &amp; the Arista cloudvision VM. TSN also has a XMPP session with the control node. Control and MX gateway exchange BGP routes over the IBGP session.</p>
+<h4>Data Plane:</h4>
+<p>As one can see in the video we are going to create two virtual networks RED (IP Subnet 172.16.1.0/24) and BLUE (IP Subnet 172.16.2.0/24). QFX5100 ge-0/0/16 logical interface is added to the RED VN and the Arista switch Et3 interface is added to the BLUE VN. In addition to this on the all in one contrail node we are going to create one VM each for the RED and the BLUE VNs.</p>
+<p>The resulting data-plane interactions are as shown in fig 3. The RED and BLUE VTEPs are created on the QFX5100 and Arista 7050 switches by OVSDB intra-VN communication between the bare-metal server and the virtual machine in the RED and BLUE VNs are facilitated by the VXLAN tunnels that are setup between the TOR switches and the compute node (all in one node in this case 10.84.30.34). Broadcast Ethernet frames for protocols such as ARP, DHCP etc., are directed towards the TSN node using VXLAN tunnels established between the TOR switches and the TSN nodes. All the inter-VN traffic originated by the bare-metal server which is destined to another bare-metal server or a VM in a different VN (RED to BLUE or vice versa) is sent to the EVPN instances for the respective VNs on the MX SDN gateway wherein routing takes place between the RED and BLUE VRFs. The VRF and the EVPN (virtual-switch routing-instance) configuration on the MX gateway is automated using the Contrail Device Manager feature.</p>
+<p>In addition to the all in one compute node has VXLAN and MPLSoGRE tunnels to the MX gateway for L2 and L3 stretch of the virtual network.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/06/Contrail-integration-with-Arista-TORs_blog_image3.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-7090" src="http://www.opencontrail.org/wp-content/uploads/2016/06/Contrail-integration-with-Arista-TORs_blog_image3.png" alt="Contrail integration with Arista TORs_blog_image3" width="800" height="547" data-id="7090" /></a></p>
+<p>&nbsp;</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/06/Contrail-integration-with-Arista-TORs_blog_image4.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-7091" src="http://www.opencontrail.org/wp-content/uploads/2016/06/Contrail-integration-with-Arista-TORs_blog_image4.png" alt="Contrail integration with Arista TORs_blog_image4" width="800" height="556" data-id="7091" /></a></p>
+<p>Resulting logical tenant virtual network logical connectivity is as shown below.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/06/Contrail-integration-with-Arista-TORs_blog_image5.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-7092" src="http://www.opencontrail.org/wp-content/uploads/2016/06/Contrail-integration-with-Arista-TORs_blog_image5.png" alt="Contrail integration with Arista TORs_blog_image5" width="800" height="676" data-id="7092" /></a></p>
+<h4>References:</h4>
+<p>Sample testbed.py file &amp; the MX GW, QFX5100 , Arista Switch, Cloudvision configurations<br />
+<strong><a href="https://github.com/vshenoy83/Contrail-BMS-Configs.git">https://github.com/vshenoy83/Contrail-BMS-Configs.git</a></strong></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

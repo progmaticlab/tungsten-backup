@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Performance Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/performance/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/performance/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Tue, 04 Nov 2014 03:05:08 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>Performance Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/performance/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>OpenStack Neutron at scale</title>
+		<link>https://tungsten.io/openstack-neutron-at-scale/</link>
+		
+		<dc:creator><![CDATA[Harshad Nakil]]></dc:creator>
+		<pubDate>Tue, 04 Nov 2014 03:05:08 +0000</pubDate>
+				<category><![CDATA[Performance]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=5652</guid>
+
+					<description><![CDATA[“Neutron cannot scale.” – This is a pet peeve of several folks, I often meet whether in the customer or vendor or open-source community. I don’t blame them, because their...]]></description>
+										<content:encoded><![CDATA[<p>“Neutron cannot scale.” – This is a pet peeve of several folks, I often meet whether in the customer or vendor or open-source community. I don’t blame them, because their misgivings are not unfounded. In fact, as some of the OpenStack vendors set out to demonstrate the scalability of OpenStack, they had to disable Neutron – read the recent posts from <a href="https://www.mirantis.com/blog/benchmarking-openstack-megascale-tested-mirantis-openstack-softlayer/">Mirantis</a> and <a href="http://javacruft.wordpress.com/2014/06/18/168k-instances/">Canonical</a>.</p>
+<p>As I read through the above posts, where they explain one bottleneck after another, I realize how and why the scalability of Neutron is questioned by so many, so frequently. In the Canonical scale tests, the system had so many timeouts and failures, that the ‘Neutron security group’ feature had to be turned off and eventually Neutron was completely turned off and replaced with ‘nova networking’. Yes, you read it right ! Because of scale limitations, while the world moved ahead from nova-networks to neutron, these test deployments had to move back. The reason for this limitation is unlike other OpenStack services it difficult to scale out out-of-the-box neutron server. When you enable multiple workers in Neutron there are race conditions to MySQL. Neutron Server and Neutron Agent architecture also poses challenges. Refer to the <a href="https://www.openstack.org/assets/presentation-media/junohpneutronatscalefinal.pdf">presentation</a> from HP specifically talking about the above challenges.</p>
+<p>OpenContrail, on the other hand, is a system that has been designed right from day one for scale out. With OpenContrail, a layer 3 overlay is created using a vRouter in the kernel of each of the compute nodes. The policies are defined centrally at the Controller and enforced in a distributed fashion within the vRouter. OpenContrail by default, does all services in distributed fashion &#8211; distributed routing, DHCP, floating IP and DNS &#8211; and that helps it achieve the scale that default Neutron cannot.</p>
+<p>When we saw the scalability concerns from the community, we thought of demonstrating OpenContrail capabilities by running a few basic scale tests. Seeing is believing – so here’s a <a href="https://www.youtube.com/watch?v=xN0rXHD_dqk">video</a> of the test that we’ve performed.</p>
+<p style="padding-left: 180px;">[video_lightbox_youtube video_id=&#8221;xN0rXHD_dqk&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]
+<p> Some of the salient features of the tests we conducted are:</p>
+<ul>
+<li>Contrail cluster scaled up to run 1,000 compute nodes (hence 1,000 vRouters)</li>
+<li>The cluster uses just 3 instances of the Controller (Control, Analytics and Config Nodes)</li>
+<li>55 Tenants (or Projects)</li>
+<li>260 Virtual Networks, together hosting 5,394 virtual machines</li>
+</ul>
+<p>What we demonstrated is the creation of several security groups to allow traffic between the different virtual networks within a tenant. While traffic ran, some security groups rules were modified and traffic to those virtual networks stopped, without disturbing other ongoing traffic flows, and upon adding those security group rules back, normal traffic resumed.</p>
+<p>What you will find particularly interesting in the demo, is that despite the large number of compute nodes, virtual networks and virtual machines at play, the policies defined at the Neutron level is propagated and enforced on all the compute nodes immediately. Secondly and more importantly modification of some of the security group rules, did not bring down all flows (which happens quite often in other implementations). And finally, the network footprint of the OpenContrail components is really small – and that really highlights the efficiency of the implementation. Below is a quick snapshot of the 1,000 compute nodes in action.</p>
+<p><img fetchpriority="high" decoding="async" class="alignnone wp-image-5653" src="http://www.opencontrail.org/wp-content/uploads/2014/11/openstack_neutron_blogpost_image.png" alt="openstack_neutron_blogpost_image" width="800" height="385" data-id="5653" /></p>
+<p>So, to conclude, “Neutron cannot scale” is just a belief that can be overcome. It just depends on how you implement the Neutron backend. We have tested it with just 1,000 vRouters and we expect this number to scale to several times, without affecting the performance of the system. We will try to demo a further scaled up environment, under higher load conditions in a future demo post. Meanwhile, I would encourage you to take OpenContrail for a scale test-drive and run large numbers of virtual networks and virtual machines, send heavy traffic and see how the system responds. And yes, do report the results back to the community, so others can learn and replicate it.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Contrail and Network Namespace</title>
+		<link>https://tungsten.io/contrail-and-network-namespace/</link>
+		
+		<dc:creator><![CDATA[Tao Liu]]></dc:creator>
+		<pubDate>Sat, 11 Oct 2014 23:12:10 +0000</pubDate>
+				<category><![CDATA[Performance]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://23.253.246.131/?p=5161</guid>
+
+					<description><![CDATA[1 Network Namespace Network namespace is a feature of Linux kernel. A separate network stack can be created as a network namespace for an application to run on. Network namespace...]]></description>
+										<content:encoded><![CDATA[<h5>1 Network Namespace</h5>
+<p>Network namespace is a feature of Linux kernel. A separate network stack can be created as a network namespace for an application to run on.</p>
+<p>Network namespace is one of basic technologies used by Linux Container (LXC) and Docker. The goal of this document is to walk you through a workflow to connect an application in netnamespace to be part of a Contrail Virtual network.<br />
+<span id="more-1635"></span></p>
+<h5>2 Connect Network Namespace and Virtual Network</h5>
+<p>The application running in network namespace is similar as running on bare-metal server. Contrail has the capability to connect such application to a virtual network, so that it can connect to other virtual machines. Essentially, from Contrail point of view, a network namespace is the same as a virtual machine.</p>
+<p>Opencontrail-netns is a program to connect network namespace and virtual network in Contrail.</p>
+<p><a href="https://github.com/pedro-r-marques/opencontrail-netns" target="_blank">https://github.com/pedro-r-marques/opencontrail-netns</a></p>
+<p>Here is the workflow of script daemon_start.py.</p>
+<ol>
+<li>Create a virtual machine on an existing virtual network, virtual machine interface and IP address in Contrail. Virtual machine here is not the real virtual machine running in system. Creating those objects makes Contrail treat network namespace as the same as virtual machine.</li>
+<li>Create network namespace and virtual Ethernet device (veth) that is like a pipe. The interface on one end of veth is in network namespace, which is equivalent to the interface in virtual machine. The interface on another end of veth is in default namespace, which is like the tap interface. Configure MAC address for the interface in network namespace.</li>
+<li>Register interface in default namespace to vRouter.</li>
+<li>Configure address on the interface in network namespace.</li>
+</ol>
+<p>The script daemon_stop.py removes all configurations in the reversed order.</p>
+<h5>3 Demo with MySQL</h5>
+<p>Here is a demo to show how Contrail connects MySQL server in network namespace to virtual network, so it can be accessed from other virtual machine. This demo runs on Contrail 1.05 Ubuntu based compute node. The MySQL server will run in network namespace. A MySQL client will run in VM.</p>
+<p><img decoding="async" class="size-full wp-image-5678 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2014/10/blogpost_july_23_2014_image1.png" alt="blogpost_july_23_2014_image1" width="477" height="335" data-id="5678" /></p>
+<ol>
+<li>Create virtual networks and VM.</li>
+</ol>
+<p>Create virtual networks “database” and “client” on Contrail Web UI.</p>
+<p>Create network policy to allow all traffic, attach the policy to virtual networks “database” and “client”.</p>
+<p>Launch VM “client” on virtual network “client” on OpenStack Web UI.</p>
+<ol start="2">
+<li>Build and install opencontrail-netns package.</li>
+</ol>
+<p><a href="https://github.com/pedro-r-marques/opencontrail-netns" target="_blank">https://github.com/pedro-r-marques/opencontrail-netns</a></p>
+<p>Clone the code and build the package.</p>
+<pre><span style="font-family: 'courier new', courier;"><code> $ git clone https://github.com/pedro-r-marques/opencontrail-netns.git
+ $ cd opencontrail-netns/
+ $ python ./setup.py sdist
+ $ ls dist
+ opencontrail-netns-0.1.tar.gz</code></span></pre>
+<p>Copy the package to compute node and install it.</p>
+<pre><span style="font-family: 'courier new', courier;"><code> # tar xzf opencontrail-netns-0.1.tar.gz
+ # cd opencontrail-netns-0.1/
+ # python setup.py install
+ # ls /usr/local/bin/netns-daemon-start
+ /usr/local/bin/netns-daemon-start</code></span></pre>
+<p>3. Install MySQL on compute node.</p>
+<pre><span style="font-family: 'courier new', courier;"><code># apt-get install mysql-server</code></span></pre>
+<p>4. Initialize MySQL server to add user “tony” and allow the access.</p>
+<pre><span style="font-family: 'courier new', courier;"><code> # mysql -uroot -ppassword
+ mysql&gt; CREATE USER 'tony'@'%' IDENTIFIED BY 'password';
+ mysql&gt; GRANT ALL PRIVILEGES ON *.* TO 'tony'@'%' WITH GRANT OPTION;
+ mysql&gt; FLUSH PRIVILEGES;
+ mysql&gt; quit
+ # service mysql stop</code></span></pre>
+<p>5. Update /etc/mysql/my.cnf.</p>
+<pre><span style="font-family: 'courier new', courier;"><code> /etc/mysql# diff -u my.cnf.orig my.cnf
+ --- my.cnf.orig
+ +++ my.cnf
+ @@ -44,7 +44,7 @@
+ #
+ # Instead of skip-networking the default is now to listen only on
+ # localhost which is more compatible and is not less secure.
+ -bind-address = 127.0.0.1
+ +bind-address = 0.0.0.0
+ #
+ # * Fine Tuning
+ #</code></span></pre>
+<p>6. Update /etc/init/mysql.conf.</p>
+<pre><span style="font-family: 'courier new', courier;"><code> /etc/init# diff -u mysql.conf.orig mysql.conf
+ --- mysql.conf.orig
+ +++ mysql.conf
+ @@ -16,6 +16,8 @@
+ kill timeout 300
+ pre-start script
+ + /usr/local/bin/netns-daemon-start -s 10.84.18.2 --network default-domain:demo:database mysql
+ +
+ #Sanity checks
+ [ -r $HOME/my.cnf ]
+ [ -d /var/run/mysqld ] || install -m 755 -o mysql -g root -d /var/run/mysqld
+ @@ -23,7 +25,9 @@
+ LC_ALL=C BLOCKSIZE= df --portability /var/lib/mysql/. | tail -n 1 | awk '{ exit ($4&lt;4096) }'
+ end script
+ -exec /usr/sbin/mysqld
+ +exec ip netns exec ns-mysql /usr/sbin/mysqld
+ post-start script
+ for i in `seq 1 30` ; do
+ @@ -42,3 +46,7 @@
+ done
+ exit 1
+ end script
+ +
+ +post-stop script
+ + /usr/local/bin/netns-daemon-stop -s 10.84.18.2 mysql
+ +end script</code></span></pre>
+<p>7. Start MySQL server.</p>
+<pre><span style="font-family: 'courier new', courier;"><code># service mysql start</code></span></pre>
+<p>8.Connect to MySQL server from VM “client”.</p>
+<pre><span style="font-family: 'courier new', courier;"><code> [root@client ~]# mysql -h 192.168.10.252 -utony -ppassword
+ Welcome to the MySQL monitor. Commands end with ; or \g.
+ Your MySQL connection id is 37
+ Server version: 5.5.34-0ubuntu0.12.04.1 (Ubuntu)
+ Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
+ Oracle is a registered trademark of Oracle Corporation and/or its
+ affiliates. Other names may be trademarks of their respective
+ owners.
+ Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+ mysql&gt;</code></span></pre>
+<h5>4 Step by Step</h5>
+<p>This shows how netns-daemon-start works step by step.</p>
+<p>1. Get ready</p>
+<pre><span style="font-family: 'courier new', courier;"><code> # cd opencontrail-netns-0.1/opencontrail_netns
+ # python
+ Python 2.7.3 (default, Apr 10 2013, 06:20:15)
+ [GCC 4.6.3] on linux2
+ Type "help", "copyright", "credits" or "license" for more information.
+ &gt;&gt;&gt; from vnc_api import vnc_api
+ &gt;&gt;&gt; import subprocess
+ &gt;&gt;&gt; vnc = vnc_api.VncApi(username = 'admin', password = 'contrail123', tenant_name = 'admin', api_server_host = '10.84.18.2')</code></span></pre>
+<p>2. Configure Contrail</p>
+<pre><span style="font-family: 'courier new', courier;"><code> &gt;&gt;&gt; vm_instance = vnc_api.VirtualMachine(name = 'a4s5-mysql')
+ &gt;&gt;&gt; vnc.virtual_machine_create(vm_instance)
+ u'3bf9a099-c25a-493f-ab83-a8ed21047e50'
+ &gt;&gt;&gt;
+ &gt;&gt;&gt; vm_interface = vnc_api.VirtualMachineInterface(name = 'veth0', parent_obj = vm_instance)
+ &gt;&gt;&gt; vn = vnc.virtual_network_read(fq_name = ['default-domain', 'demo', 'database'])
+ &gt;&gt;&gt; vm_interface.set_virtual_network(vn)
+ &gt;&gt;&gt; vnc.virtual_machine_interface_create(vm_interface)
+ u'a0590a72-2952-445f-a9bf-b5762d8cb9fe'
+ &gt;&gt;&gt; vm_interface = vnc.virtual_machine_interface_read(id = vm_interface.uuid)
+ &gt;&gt;&gt;
+ &gt;&gt;&gt; ip = vnc_api.InstanceIp(name = 'a4s5-mysql.veth0')
+ &gt;&gt;&gt; ip.set_virtual_machine_interface(vm_interface)
+ &gt;&gt;&gt; ip.set_virtual_network(vn)
+ &gt;&gt;&gt; vnc.instance_ip_create(ip)
+ u'3dc7f645-6863-4b30-9a5a-14ce052e2ca3'
+ &gt;&gt;&gt; ip = vnc.instance_ip_read(id = ip.uuid)
+ &gt;&gt;&gt; ip.get_instance_ip_address()
+ u'192.168.10.252'</code></span></pre>
+<p>3. Configure network namespace</p>
+<pre><span style="font-family: 'courier new', courier;"><code> &gt;&gt;&gt; subprocess.call('ip netns add ns-mysql', shell = True)
+ 0
+ &gt;&gt;&gt; subprocess.call('ip netns list', shell = True)
+ ns-mysql
+ 0
+ &gt;&gt;&gt; subprocess.call('ip link add veth0 type veth peer name instance0', shell = True)
+ 0
+ &gt;&gt;&gt; subprocess.call('ip link set veth0 netns ns-mysql', shell = True)
+ 0
+ &gt;&gt;&gt; subprocess.call('ip link set instance0 up', shell = True)
+ 0
+ &gt;&gt;&gt; mac = vm_interface.virtual_machine_interface_mac_addresses.mac_address[0]
+ &gt;&gt;&gt; subprocess.call('ip netns exec ns-mysql ifconfig veth0 hw ether %s' %(mac), shell = True)
+ 0</code></span></pre>
+<p>4. Register to vRouter</p>
+<pre><span style="font-family: 'courier new', courier;"><code> &gt;&gt;&gt; import vrouter_control
+ &gt;&gt;&gt; vrouter_control.add_interface('instance0', vm_interface.uuid, vm_instance.uuid, mac)</code></span></pre>
+<p>5. Configure interface</p>
+<pre><span style="font-family: 'courier new', courier;"><code> &gt;&gt;&gt; subprocess.call('ip netns exec ns-mysql dhclient veth0', shell = True)
+ 0
+ &gt;&gt;&gt; subprocess.call('ip netns exec ns-mysql ip addr list', shell = True)
+ 1: lo: mtu 65536 qdisc noop state DOWN
+ link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+ 11: veth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP qlen 1000
+ link/ether 02:a0:59:0a:72:29 brd ff:ff:ff:ff:ff:ff
+ inet 192.168.10.252/24 brd 192.168.10.255 scope global veth0
+ inet6 fe80::a0:59ff:fe0a:7229/64 scope link
+ valid_lft forever preferred_lft forever</code></span></pre>
+<p>Now, in Contrail, virtual machine, virtual machine interface and routes are all set.</p>
+<p>&nbsp;</p>
+<p><img decoding="async" class="alignnone size-full wp-image-5680" src="http://www.opencontrail.org/wp-content/uploads/2014/10/blogpost_july_23_2014_image3.png" alt="blogpost_july_23_2014_image3" width="1071" height="234" data-id="5680" /><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5681" src="http://www.opencontrail.org/wp-content/uploads/2014/10/blogpost_july_23_2014_image4.png" alt="blogpost_july_23_2014_image4" width="1068" height="640" data-id="5681" /></p>
+<p>6. Start MySQL server in network namespace</p>
+<pre><span style="font-family: 'courier new', courier;"><code># ip netns exec ns-mysql /usr/sbin/mysqld</code></span></pre>
+<p>7. Connect MySQL server from VM “client”</p>
+<pre><span style="font-family: 'courier new', courier;"><code>[root@client ~]# ip addr list
+ 1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 16436 qdisc noqueue state UNKNOWN
+ link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+ inet 127.0.0.1/8 scope host lo
+ inet6 ::1/128 scope host
+ valid_lft forever preferred_lft forever
+ 2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP qlen 1000
+ link/ether 02:b8:43:bb:24:41 brd ff:ff:ff:ff:ff:ff
+ inet 192.168.1.253/24 brd 192.168.1.255 scope global eth0
+ inet6 fe80::b8:43ff:febb:2441/64 scope link
+ valid_lft forever preferred_lft forever
+ [root@client ~]#
+ [root@client ~]# mysql -h 192.168.10.252 -utony -ppassword
+ Welcome to the MySQL monitor. Commands end with ; or \g.
+ Your MySQL connection id is 37
+ Server version: 5.5.34-0ubuntu0.12.04.1 (Ubuntu)
+ Copyright (c) 2000, 2013, Oracle and/or its affiliates. All rights reserved.
+ Oracle is a registered trademark of Oracle Corporation and/or its
+ affiliates. Other names may be trademarks of their respective
+ owners.
+ Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+ mysql&gt;</code></span></pre>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Evaluating OpenContrail Virtual Router Performance</title>
+		<link>https://tungsten.io/evaluating-opencontrail-virtual-router-performance/</link>
+		
+		<dc:creator><![CDATA[Rajagopalan Sivaramakrishnan]]></dc:creator>
+		<pubDate>Wed, 16 Oct 2013 03:28:38 +0000</pubDate>
+				<category><![CDATA[Performance]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://opencontrail.org/?p=601</guid>
+
+					<description><![CDATA[The OpenContrail solution uses overlays for network virtualization. Packets between tenant virtual machines are encapsulated in a tunnel on the IP fabric connecting the compute servers in the network. A...]]></description>
+										<content:encoded><![CDATA[<p>The OpenContrail solution uses overlays for network virtualization. Packets between tenant virtual machines are encapsulated in a tunnel on the IP fabric connecting the compute servers in the network.</p>
+<p>A common concern with using tunnels to encapsulate packets is whether the performance will be equivalent to the non-tunneled scenario. Many server NICs that are commonly used today do not support performance optimizations, like segmentation offload for tunneled packets. Although some vendors have recently announced NICs with optimizations for overlay networks, these are not yet in common use in data center networks.</p>
+<p>As a result, there is a need to optimize performance for the least common denominator i.e. without making any assumptions about the hardware capabilities of the server NICs. Also, one of the underlying design principles of the OpenContrail solution is to only use standard protocols and encapsulations in order to support interoperability with existing network hardware (or virtual) devices and leverage years of experience with proven protocols. So, inventing a new protocol or encapsulation to optimize for performance was not an attractive option.</p>
+<p><span id="more-601"></span></p>
+<p>OpenContrail has a module called vRouter that performs data forwarding in the kernel.  The vRouter module is an alternative to the Linux bridge in the kernel and one of its functionality is to perform tunnel encapsulation and decapsulation in software. A comparison of the forwarding performance of vRouter versus Linux bridge would give a good indication of the overhead of software tunneling.</p>
+<p><strong>THE TEST</strong></p>
+<p>The setup used to evaluate performance consists of 2 servers connected using Intel 10G NICs with a MTU of 1500. The servers have 2 CPU sockets each, with 6 cores per socket and 2 threads per core. The processor is an Intel Xeon running at 2.5GHz. The servers have 128GB of memory each and run Centos 6.4 as the host operating system. A virtual network is created and a virtual machine (VM) is instantiated on each server in this virtual network. Each VM has 1 VCPU, 2GB of memory and runs Ubuntu 12.04 as the guest operating system. A TCP streaming test is run between the VMs on the virtual network.</p>
+<p style="text-align: left;">As shown in <strong>Figure 1</strong> below, the netperf client application on VM1 sends a TCP stream to netserver application running on VM2.  Packets are sent over a virtual interface (vif1) from the guest into the vRouter module on the sending host, where they are encapsulated in a tunnel before being transmitted on the wire. On the receiving host, the vRouter module decapsulates the packet and forwards them to the guest over vif2. The tests with Linux bridge are exactly the same except that vRouter is replaced by the Linux bridge module.<img loading="lazy" decoding="async" class="alignnone wp-image-5817" src="http://www.opencontrail.org/wp-content/uploads/2013/10/vRouter-PerfTest-Setup.png" alt="vRouter-PerfTest-Setup" width="800" height="494" data-id="5817" /></p>
+<p>There is some variability in the measured throughput with Linux bridge as well as with vRouter depending on which CPU cores the guest VM and vHost thread are scheduled. This is exacerbated in a NUMA system as a result of the overhead associated with accessing memory from a remote NUMA node. In order to avoid this variability in performance between test runs, the guest VM and the vHost thread are each pinned to a CPU core. This results in consistent numbers between test runs and allows an apples-to-apples comparison.</p>
+<p style="text-align: left;"> On this setup, the unidirectional throughput measured with vRouter using MPLS over GRE as the encapsulation is 9.18Gbps. The CPU consumption on the sender is 128% (1.28 CPU cores) and it is 166% on the receiver. The CPU consumption includes the processing to push packets to and from the guest and does not include the CPU consumed by the guest itself. With bidirectional traffic (one TCP stream in each direction), the aggregate throughput is 13.1 Gbps and the CPU consumption is 188% on both ends.</p>
+<p style="text-align: left;">The table below compares the throughput and CPU consumption of vRouter with the Linux bridge numbers for a unidirectional TCP streaming test.</p>
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td valign="top" width="111"></td>
+<td style="text-align: center;" valign="top" width="111"><strong>Throughput</strong></td>
+<td style="text-align: center;" valign="top" width="111"><strong>Sender CPU</strong></td>
+<td style="text-align: center;" valign="top" width="111"><strong>Receiver CPU</strong></td>
+</tr>
+<tr>
+<td valign="top" width="111"><strong>Linux bridge</strong></td>
+<td style="text-align: center;" valign="top" width="111">9.41 Gbps</td>
+<td style="text-align: center;" valign="top" width="111">85%</td>
+<td style="text-align: center;" valign="top" width="111">125%</td>
+</tr>
+<tr>
+<td valign="top" width="111"><strong>vRouter</strong></td>
+<td style="text-align: center;" valign="top" width="111">9.18 Gbps</td>
+<td style="text-align: center;" valign="top" width="111">128%</td>
+<td style="text-align: center;" valign="top" width="111">166%</td>
+</tr>
+</tbody>
+</table>
+<p style="text-align: center;"><b>Table 1: TCP unidirectional streaming test</b></p>
+<p>The table below compares the numbers for a bidirectional TCP streaming test. The throughput below is the aggregate of the measured throughput at each end. The CPU consumption is the same on both servers as the traffic is bidirectional</p>
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td valign="top" width="148"></td>
+<td style="text-align: center;" valign="top" width="148"><strong>Throughput</strong></td>
+<td style="text-align: center;" valign="top" width="148"><strong>CPU consumption</strong></td>
+</tr>
+<tr>
+<td valign="top" width="148"><strong>Linux bridge</strong></td>
+<td style="text-align: center;" valign="top" width="148">13.9 Gbps</td>
+<td style="text-align: center;" valign="top" width="148">128%</td>
+</tr>
+<tr>
+<td valign="top" width="148"><strong>vRouter</strong></td>
+<td style="text-align: center;" valign="top" width="148">13.1 Gbps</td>
+<td style="text-align: center;" valign="top" width="148">188%</td>
+</tr>
+</tbody>
+</table>
+<p style="text-align: center;"> <b>Table 2: TCP bidirectional streaming test</b></p>
+<p style="text-align: left;"> In order to measure the latency of communication, a TCP request-response test was run between the 2 servers. The table below compares the number of request-response transactions seen with Linux bridge and vRouter.</p>
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td valign="top" width="221"></td>
+<td style="text-align: center;" valign="top" width="221"><strong>Request-response transactions</strong></td>
+</tr>
+<tr>
+<td valign="top" width="221"><strong>Linux bridge</strong></td>
+<td style="text-align: center;" valign="top" width="221">11050</td>
+</tr>
+<tr>
+<td valign="top" width="221"><strong>VRouter</strong></td>
+<td style="text-align: center;" valign="top" width="221">10800</td>
+</tr>
+</tbody>
+</table>
+<p style="text-align: center;"> <b>Table 3: TCP request-response test</b></p>
+<p style="text-align: left;">Data center networks often enable jumbo frames for better performance. The following table compares the performance of vRouter with Linux bridge with a jumbo MTU on the 10G interface. The guest application was modified to use sendfile() instead of send() in order to avoid a copy from user space to kernel. Otherwise, the single-threaded guest application couldn’t achieve a bidirectional throughput higher than 14 Gbps.</p>
+<table border="0" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td valign="top" width="148"></td>
+<td style="text-align: center;" valign="top" width="148"><strong>Throughput</strong></td>
+<td style="text-align: center;" valign="top" width="148"><strong>CPU consumption</strong></td>
+</tr>
+<tr>
+<td valign="top" width="148"><strong>Linux bridge</strong></td>
+<td style="text-align: center;" valign="top" width="148">18 Gbps</td>
+<td style="text-align: center;" valign="top" width="148">125%</td>
+</tr>
+<tr>
+<td valign="top" width="148"><strong>vRouter</strong></td>
+<td style="text-align: center;" valign="top" width="148">17.4 Gbps</td>
+<td style="text-align: center;" valign="top" width="148">120%</td>
+</tr>
+</tbody>
+</table>
+<p style="text-align: center;"><b>Table 4: TCP bidirectional streaming test (jumbo MTU)</b></p>
+<p><b>CONCLUSION</b></p>
+<p>As can be seen from the above tables, vRouter achieves comparable throughput and latency with Linux bridge. The throughput is slightly lower with vRouter due to the additional bytes sent on the wire for the tunnel headers. The latency is slightly higher with vRouter as it uses multiple CPU cores to process packets and this incurs additional latency. However, the big advantage is that VMs running on the compute nodes can directly communicate with any hardware gateway router (such as the Juniper MX) or Networking Services like Firewalls, etc.</p>
+<p>There are other encapsulation standards supported by vRouter – VXLAN and MPLS over UDP. Using MPLS over UDP allows the server NIC to verify checksums in hardware and reduces the CPU consumption on the receiver by about 15%, while achieving the same throughput.</p>
+<p>In summary, the OpenContrail solution achieves close to line rate forwarding on a 10G link without depending on any performance optimizations in the server NICs. This throughput is achieved using standard protocols and encapsulations that allow for interoperability. Hence, tunneling packets in an overlay network does not add any significant overheard compared to the non-tunneled scenario.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

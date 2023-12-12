@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Neutron Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/neutron/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/neutron/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Sat, 23 Apr 2016 21:09:27 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>Neutron Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/neutron/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Enhancing OpenStack LBaaSv1 via Custom Attributes in OpenContrail</title>
+		<link>https://tungsten.io/enhancing-openstack-lbaasv1-via-custom-attributes-in-opencontrail/</link>
+		
+		<dc:creator><![CDATA[Aniket Daptari]]></dc:creator>
+		<pubDate>Sat, 23 Apr 2016 21:09:27 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[LBaas]]></category>
+		<category><![CDATA[Neutron]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6995</guid>
+
+					<description><![CDATA[Note: This blog is co-authored by Aniket Daptari from Juniper Networks and Varun Lodaya from Symantec. Varun will be presenting his work at the upcoming OpenContrail User Group meeting during...]]></description>
+										<content:encoded><![CDATA[<p><em><strong>Note: </strong>This blog is co-authored by Aniket Daptari from Juniper Networks and Varun Lodaya from Symantec. Varun will be presenting his work at the upcoming <a href="http://www.opencontrail.org/event/ocug-austin-2016/">OpenContrail User Group meeting </a>during the OpenStack Summit (April 27th). <strong><a href="http://www.opencontrail.org/event/ocug-austin-2016/">RSVP</a></strong> to the event if you want to see his talk.</em></p>
+<p>&nbsp;</p>
+<p>This blog highlights how OpenContrail has fostered the notion of User and Developer communities. Here, we highlight one example of a specific User and how they have contributed as a Developer to enhance the value they extract from OpenContrail. Symantec has now been a long time user and contributor to OpenContrail. In this particular blog we aim to highlight one of their most recent contributions that enhances the LBaaS offering in a manner that not only addresses their specific use case, but is generic enough for other users to leverage.</p>
+<p>Further, this general approach may be used to extend other API sets beyond LBaaS as well.</p>
+<p>With this, we also want to highlight the contribution of OpenContrail developer, Varun Lodaya who has played a critical role in the design and development of this enhancement</p>
+<h3>Abstract :</h3>
+<p>With LBaaS, OpenStack attempts to define a single set of APIs to consume load balancing functionality regardless of the implementation of those APIs. This allows the OpenStack operator flexibility in choosing the load balancing implementation on the backend as well as in making changes to that back end. This has allowed various vendors to provide their southbound LBaaS drivers for example F5, A10, HAProxy, NGINX, etc. Now, while each of these load balancers offers many varied features, the northbound LBaaS APIs (v1.0) are a bit limited. It is perhaps impractical to provide APIs for every feature provided by all the load balancers. Therefore, there is a need to provide a way to support load balancer functionality beyond what is made available via the LBaaS v1.0 APIs.</p>
+<p>OpenContrail user, Symantec had the following LBaaS use cases that translated to a requirement to exercise additional functionality beyond what is available via LBaaS v1. In response to that requirement, Symantec developers designed the LBaaS Custom Attributes support.</p>
+<p>The following are the use cases in the words of Cloud Platform Engineering developer, Varun Lodaya, from Symantec:</p>
+<h3>Use Cases:</h3>
+<p>● Enable our cloud users to manage all their LBaaS features/configurations themselves.<br />
+● Empower the cloud providers to decide what capabilities they want their users to have since they know their infrastructure capabilities and limitations the best.<br />
+● Support tenant SSL certs with custom attributes.</p>
+<h3>Design :</h3>
+<p>We came up with a modular design that would help to cater to all of the above use cases. Following is the design flow:<br />
+● Based on the LBaaS driver that the cloud provider is using, the cloud provider will identify the additional features they want to expose to their users. These additional features will be made available to the users via custom attributes. The cloud provider will then generate a validation file that contains all the custom attributes (corresponding to the features) they want to provide to their users. In addition to the list of additional features, the cloud provider will also specify any limits they might want to enforce associated with those custom attributes.<br />
+● This validation file will be used and enforced by OpenContrail when facilitating the invocation of the custom attributes.<br />
+● When users exercise the load balancing functionality via the LBaaS APIs, they will invoke additional functionality by specifying a list of keyvalue dicts while configuring the LBaaS pool. This list of keyvalue dicts is saved in a database.<br />
+● When the LBaaS VIP is created, the OpenContrail Service Monitor process reads the custom attributes from the lb_pool object and validates them against the corresponding custom validation file.<br />
+● If validation fails, service_monitor process moves the vip/service_instance to “Error” state with the corresponding error message. It’s users responsibility to then go back and correct their custom attributes to pass validation.<br />
+● If validation passes, the custom attributes are pushed down to the corresponding drivers. In case of OpenContrail’s implementation of LBaaS using HAProxy, these custom attributes get pushed to the vRouter from where they get applied to the corresponding HAProxy process.<br />
+● This custom attributes extension could also be used to support tenant level SSL certs with LBaaSv1. Users could manage their certs in different ways, one of those ways being the Openstack project Barbican.<br />
+● Once they have their certificate pem files ready, they can provide the certificate references as custom attributes to OpenContrail.<br />
+● OpenContrail then downloads the certificates via references provided in custom attributes and updates the corresponding southbound driver with the SSL certificates.<br />
+● Currently, we support Openstack Barbican as certificate manager and OpenContrail code fetches the certificates and private keys from Barbican, but, code is generic enough to be able to plugin any cert_manager_driver which could then fetch the certificates from thirdparty certificate managers.</p>
+<h3>Usage:</h3>
+<p><strong>CLI:</strong><br />
+<em>Neutron CLI to provide custom attributes:</em></p>
+<pre><span style="font-family: 'courier new', courier;">neutron lb-pool-create --name Test_Pool --subnet-id &lt;subnetid&gt;
+--lb-method ROUND_ROBIN --protocol HTTP --custom-attributes type=dict
+list=true client_timeout=50000,
+tls_container= http://&lt;barbican_ep&gt;/v1/containers/ &lt;container_ref_uuid&gt;
+neutron lb-pool-update &lt;pool-id&gt; --custom-attributes type=dict
+list=true server_timeout=100000</span></pre>
+<p><em>Barbican CLI to manage certs :</em></p>
+<pre><span style="font-family: 'courier new', courier;">barbican secret store --payload-content-type='text/plain'
+--name='certificate' --payload="$(cat server.crt)"
+barbican secret store --payload-content-type='text/plain'
+--name='private_key' --payload="$(cat server.key)"
+barbican secret container create --name='tls_container'
+--type='certificate' --secret="certificate=$(barbican secret list |
+awk '/ certificate / {print $2}')" --secret="private_key=$(barbican
+secret list | awk '/ private_key / {print $2}')"</span></pre>
+<p><strong>API</strong>:<br />
+<em>Neutron API to provide custom attributes:</em></p>
+<pre><span style="font-family: 'courier new', courier;">curl -i -X POST http://&lt;neutron_end_point&gt;:9696/v2.0/ports.json -H
+"UserAgent: pythonneutronclient" -H "ContentType:
+application/json" -H "Accept: application/json" -H "X-Auth-Token:
+0cb1bad6081e4ca383495a3f5a3ea718" -d '{"port": {"network_id":
+"9be1ce8e-5226-4046-be82-100fcd041dc1", "fixed_ips": [{"subnet_id":
+"c2968821-e52b-4c2e-a895-4ded7abf2edb", "ip_address":
+"192.168.1.5"}], "custom_attributes": [{"client_timeout=50000",
+"tls_container=http://&lt;barbican_ep&gt;/v1/containers/&lt;container_uuid&gt;"}]
+, "admin_state_up": true}}'</span></pre>
+<p><em>Barbican API to create private_key secrets :</em></p>
+<pre><span style="font-family: 'courier new', courier;">curl -i -X POST https://&lt;barbicanapi_end_point&gt;:9311/v1/secrets -H
+"content-type:application/json" -H "X-Auth-Token:$TOKEN" \
+-d '{"name": "Private_Key", "payload": "&lt;private_key&gt;",
+"payload_content_type": "text/plain"}'</span></pre>
+<p><em>Barbican API to create certificate secrets:</em></p>
+<pre><span style="font-family: 'courier new', courier;">curl -i  -X POST https://&lt;barbicanapi_end_point&gt;:9311/v1/secrets -H
+"content-type:application/json" -H "X-Auth-Token:$TOKEN" \
+-d '{"name": "Certificate", "payload": "&lt;certificate&gt;",
+"payload_content_type": "text/plain"}'</span></pre>
+<p><em>Barbican API to create pem containers:</em></p>
+<pre><span style="font-family: 'courier new', courier;">curl -i -X POST https://&lt;barbicanapi_end_point&gt;:9311/v1/containers -H
+"content-type:application/json" -H "X-Auth-Token:$TOKEN" \
+-d '{"name": "tls_container", "type": "certificate", "secret_refs": \
+[{"name": "private_key", "secret_ref": "&lt;key_ref&gt;"},{"name": \
+"certificate", "secret_ref": "&lt;certificate_ref&gt;"}]}'</span></pre>
+<p><em>Barbican API to update secret ACLs:</em></p>
+<pre><span style="font-family: 'courier new', courier;">curl -i -X PUT \https://&lt;barbicanapi_end_point&gt;:9311/v1/secrets/&lt;secret_uuid&gt;/acls \
+-H "content-type: application/json" -H "X-Auth-Token:$TOKEN" \
+-d '{"read": {"users": "[&lt;user_uuids&gt;]"}}'</span></pre>
+<p><strong>EXAMPLE</strong>:<br />
+How to use Custom Attributes for SSL Cert Support with HAProxy:<br />
+Steps:<br />
+1) Add the new config file which contains keystone auth credentials to<br />
+/etc/contrail/contrail-vrouter-agent.conf file as follows:</p>
+<pre><span style="font-family: 'courier new', courier;">cat /etc/contrail/contrail-vrouter-agent.conf | grep B3 lb_custom
+[ SERVICE INSTANCE]
+<span style="color: #993300;"># Path to the script which handles the netns commands</span>
+netns_command = <span style="color: #339966;">/usr/</span>bin/opencontrail-vrouter-netns
+lb_custom_attr_conf_path = <span style="color: #339966;">/etc/</span>contrail/contrail-vrouter-custom-attr.conf</span></pre>
+<p>2) The keystone file contains the following by default:</p>
+<pre><span style="font-family: 'courier new', courier;">/etc/contrail/contrail-vrouter-custom-attr.conf
+[DEFAULT]
+
+[KEYSTONE]
+keystone_endpoint=http://172.16.38.189:5000
+barbican_endpoint=http://172.16.38.188:9311
+domain_name=default
+username=admin
+password=abc123
+project_name=demo
+keystone_version=v3
+
+[CERT]
+#cert_manager=Barbican_Cert_Manager
+cert_manager=Generic_Cert_Manager</span></pre>
+<p>3) Restart contrail vrouter agent for it to read this new config.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ubuntu : <span style="color: #339966;">/var/</span>log/keystone <span style="color: #993300;"># service supervisor-vrouter restart</span>
+supervisor-vrouter stop / waiting
+supervisor-vrouter start / running , process <span style="color: #008000;">18287</span></span></pre>
+<p>Steps 4 to 7 would vary based on the driver selected in the config.</p>
+<p>Barbican Cert Manager Flow:</p>
+<p>4) Create barbican secrets first. Make sure payloadcontenttype is ‘text/plain’.</p>
+<pre><span style="font-family: 'courier new', courier;">barbican secret store --payload-content-type= <span style="color: #339966;">'text/plain'</span> --name= <span style="color: #339966;">'certificate'</span>
+--payload= <span style="color: #339966;">"$(cat ssl.crt)"</span>
+barbican secret store --payload-content-type= <span style="color: #339966;">'text/plain'</span> --name = <span style="color: #339966;">'private_key'</span>
+--payload= <span style="color: #339966;">"$(cat ssl.key)"</span></span></pre>
+<p>5) Create the barbican container referencing both the secrets</p>
+<pre><span style="font-family: 'courier new', courier;">barbican container create --name= <span style="color: #339966;">'tls_container'</span> --secret=<span style="color: #339966;"> "certificate=$(barbican</span>
+<span style="color: #339966;">secret list | awk '/ certificate / {print $2}')"</span> --secret= <span style="color: #339966;">"private_key=$(barbican</span>
+<span style="color: #339966;">secret list | awk '/ private_key / {print $2}')"</span></span></pre>
+<p>6) Now create the load balancer pool with tls_container as the custom-attribute as follows:</p>
+<pre><span style="font-family: 'courier new', courier;">neutron lb-pool-create --subnet-id c41ec07c-9330-4469-b7f7-33fd4f29fce1 --lb-method
+ROUND_ROBIN --protocol HTTPS --name TestPool --custom-attributes type = dict list = true
+tls_container = <a href="http://172.16.38.188:9311/v1/containers/f3c48a4b-efab-4050-9c6e-289fb6c10168">http://172.16.38.188:9311/v1/containers/f3c48a4b-efab-4050-9c6e-289fb6c10168</a></span></pre>
+<p>7) Create the load balancer VIP now</p>
+<pre><span style="font-family: 'courier new', courier;">neutron lb-vip-create --subnet-id c41ec07c-9330-4469-b7f7-33fd4f29fce1 --protocol HTTP
+--protocol-port 443 --name TestVip TestPool</span></pre>
+<p>Basic Cert Manager Flow:</p>
+<p>4) Store secrets in shared folder.</p>
+<p>5) Now create the load balancer pool with tls_container as the custom-attribute as follows:</p>
+<pre><span style="font-family: 'courier new', courier;">neutron lb-pool-create --subnet-id c41ec07c-9330-4469-b7f7-33fd4f29fce1 --lb-method
+ROUND_ROBIN --protocol HTTPS --name TestPool --custom-attributes type = dict list = true
+tls_container =<span style="color: #808000;">/var/lib/contrail/shared_crts/crt.pem</span></span></pre>
+<p>7) Create the load balancer VIP now</p>
+<pre><span style="font-family: 'courier new', courier;">neutron lb-vip-create --subnet-id c41ec07c-9330-4469--b7f7-33fd4f29fce1 --protocol HTTP
+--protocol-port 443 --name <span style="color: #800080;">TestVip TestPool</span></span></pre>
+<p>8) Monitor Logs by tailing the below file:</p>
+<p>/var/log/contrail/haproxy_parse.log</p>
+<p>BLUEPRINT and SOURCE CODE:<br />
+<a href="https://blueprints.launchpad.net/opencontrail/+spec/lbaas-custom-attr-support">https://blueprints.launchpad.net/opencontrail/+spec/lbaas-custom-attr-support</a><br />
+<a href="https://bugs.launchpad.net/opencontrail/+bug/1475393">https://bugs.launchpad.net/opencontrail/+bug/1475393</a><br />
+<a href="https://bugs.launchpad.net/opencontrail/+bug/1546253">https://bugs.launchpad.net/opencontrail/+bug/1546253</a><br />
+<a href="https://bugs.launchpad.net/opencontrail/+bug/1547645">https://bugs.launchpad.net/opencontrail/+bug/1547645</a></p>
+<p>&nbsp;</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

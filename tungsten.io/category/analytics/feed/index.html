@@ -1,0 +1,1191 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Analytics Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/analytics/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/analytics/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Tue, 25 Jul 2023 20:59:21 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>Analytics Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/analytics/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Tungsten Fabric architecture—an overview</title>
+		<link>https://tungsten.io/tungsten-fabric-architecture-an-overview/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Tue, 03 Aug 2021 00:14:33 +0000</pubDate>
+				<category><![CDATA[Analytics]]></category>
+		<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Linux Foundation]]></category>
+		<category><![CDATA[Open Source]]></category>
+		<category><![CDATA[Tungsten Fabric]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8350</guid>
+
+					<description><![CDATA[This is a contributed blog from LF Networking Member CodiLime. Originally published here. SDN or Software-Defined Networking is an approach to networking that enables the programmatic and dynamic control of...]]></description>
+										<content:encoded><![CDATA[
+<p><strong><em>This is a contributed blog from LF Networking Member CodiLime. </em></strong><a href="https://codilime.com/blog/tungsten-fabric-architecture-an-overview/"><strong><em>Originally published here</em></strong>.</a></p>
+
+
+
+<p><strong>SDN or Software-Defined Networking is an approach to networking that enables the programmatic and dynamic control of a network. It is considered the next step in the evolution of network architecture. To implement this approach effectively, you will need a mature SDN Controller such as Tungsten Fabric. Read our blog post to get a comprehensive overview of Tungsten Fabric architecture.</strong></p>
+
+
+
+<h2 class="wp-block-heading">What is Tungsten Fabric</h2>
+
+
+
+<p><a href="https://codilime.com/tungsten-fabric/">Tungsten Fabric</a>&nbsp;(previously OpenContrail) is an open-source&nbsp;<a href="https://codilime.com/glossary/sdn-controller/">SDN controller</a>&nbsp;that provides connectivity and security for virtual, containerized or bare-metal workloads. It is developed under the umbrella of&nbsp;<a href="https://tungsten.io/">the Linux Foundation</a>. Since most of its features are platform- or device agnostic, TF can connect mixed VM-container-legacy stacks. What Tungsten Fabric sees is only a source and target API. The technology stack that TF can connect includes:</p>
+
+
+
+<ul>
+<li>Orchestrators or virtualization platforms (e.g. OpenShift, Kubernetes, Mesos or VMware vSphere/Orchestrator)</li>
+
+
+
+<li>OpenStack (via a monolithic plug-in or an ML2/3 network driver mechanism)</li>
+
+
+
+<li>SmartNIC devices</li>
+
+
+
+<li>SR-IOV clusters</li>
+
+
+
+<li>Public clouds (multi-cloud or hybrid solutions)</li>
+
+
+
+<li>Third-party proprietary solutions</li>
+</ul>
+
+
+
+<p>One of TF’s main strengths is its ability to connect both the physical and virtual worlds. In other words, to connect in one network different workloads regardless of their nature. They can be Virtual Machines, physical servers or containers.</p>
+
+
+
+<p>To deploy Tungsten Fabric, you may need&nbsp;<a href="https://codilime.com/network-professional-services/">Professional Services (PS)</a>&nbsp;to integrate it with your existing infrastructure and ensure ease of use and security.</p>
+
+
+
+<h2 class="wp-block-heading">Tungsten Fabric components</h2>
+
+
+
+<p>The entire TF architecture can be divided into the&nbsp;<a href="https://codilime.com/glossary/control-plane/">control plane</a>&nbsp;and&nbsp;<a href="https://codilime.com/glossary/data-plane/">data plane</a>&nbsp;components. Control plane components include:</p>
+
+
+
+<ul>
+<li>Config—managing the entire platform</li>
+
+
+
+<li>Control—sending rules for network traffic management to vRouter agents</li>
+
+
+
+<li>Analytics—collecting data from other TF components (config, control, compute)</li>
+</ul>
+
+
+
+<p>Additionally, there are two optional components of the Config:</p>
+
+
+
+<ul>
+<li>Device Manager—managing underlay physical devices like switches or routers</li>
+
+
+
+<li>Kube Manager—observing and reporting the status of Kubernetes cluster</li>
+</ul>
+
+
+
+<p>Data plane or compute components include:</p>
+
+
+
+<ul>
+<li>vRouter and its agents—managing packet flow at the virtual interface vhost0 according to the rule defined in the control component and received using vRouter agents</li>
+</ul>
+
+
+
+<h2 class="wp-block-heading">TF Config—the brain of the platform</h2>
+
+
+
+<p>TF Config is the main part of the platform where network topologies are configured. It is the biggest TF component developed by the largest number of developers. In a nutshell, it is a database where all configurations are stored. All other TF components depend on the Config. The term itself has two meanings:</p>
+
+
+
+<ul>
+<li>VM where all containers are stored</li>
+
+
+
+<li>A container named “config” where the entire business logic is stored</li>
+</ul>
+
+
+
+<p>TF Config has two APIs: North API (provided by Config itself) and South API (provided by other control plane components). The first one is more important here because it is the API used for communication. The South API is used by Device Manager (also a part of TF and discussed later) and other tools.</p>
+
+
+
+<p>TF Config uses an intent-based approach. The network administrator does not need to define all conditions but only how the network is expected to work. Other elements are configured automatically. For example, you want to enable network traffic from one network to another. It is enough to define this intention, and all the magic is done under the hood.</p>
+
+
+
+<p>The schema transformer listens to the database to check if there is a new entry. When such an entry is added, it checks for lacking data and completes it using the Northbound API. In this way, network routings are created, a firewall is unblocked to enable the traffic to flow between these two networks, and the devices obtain all the data necessary to get the network up and running.&nbsp;</p>
+
+
+
+<p>An intent-based approach automates network creation. There are many settings that need to be defined when creating a new network, and it takes time to set up all of them. As a process, it is also error-prone. Using TF simplifies everything, as most settings are default ones and are completed automatically.</p>
+
+
+
+<p>When it comes to communication with Config, its API is shared via http. Alternatively, you can use a TF UI or cURL, a command line tool for file transfer with a URL syntax supporting a number of protocols including HTTP, HTTPS, FTP, etc. There is also a TF CLI tool.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/2e290badcc110dcce6a0552dbc336d7aff19ec7a/0799e/img/codilime_tungsten-fabric-config-with-openstack.png" alt="Tungsten Fabric Config with OpenStack" title="Fig 1. Tungsten Fabric Config with OpenStack"/></figure>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/ae5f2aa3d9d32d1df4f649baa05ea40cd4f30dff/7e06b/img/codilime_tungsten_fabric_config_with_kubernetes.png" alt="Tungsten Fabric Config with Kubernetes" title="Fig 2. Tungsten Fabric Config with Kubernetes"/></figure>
+
+
+
+<p></p>
+
+
+
+<h2 class="wp-block-heading">Managing physical devices with Device Manager</h2>
+
+
+
+<p>Device Manager is an optional component with two major functions. Both are related to fabric management, which is the management of underlay physical devices like switches or routers.</p>
+
+
+
+<p>First, it is responsible for listening to configuration events from the Config API Server and then for pushing required configuration changes to physical devices. Virtual Networks, Logical Routers and other overlay objects can be extended to physical routers and switches. Device Manager enables homogeneous configuration management of overlay networking across compute hosts and hardware devices. In other words, bare-metal servers connected to physical switches or routers may be a part of the same Virtual Network as virtual machines or containers running on compute hosts.</p>
+
+
+
+<p>Secondly, this component manages the life cycle of physical devices. It supports the following features:</p>
+
+
+
+<ul>
+<li>onboarding fabric—detect and import brownfield devices</li>
+
+
+
+<li>zero-touch provisioning—detect, import and configure greenfield devices</li>
+
+
+
+<li>software image upgrade—individual or bulk upgrade of device software</li>
+</ul>
+
+
+
+<p>Today only Juniper’s MX routers and QFX switches have&nbsp;<a href="https://github.com/tungstenfabric/tf-controller/tree/master/src/config/device-manager/device_manager/plugins/juniper/">an open-source plug-in</a>.</p>
+
+
+
+<h2 class="wp-block-heading">Device Manager: under the hood</h2>
+
+
+
+<p>Device Manager reports job progress by sending UVEs (User Visible Entities) to the Collector. Users can retrieve job status and logs using the Analytics API and it’s Query Engine. Device Manager works in full or partial mode. There can be only one active instance in the full mode. In this mode, it is responsible for processing events sent via RABBITMQ. It evaluates high-level intents like Virtual Networks or Logical Routers and translates them into a low-level configuration that can be pushed into physical devices. It also schedules jobs on the message queue that can be consumed by other instances running in partial mode. Those followers listen for new job requests and execute ansible scripts, which&nbsp; push the desired configuration to devices.</p>
+
+
+
+<p>Device Manager has the following components:</p>
+
+
+
+<ul>
+<li>device-manager—translates high-level intents into a low-level configuration</li>
+
+
+
+<li>device-job-manager—executes ansible playbooks, which configure routers and switches</li>
+
+
+
+<li>DHCP server—in a zero-touch provisioning use case, physical device gets management IP address from a local DHCP server running alongside device-manager</li>
+
+
+
+<li>TFTP server—in the zero-touch provision use case, this server is used to provide a script with the initial configuration</li>
+</ul>
+
+
+
+<h2 class="wp-block-heading">Kube Manager</h2>
+
+
+
+<p>Kube Manager is an additional component launched together with other Tungsten Fabric SDN Controller components. It is used to establish communication between Tungsten Fabric and Kubernetes, and is essential to their integration. In a nutshell, it listens to the Kubernetes API server events such as creation, modification or deletion of k8s objects (pods, namespaces or services). When such an event occurs, Kube Manager processes it and creates, modifies or deletes an appropriate object in the Tungsten Fabric Config API. Tungsten Fabric Control will then find those objects and send information about them along to the vRouter agent. After that, the vRouter agent can finally create the correctly configured interface for the container.&nbsp;</p>
+
+
+
+<p>The following example should clarify this process. Let’s say that an annotation is added to the namespace in Kubernetes, saying that the network in this namespace should be isolated from the rest of the network. Kube Manager gets the information about it and changes the setup of the TF object accordingly.</p>
+
+
+
+<h2 class="wp-block-heading">Control</h2>
+
+
+
+<p>The Control component is responsible for sending network traffic configurations to vRouter agents. Such configurations are received from the Config’s Cassandra database, which offers consistency, high availability and easy scalability. To represent the configuration and operational state of the environment, the IF-MAP (The Interface to Metadata Access Point) protocol is used. The control nodes exchange routes with one another using IBGP protocol to ensure that all control nodes have the same network state. Communication between Control and vRouter agents is done via Extensible Messaging and the Presence Protocol (XMPP)—a communications protocol for message-oriented middleware based on XML. Finally, the Control communicates with gateway nodes (routers and switches) using the BGP protocol.</p>
+
+
+
+<p>TF Control works similarly to a hardware router. Control is a control plane component responsible for steering the data plane and sending the traffic flow configuration to vRouter agents. For their part, hardware routers are responsible for handling traffic according to the instructions they receive from the control plane. In TF architecture, physical routers and their agent services work alongside vRouters and vRouter agents, as Tungsten Fabric can handle both physical and virtual worlds.</p>
+
+
+
+<p>TF Control communicates with a vRouter using XMPP, which is equivalent to a standard BGP session, though XMPP carries more information (e.g. configurations). Still, thanks to its reliance on XMPP, TF Control can send network traffic configurations to both vRouters and physical ones—the code used for communication is exactly the same.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/78293605fc2e819777b61ebc74e950624e0ebc2b/46b16/img/codilime_tungsten_fabric_control.png" alt="Tungsten Fabric Control" title="Fig. 3 Tungsten Fabric Control"/></figure>
+
+
+
+<p></p>
+
+
+
+<h2 class="wp-block-heading">Analytics</h2>
+
+
+
+<p>Analytics is a separate TF component that collects data from other components (config, control, compute). The following data are collected:</p>
+
+
+
+<ul>
+<li>Object logs (concrete objects in the TF structure)</li>
+
+
+
+<li>System logs</li>
+
+
+
+<li>Trace buffers</li>
+
+
+
+<li>Flow statistics in TF modules</li>
+
+
+
+<li>Status of TF modules (i.e. if they are working and what their state is)</li>
+
+
+
+<li>Debugging data (if a required data collection level is enabled in the debugging mode)</li>
+</ul>
+
+
+
+<p>Analytics is an additional component of Tungsten Fabric. TF works fine without it using just its main components. It can even be enabled as an additional plugin long after the TF solution was originally deployed.</p>
+
+
+
+<p>To collect the data coming from other TF components, an original Juniper protocol called Sandesh is used. The name comes from&nbsp;<a href="http://sandesh.com/">an Indian newspaper in Gujarati language</a>. “Sandesh” means “message” or “news”. Analogically, the protocol is the messenger that brings news about the SDN.</p>
+
+
+
+<p>In the Analytics component, there are two databases. One is based on the Cassandra database and contains historical data: statistics, logs, TF data flow information. It is commonly used for Analytics and Config components. Cassandra is the database that allows you to write data quickly, but it reads data more slowly. It is therefore used to write and store historical data. If there is a need to analyze how TF deployment worked over a longer period of time, this data can be read. In practice, such a need does not occur very often. This feature is most often used by developers to debug a problem.</p>
+
+
+
+<p>The second database is based on the Redis database and collects UVE (User Visible Entities) such as information about existing virtual networks, vRouters, virtual machines and about their actual state (whether it’s working or not). These are the components of the system infrastructure defined by users (in contrast to the elements created automatically under the hood by TF). Since the data about their state are dynamic, they are stored in the Redis database, which allows users to read them much more quickly than in the Cassandra database.&nbsp;</p>
+
+
+
+<p>All these TF components send data to the Collector, which writes them in either the Cassandra or Redis database. On the other side, there is an API Server which is sometimes called the Analytics API to distinguish it from the API Server, e.g. in the Config. This Analytics API provides a REST API for extracting data from the database.</p>
+
+
+
+<p>Apart from these, Analytics has one additional component, called QueryEngine. This is an indirect process taking a user query for historical data. The user sends an SQL-like query to the Analytics API (API Server) REST port. Then the query is sent to QueryEngine, which performs a database query in Cassandra and, via the Analytics API, sends the result back to the user.</p>
+
+
+
+<p>&nbsp;Figure 4 shows the Analytics Node Manager and Analytics Database Node Manager. In fact, there are many different node managers in the TF architecture that are used to monitor specific parts of the architecture and send reports about them. In our case, Analytics Node Manager monitors Collector, QueryEngine and API Server, while the Analytics Database Node Manager monitors databases in the Analytics component. In this way, Analytics also collects data on itself.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/ed127b73f4599b0f2fb94db2feca0d26b6878792/b3bb1/img/codilime_tungsten_fabric_analytics.png" alt="Tungsten Fabric Analytics" title="Fig. 4 Tungsten Fabric Analytics"/></figure>
+
+
+
+<p></p>
+
+
+
+<h2 class="wp-block-heading">The VRouter forwarder and agent</h2>
+
+
+
+<p>This component is installed on all compute hosts that run the workload. It provides Integrated routing and bridging functions for network traffic from and between Virtual Machines, Containers and external networks. It applies network and security rules defined by the Tungsten Fabric controller. This component is not mandatory, but it is required for any use case with virtualized workloads.&nbsp;</p>
+
+
+
+<ul>
+<li>Agent</li>
+</ul>
+
+
+
+<p>The agent is a user-space application that maintains XMPP sessions with the Tungsten Fabric controllers. It is used to get VRF (Virtual Routing and Forwarding) and ACLs (Access Control Lists) that are derived from high-level intents like Virtual Networks. The agent maintains a local database of VRFs and ACLs. This component reports its state to the Analytics API by sending Sandesh messages with UVEs (User Visible Entities) with logs and statistics. It is responsible for maintaining the correct forwarding state in Forwarder. The agent also handles some protocols like DHCP, DNS or ARP.</p>
+
+
+
+<p>Communication with the forwarder is achieved with the help of a KSync module, which uses Netlink sockets and shared memory between the agent and the forwarder. In some cases, application and kernel modules also use the pkt0 tap interface to exchange packets. Those mechanisms are used to update the flow table with flow entries based on the agent’s local data.</p>
+
+
+
+<ul>
+<li>Forwarder</li>
+</ul>
+
+
+
+<p>The forwarder performs packet processing based on flows pushed by the agent. It may drop the packet, forward it to the local virtual machine, or encapsulate it and send it to another destination.</p>
+
+
+
+<p>The forwarder is usually deployed as a kernel module. In that case, it is a software solution independent of NIC or server type. Packet processing in kernel space is more efficient than in user-space and provides some room for optimization. The drawback is that it can only be installed with a specific supported kernel version. For advanced users, modules for a different kernel version can be built. Default kernel versions are specified&nbsp;<a href="https://github.com/tungstenfabric/tf-packages">here</a>.</p>
+
+
+
+<p>This kernel module is released as a docker image that contains a pre-built module and user-space tools. When this image is run, it copies binaries to the host system and installs the kernel module on the host (it needs to be run in privileged mode). After successful installation, a vrouter module should be loaded into the kernel (“lsmod | grep vrouter”) and new tap interfaces pkt0 and vhost0 created. If problems occur, checking the kernel logs (“dmesg”) can help you arrive at a solution.</p>
+
+
+
+<p>The forwarder can also be installed as a userspace application that uses The Data Plane Development Kit (DPDK), which enables higher performance than the kernel module.</p>
+
+
+
+<ul>
+<li>Packet flow</li>
+</ul>
+
+
+
+<p>For every incoming packet from a VM, vRouter forwarder needs to decide how to process it. The options are DROP, FORWARD, MIRROR, NAT or HOLD. Information about what to do is stored in flow table entries. The forwarder is using packet headers to find a corresponding entry in the above-mentioned tables. With the first packet from a new flow, the entry might be empty. In that case, the vRouter forwarder sends this packet to the pkt0 interface, where the agent is listening. Using its local information about VRFs and ACLs, the agent pushes (using KSync and shared memory) a new flow to the forwarder and resends a packet. In other words, the vRouter forwarder doesn’t have full knowledge of how to process every packet in the system so it cooperates with the agent to get that knowledge. It is because this process may take some time that the first packet sent through the vRouter may come with a visible delay.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/ce7df33860634d6884826a143b59fff25354c849/9bb3f/img/codilime_tungsten-fabric-compute-with-openstack.png" alt="Tungsten Fabric Compute with OpenStack" title="Fig. 5 Tungsten Fabric Compute with OpenStack"/></figure>
+
+
+
+<p></p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/bb1cb15886dadd0311a7daf94482d72eab948af1/f69c8/img/codilime_tungsten_fabric_compute_with_kubernetes.png" alt="Tungsten Fabric Compute with Kubernetes" title="Fig. 6 Tungsten Fabric Compute with Kubernetes"/></figure>
+
+
+
+<p></p>
+
+
+
+<h2 class="wp-block-heading">Tungsten Fabric with OpenStack and Kubernetes—an overview</h2>
+
+
+
+<p>To sum up, Figures 7 and 8 provide an overview of the TF integration with Openstack and Kubernetes, respectively.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/66268e490e805fb49cfee8bea9e0da362f9bdd17/31273/img/codilime_tungsten-fabric-with-openstack.png" alt="Tungsten Fabric with Openstack" title="Fig. 7 Tungsten Fabric with Openstack"/></figure>
+
+
+
+<p></p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/b2f1d82056fa087b400a34859992f4e7f5fc36ff/1af44/img/codilime_tungsten_fabric_with_kubernetes.png" alt="Tungsten Fabric with Kubernetes" title="Fig. 8 Tungsten Fabric with Kubernetes"/></figure>
+
+
+
+<p></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Anomaly Detection for Network Flows in Contrail Analytics</title>
+		<link>https://tungsten.io/anomaly-detection-for-network-flows-in-contrail-analytics/</link>
+		
+		<dc:creator><![CDATA[Anish Mehta]]></dc:creator>
+		<pubDate>Tue, 01 Nov 2016 17:07:01 +0000</pubDate>
+				<category><![CDATA[Analytics]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7234</guid>
+
+					<description><![CDATA[Virtualization and Cloud Computing are accelerating the movement of System monitoring from manual, to reactive to proactive. Knowing when a host or service is down is certainly important, but the...]]></description>
+										<content:encoded><![CDATA[<p><iframe src="https://www.youtube.com/embed/W0FQ19NpeM8" width="600" height="380" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p>Virtualization and Cloud Computing are accelerating the movement of System monitoring from manual, to reactive to proactive. Knowing when a host or service is down is certainly important, but the ready availability of additional metrics and events from both the application and the infrastructure enables us to get ahead of the curve, and manage performance and availability in a better way. One important aspect of being proactive is Anomaly Detection. Once an event notification infrastructure is place, we can raise alerts based on static thresholds. But, it’s often unclear what’s anomalous and what isn’t for a given deployment. Anomaly Detection via Machine learning techniques can help address this.</p>
+<p>Contrail Networking provides Alerts based on any aspect of the system’s Operational State. <a href="http://www.opencontrail.org/operational-state-in-the-opencontrail-system-uve-user-visible-entities-through-analytics-api/).">(Operational State in the OpenContrail system: UVE – User Visible Entities through Analytics API)</a>.  We also provide an Anomaly Detection model based on time-series analysis of any metric. Based on past time series information, we learn what to expect in the future. If a given metric reports values that are far from this expectation, we raise an Alert. Of course, this must all be configurable &#8211; the parameters and algorithms used for learning the expectation, as well as the threshold that causes the alert.</p>
+<p>In this example, we will use statistical process control, based on computing the running average and standard deviation and examining the current value using real-time stream processing. The metric being used is the number of flows being added on a Virtual Machine Interface on a host/vRouter. We run a multitier application with some clients – a redmine webserver with a separate mysql database. Then, we launch a TCP SYN attack on the webserver, which causes an unusual number of flows. This triggers an Alert.</p>
+<p>Let&#8217;s dive in.</p>
+<p><strong>Setting up the Application</strong></p>
+<p>Our system has the “<strong>default-domain:demo”</strong> project with two Virtual Networks – “<strong>fe-front”</strong> and “<strong>be-vn”</strong>.<br />
+<strong>“fe-front”</strong> has the VM “<strong>fe-web”</strong> running a Redmine WebServer. It has a floating IP 10.84.53.83 for clients to access it.<br />
+<strong>“be-vn”</strong> has the VM “<strong>be-db”</strong>, running a Mysql DB being used by the Redmine Webserver.<br />
+This is the Network Monitoring page from the Contrail UI.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/11/Anomaly-Detection-of-Flows_blogpost_image1.png"><img fetchpriority="high" decoding="async" class="alignnone wp-image-7235" src="http://www.opencontrail.org/wp-content/uploads/2016/11/Anomaly-Detection-of-Flows_blogpost_image1.png" alt="anomaly-detection-of-flows_blogpost_image1" width="813" height="600" data-id="7235" /></a></p>
+<p><strong>Configuring the Alert</strong></p>
+<p>Every vRouter reports per-VMI (virtual machine interface) flow statistics against the VMI UVE every 30 seconds:</p>
+<p><em>From controller/src/vnsw/agent/uve/vrouter.sandesh:</em><br />
+struct VrouterFlowRate {<br />
+1: optional u32 added_flows;<br />
+2: optional u32 max_flow_adds_per_second;<br />
+3: optional u32 min_flow_adds_per_second;<br />
+4: optional u32 deleted_flows;<br />
+5: optional u32 max_flow_deletes_per_second;<br />
+6: optional u32 min_flow_deletes_per_second;<br />
+7: optional u32 active_flows<br />
+}</p>
+<p>The vRouter also calculates the Exponential Weighted Mean and Standard Deviation for added_flows, deleted_flows and active_flows as per the standard formulas:<br />
+μ<sub>i </sub>= (1−α)μ<sub>i-1</sub> + α x<sub>i</sub><br />
+σ<sup>2</sup><sub>i</sub>= S<sub>i   </sub>= (1−α)(S<sub>i−1</sub>+α(x<sub>i</sub> − μ<sub>i-1</sub>)<sup>2</sup>)<br />
+Here x<sub>i</sub> is the observation in the i-th step, μ<sub>i-1</sub>  is the estimated EWM (Exponentially Weighted Mean) , and S<sub>i−1 </sub>is the previous estimate of the variance.</p>
+<p>We will be using α (alpha) of 0.1 on added_flows in this example.</p>
+<p><em>From controller/src/vnsw/agent/uve/interface.sandesh</em>:<br />
+struct UveVMInterfaceAgent {<br />
+1: string                name (key=&#8221;ObjectVMITable&#8221;)<br />
+…<br />
+26: optional vrouter.VrouterFlowRate flow_rate<br />
+41: optional derived_stats_results.AnomalyResult added_flows_ewm<br />
+(stats=&#8221;flow_rate.added_flows:DSAnomaly:EWM:0.1&#8243;)<br />
+42: optional derived_stats_results.AnomalyResult deleted_flows_ewm<br />
+(stats=&#8221;flow_rate.deleted_flows:DSAnomaly:EWM:0.1&#8243;)<br />
+43: optional derived_stats_results.AnomalyResult active_flows_ewm<br />
+(stats=&#8221;flow_rate.active_flows:DSAnomaly:EWM:0.1&#8243;)<br />
+…<br />
+}</p>
+<p>(It is possible to override alpha by changing the vRouter configuration file at /etc/contrail/contrail-vrouter-agent.conf. The EWM calculation can also be disabled completely)</p>
+<p>The vRouter publishes the value of sigma () as it runs the calculation on each VMI. This is a normalized measure of how far the last sample was from the mean. We can configure an Alert based on this. Lets use 2.5.  (For a normal distribution, 98.8% of samples fall between μ ± 2.5σ)</p>
+<p>Alerts can be configured at the global level for all objects, or at the project level for objects that are associated with a project, such as Virtual Networks or Virtual Machine Interfaces. Let’s configure this Alert under the <strong>default-domain:demo</strong> project. So, we can go to the Contrail UI under the <strong>Alarm Rules</strong> tab of <strong>Configure -&gt; Alarms -&gt; Project -&gt; default-domain -&gt; demo</strong>. This is what the Alert will look like:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/11/Anomaly-Detection-of-Flows_blogpost_image2.png"><img decoding="async" class="alignnone wp-image-7236" src="http://www.opencontrail.org/wp-content/uploads/2016/11/Anomaly-Detection-of-Flows_blogpost_image2.png" alt="anomaly-detection-of-flows_blogpost_image2" width="881" height="500" data-id="7236" /></a></p>
+<p>We added an Alert named <strong>vmi-anomalous-added-flows</strong>. The EWM calculations for the flows added to a VMI every 30 seconds are available in the UVE as UveVMInterfaceAgent.added_flows_ewm. This is the VMI UVE, but in the Alert contents, it is also useful to have the UVE Key of the VM and the VN, so we add them as the variables UveVMInterfaceAgent.vm_name and UveVMInterfaceAgent.virtual_network .</p>
+<p><strong>The Application and the Anomaly</strong></p>
+<p>We will use a script to simulate clients accessing the Redmine Webserver via the floating IP.<br />
+# while sleep $[ ( $RANDOM % 6 )  + 1 ]s ; do wget 10.84.53.83 -O /dev/null -o /dev/null ; done<br />
+Client access results in flows with clients, and between the Redmine Webserver and Database. This is visible in the VMI UVE, looking at the Analytics API:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/11/Anomaly-Detection-of-Flows_blogpost_image3.png"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-7237" src="http://www.opencontrail.org/wp-content/uploads/2016/11/Anomaly-Detection-of-Flows_blogpost_image3.png" alt="anomaly-detection-of-flows_blogpost_image3" width="1108" height="458" data-id="7237" /></a></p>
+<p>Now, we will use the hping3 utility to generate a TCP SYN attack to the Floating IP:</p>
+<p># hping3 10.84.53.83 -i u100000 -S -p 80</p>
+<p>After 30 seconds, the vRouter sees a change in flow metrics:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/11/Anomaly-Detection-of-Flows_blogpost_image4.png"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-7238" src="http://www.opencontrail.org/wp-content/uploads/2016/11/Anomaly-Detection-of-Flows_blogpost_image4.png" alt="anomaly-detection-of-flows_blogpost_image4" width="1109" height="458" data-id="7238" /></a></p>
+<p>&nbsp;</p>
+<p>The added_flows attribute of the VMI UVE has been seen as 268, as the exponential mean has moved from 16.22 to 42.49 and sigma is 2.997. This triggers an alert.</p>
+<p>In Contrail UI:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/11/Anomaly-Detection-of-Flows_blogpost_image5.png"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-7239" src="http://www.opencontrail.org/wp-content/uploads/2016/11/Anomaly-Detection-of-Flows_blogpost_image5.png" alt="anomaly-detection-of-flows_blogpost_image5" width="1249" height="510" data-id="7239" /></a></p>
+<p>In the Analytics streaming API:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/11/Anomaly-Detection-of-Flows_blogpost_image6.png"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-7240" src="http://www.opencontrail.org/wp-content/uploads/2016/11/Anomaly-Detection-of-Flows_blogpost_image6.png" alt="anomaly-detection-of-flows_blogpost_image6" width="848" height="332" data-id="7240" /></a></p>
+<p>The Alert is against the VMI object, but its contents also report the “<strong>fe-front</strong>” Virtual Network and the “<strong>fe-web</strong>” VM.</p>
+<p><strong>Anomaly Detection Capabilities</strong></p>
+<p>We just saw an example of Anomaly Detection against the Networking Flows of a Virtual Machine Interface. Contrail Networking offers anomaly detection on other vRouter traffic metrics as well – Physical Interface Bandwidth and per-Physical Interface flows. In addition, we also do this for some controller metrics, such as BGP Route Updates.</p>
+<p>All Alerts are configurable via the Contrail Configuration API.  To achieve scalability, the Anomaly Detection Algorithms run on the individual Contrail processes (contrail-vrouter-agent or contrail-control) that report the metrics. They can be adjusted on a per-process basis as required by changing configuration files.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Contrail Alerts</title>
+		<link>https://tungsten.io/contrail-alerts/</link>
+		
+		<dc:creator><![CDATA[Anish Mehta]]></dc:creator>
+		<pubDate>Sun, 25 Oct 2015 02:41:49 +0000</pubDate>
+				<category><![CDATA[Analytics]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6765</guid>
+
+					<description><![CDATA[OpenContrail networking provides network virtualization to data center applications using a layered, horizontally scalable software system.  We have the abstractions in place to present the operational state of this system...]]></description>
+										<content:encoded><![CDATA[<p>OpenContrail networking provides network virtualization to data center applications using a layered, horizontally scalable software system.  We have the abstractions in place to present the operational state of this system <a href="http://www.opencontrail.org/operational-state-in-the-opencontrail-system-uve-user-visible-entities-through-analytics-api/).">(Operational State in the OpenContrail system: UVE – User Visible Entities through Analytics API)</a>. The system is architected to be as simple as possible to operate for the functionality it delivers. An important element of this is Contrail Alerts – in addition to providing detailed operational state in a easy-to-navigate way, we also need to clearly highlight unusual conditions that may require more urgent administrator attention and action.</p>
+<p>We provide Alerts on a per-UVE basis. Contrail Analytics will raise (or clear) instances of these alerts (alarms) using python-coded “rules” that examine the contents of the UVE and the object’s configuration. Some rules will be built-in. Others can be added using python Entry-Point based plugins.</p>
+<p>See Contrail Alerts features in a demo:</p>
+<p>[video_lightbox_youtube video_id=&#8221;fUgP2KtAy9A&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3>Contrail Analytics APIs for Alerts</h3>
+<p>There is an API to get the list of supported alerts as follows:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_alerts_blogpost_image1.png"><img loading="lazy" decoding="async" class="wp-image-6766 alignleft" src="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_alerts_blogpost_image1.png" alt="contrail_alerts_blogpost_image1" width="600" height="566" data-id="6766" /></a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Lets look at an example.</p>
+<p>We have a system configured with 2 BGP peers as gateways, but those gateways themselves have not been configured with this system’s control node yet. Based on the state of these peers, we raise an alarm against the control-node UVE.</p>
+<p>We can look at the alarms being reported on this system via the following API:</p>
+<pre><span style="font-family: 'courier new', courier;">GET <em>http://&lt;analytics-ip&gt;:&lt;rest-api-port&gt;/analytics/alarms</em></span></pre>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_alerts_blogpost_image2.png"><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6767" src="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_alerts_blogpost_image2.png" alt="contrail_alerts_blogpost_image2" width="938" height="657" data-id="6767" /></a></p>
+<p>The API reports the type of alarm, severity, a description which lists the reason why it exists, whether its been acknowledged yet, and the timestamp. We provide an API for acknowledging alarms as follows:</p>
+<pre><span style="font-family: 'courier new', courier;">POST http://:/analytics/alarms/acknowledge
+
+Body: {“table”: , “name”: , “type”: , “token”: }</span></pre>
+<p>When the alarm condition is resolved, the alarm will be deleted automatically, whether or not it has been acknowledged.<br />
+The alarm is also shown along with the rest of the UVE if the UVE GET API is used:</p>
+<pre><span style="font-family: 'courier new', courier;">GET http://:/analytics/uves/control-node/</span></pre>
+<p>In addition to these GET APIs, a streaming interface is also available for both UVEs and Alarms. That interface is described in detailed in the <a href="http://www.opencontrail.org/contrail-analytics-streaming-api/">Contrail Analytics Streaming API</a> blogpost.</p>
+<h3>Alarm Processing and Plugins</h3>
+<p>New Alerts can be added to the Contrail Analytics by installing python plugins onto the Analyics Nodes. Consistent hashing techniques are used to distribute alarm processing among all functioning Analytics Nodes (the hash is based on the UVE Key). So, the python plugin for an Alert must be installed on each Analytics Node.<br />
+Let us look at the plugin for the alert used in the example above.</p>
+<p>This module plugin is here:<br />
+controller/src/opserver/plugins/alarm_bgp_connectivity/</p>
+<p>We install this plugin as follows:(from alarm_bgp_connectivity/setup.py)</p>
+<pre><span style="font-family: 'courier new', courier;">#
+# Copyright (c) 2013 Juniper Networks, Inc. All rights reserved.
+#
+
+from setuptools import setup, find_packages
+
+setup(
+    name='alarm_bgp_connectivity',
+    version='0.1dev',
+    packages=find_packages(),
+    entry_points = {
+        'contrail.analytics.alarms': [
+            'ObjectBgpRouter = alarm_bgp_connectivity.main:BgpConnectivity',
+        ],
+    },
+    zip_safe=False,
+    long_description="BGPConnectivity alarm"
+)</span></pre>
+<p>“ObjectBGPRouter” represents the control-node UVE.<br />
+See UVE_MAP in controller/src/analytics/viz.sandesh</p>
+<p>The implementation is as follows (from alarm_bgp_connectivity/main.py)</p>
+<pre><span style="font-family: 'courier new', courier;">from  opserver.plugins.alarm_base import AlarmBase
+
+class BgpConnectivity(AlarmBase):
+    """Not enough BGP peers are up in BgpRouterState.num_up_bgp_peer"""
+
+    def __call__(self, uve_key, uve_data):
+        err_list = []
+        if not uve_data.has_key("BgpRouterState"):
+            return self.__class__.__name__, AlarmBase.SYS_WARN, err_list
+
+        ust = uve_data["BgpRouterState"]
+
+        l,r = ("num_up_bgp_peer","num_bgp_peer")
+        cm = True
+        if not ust.has_key(l):
+            err_list.append(("BgpRouterState.%s != None" % l,"None"))
+            cm = False
+        if not ust.has_key(r):
+            err_list.append(("BgpRouterState.%s != None" % r,"None"))
+            cm = False
+        if cm:
+            if not ust[l] == ust[r]:
+                err_list.append(("BgpRouterState.%s != BgpRouterState.%s" \
+                        % (l,r), "%s != %s" % (str(ust[l]), str(ust[r]))))
+
+        return self.__class__.__name__, AlarmBase.SYS_WARN, err_list</span></pre>
+<p>This plugin code is called anytime a control-node UVE changes. It can examine the contents of the UVE can decide whether an alarm should be raise or not. In this case, we compare the “BgpRouterState.num_bgp_peer” attribute of the UVE with the “BgpRouterState.num_up_bgp_peer” attribute.</p>
+<h3>Contrail UI</h3>
+<p>A dashboard listing all Alarms present in the system is also available in Contrail UI as follows:<br />
+<a href="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_alerts_blogpost_image3.png"><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6768" src="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_alerts_blogpost_image3.png" alt="contrail_alerts_blogpost_image3" width="1273" height="761" data-id="6768" /></a></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Contrail Analytics Streaming API</title>
+		<link>https://tungsten.io/contrail-analytics-streaming-api/</link>
+		
+		<dc:creator><![CDATA[Anish Mehta]]></dc:creator>
+		<pubDate>Sun, 25 Oct 2015 02:16:18 +0000</pubDate>
+				<category><![CDATA[Analytics]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6756</guid>
+
+					<description><![CDATA[Contrail Analytics collects information from the various components of the system, and provides the visibility into flows, logs and UVEs that is needed to operate this system. This information is...]]></description>
+										<content:encoded><![CDATA[<p>Contrail Analytics collects information from the various components of the system, and provides the visibility into flows, logs and UVEs that is needed to operate this system. This information is provided via a REST API, which can be used to build management and analytics applications and dashboards. The Contrail UI uses this REST API as well.</p>
+<p>In addition to providing HTTP GET APIs <a href="http://www.opencontrail.org/operational-state-in-the-opencontrail-system-uve-user-visible-entities-through-analytics-api/">(Operational State in the OpenContrail system: UVE – User Visible Entities through Analytics API)</a> , we also provide a Streaming API for UVEs and Alerts. This is a very useful option for enabling rapid development of powerful and efficient applications on top of Contrail Analytics. Contrail Analytics Streaming API uses the Server-Sent Events EventSource API , which is standardized as part of HTML5.</p>
+<p><a href="https://w3c.github.io/eventsource/">https://w3c.github.io/eventsource/</a></p>
+<p>See Contrail Analytics Streming API features in a demo:</p>
+<p>[video_lightbox_youtube video_id=&#8221;h6GelebZo7A&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3></h3>
+<h3>API details</h3>
+<p>Two APIs are provided – one for alarms (read more about it in the detailed <a href="http://www.opencontrail.org/contrail-alerts/">Contrail Alerts</a> blogpost), and the other for entire UVE contents:</p>
+<pre><span style="font-family: 'courier new', courier;">GET http://&lt;analytics-ip&gt;:&lt;rest-api-port&gt;/analytics/alarm-stream
+GET http://&lt;analytics-ip&gt;:&lt;rest-api-port&gt;/analytics/uve-stream</span></pre>
+<p>Client may ask for a subset of updates using filters in URL parameters:<br />
+“tablefilt=,[…]” will provide updates for only the given UVE table types (e.g. control-node, virtual-machine etc.)</p>
+<p>For uve-stream, we can further filter by UVE Content Structures:<br />
+“cfilt=,[…]”</p>
+<p>Lets take an example.<br />
+We can ask got a stream of all bgp-peer UVE updates as follows:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_analytics_streaming_blogpost_image1.png"><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6757" src="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_analytics_streaming_blogpost_image1.png" alt="contrail_analytics_streaming_blogpost_image1" width="1273" height="761" data-id="6757" /></a></p>
+<p>First, we read all existing bgp-peer UVEs and report their contents. Then, we report updates. Continuous updates will be reported as the UVE is updated, until the user closes the connection. The data is reported with “key” , “type”, and “value”.</p>
+<ul>
+<li>The “key” is the UVE Key.</li>
+<li>The “type” is a UVE Content Structure. Multiple of these may be reported per UVE-Key. When any attribute under a Structure changes, the entire Structure is sent again. When the UVE is deleted, the streaming API will report the “key” with a “type” of null.</li>
+<li>The “value” is a JSON object representing the contents (attributes) of the Structure above. When the Structure is deleted, the streaming API will report the “key” and Structure “type” with a value of null.</li>
+</ul>
+<p>Lets take another example. We have an Analytics Node where the contrail-snmp-collector process has stopped. This will cause an alarm.<br />
+This is what we see in the alarm stream:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_analytics_streaming_blogpost_image2.png"><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6758" src="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_analytics_streaming_blogpost_image2.png" alt="contrail_analytics_streaming_blogpost_image2" width="938" height="657" data-id="6758" /></a></p>
+<p>Keep the stream open. Now we repair the system by restarting the contrail-snmp-collector. The stream reports that the alarm has been deleted:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_analytics_streaming_blogpost_image3.png"><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6759" src="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_analytics_streaming_blogpost_image3.png" alt="contrail_analytics_streaming_blogpost_image3" width="938" height="657" data-id="6759" /></a></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>A Tale of Two Layers &#8211; Correlating Overlay and Physical Network Data for better OpenStack Network Analytics</title>
+		<link>https://tungsten.io/overlay-to-physical-network-correlation/</link>
+		
+		<dc:creator><![CDATA[Anish Mehta]]></dc:creator>
+		<pubDate>Tue, 04 Nov 2014 01:26:05 +0000</pubDate>
+				<category><![CDATA[Analytics]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=5638</guid>
+
+					<description><![CDATA[For an overview of this blogpost, check the below video. Also you can find similar videos in the Video section of this site. [video_lightbox_youtube video_id=&#8221;B8aHoY&#8211;1Zs&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;] Openstack networking...]]></description>
+										<content:encoded><![CDATA[<h4>For an overview of this blogpost, check the below video. Also you can find similar videos in the <a title="OpenContrail Videos" href="http://www.opencontrail.org/videos/">Video section</a> of this site.</h4>
+<p style="text-align: center;">[video_lightbox_youtube video_id=&#8221;B8aHoY&#8211;1Zs&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]<br />
+Openstack networking can help us deliver the benefits of network virtualization to applications &#8211; lower lead times for deploying services, better resilience to failures and easier scaling. But virtualization presents a new paradigm for visibilty and debugging of network elements, physical and virtual.  Applications live their lives in the overlay network. Sometimes they face connectivity, latency and other performance problems. Is it a network problem? How do we isolate it and solve it?</p>
+<p>To do this, we really need to map what’s happening in the overlay network with the networking entities that are operating in the physical network. In this presentation, we will demonstrate an Analytics application using the OpenContrail system’s open API’s to look at a traffic flow in the overlay, and examine what physical routers and network interfaces it is traversing in the underlay. This can be co-related to interface statistics and other health indications in the underlay network.  We can also look at the physical routers being traversed by tunnels that go across from one underlay entry point to another. Correlating physical and virtual network information is these ways is a big step towards identifying, solving and even anticipating the connectivity problems of applications in OpenStack.</p>
+<h4><strong>Collecting Information from Physical Nodes</strong></h4>
+<p>Discovered topology information and interface statistics are ingested via SNMP.  We rely on lldpTable, ipMib, ifTable and ifXTable.  Each physical router is represented by the pRouter UVE (see <a href="http://opencontrail.org/operational-state-in-the-opencontrail-system-uve-user-visible-entities-through-analytics-api/">Operational State in the OpenContrail system: UVE – User Visible Entities through Analytics API</a>), which exposes these MIBs. We also correlate this information against vRouter UVEs to present physical topology in the pRouter UVE &#8211; a list of all other pRouters and vRouters that are connected this pRouter, and the links between them.</p>
+<p><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5639" src="http://www.opencontrail.org/wp-content/uploads/2014/11/overlay_to_physical_blogpost_image1.png" alt="overlay_to_physical_blogpost_image1" width="553" height="736" data-id="5639" /></p>
+<p>OpenContrail Analytics’ collector can take in flow information from physical nodes in the form of sFlow and IPFIX. The collected records can then be accessed via the Query REST API (see <a href="http://opencontrail.org/opencontrail-analytics-query-api/">OpenContrail Analytics Query API</a>) , with the following schema:</p>
+<p><a href="http://127.0.0.1:8081/analytics/table/StatTable.UFlowData.flow/schema">http://127.0.0.1:8081/analytics/table/StatTable.UFlowData.flow/schema</a></p>
+<h4> <strong>Physical Topology</strong></h4>
+<p>Using the information listed above, the OpenContrail UI presents an interactive view of the Phyisical Topology of the network. Along with the switches/routers, we display details about the links between them, including traffic statistics along that link.</p>
+<p><img loading="lazy" decoding="async" class="alignnone wp-image-5640" src="http://www.opencontrail.org/wp-content/uploads/2014/11/overlay_to_physical_blogpost_image2.png" alt="overlay_to_physical_blogpost_image2" width="800" height="640" data-id="5640" /></p>
+<p>For TORs, we show the vRouters hanging off them, and the VM instances that run on those vRouters. The interfaces that connect them and their traffic statistics can be shown as well.</p>
+<p><img loading="lazy" decoding="async" class="alignnone wp-image-5641" src="http://www.opencontrail.org/wp-content/uploads/2014/11/overlay_to_physical_blogpost_image3.png" alt="overlay_to_physical_blogpost_image3" width="800" height="602" data-id="5641" /></p>
+<h4><strong>Search Flows</strong></h4>
+<p>We can list historical overlay flows records seen on the system, according to the flow parameters used for REST API Flow Record queries, i.e. Source-VN/Source-IP, Dest-VN/Dest-IP, vRouter, Protocol/Source-Port and Protocol/Dest-Port.</p>
+<p>Then we can map these flows onto the Physical Nodes to see what path they took. The underlay flow parameters used for a given overlay flow depend on the type of encapsulation being used. MPLS-over-UDP and VXLAN encapsulations try to add entropy (for better load-balancing between paths) by varying the UDP source-port based on overlay flow parameters.  Multiple overlay flows are expected to hash onto the same underlay flow.  When looking at sFlow or IPFIX information of underlay flows to infer the path of a given overlay flow, we can exploit all samples of the underlay flow, even if they were actually due to other overlay flows.</p>
+<p><img loading="lazy" decoding="async" class="alignnone wp-image-5642" src="http://www.opencontrail.org/wp-content/uploads/2014/11/overlay_to_physical_blogpost_image4.png" alt="overlay_to_physical_blogpost_image4" width="800" height="524" data-id="5642" /></p>
+<h4><strong>Trace Path</strong></h4>
+<p>The vRouterAgent supports an active probe-based Trace Path mechanism via its HTTP Introspect API.</p>
+<p><a href="http://127.0.0.1:8085/diag.xml#Snh_TraceRouteReq">http://127.0.0.1:8085/diag.xml#Snh_TraceRouteReq</a></p>
+<p>The UI displays all recently active overlay flows for a given vRouter or Virtual Machine. We can then trace the corresponding underlay flow using active probes that have the same outer header as regular packets of this underlay flow.  The active probes are sent out using escalating TTLs, to elicit ICMP packets from the physical routers that the underlay flow would traverse. The destination vRouter detects this as a special probe packet based on the inner header, and replies back to the originating vRouter, thus completing the illumination of the path.</p>
+<p><img loading="lazy" decoding="async" class="alignnone wp-image-5643" src="http://www.opencontrail.org/wp-content/uploads/2014/11/overlay_to_physical_blogpost_image5.png" alt="overlay_to_physical_blogpost_image5" width="800" height="444" data-id="5643" /></p>
+<h4><strong>Conclusion</strong></h4>
+<p>OpenContrail Analytics exposes detailed information about overlay flows in the network, and operational information about vRouters. We have also seen the physical network information that can be ingested into OpenContrail Analytics and presented northbound. Using all these APIs, an application can be built that displays the physical topology, and shows the physical path taken by an overlay flow. We have built one such application – other applications can be built on top of these APIs as well.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>OpenContrail Analytics Query API</title>
+		<link>https://tungsten.io/opencontrail-analytics-query-api/</link>
+		
+		<dc:creator><![CDATA[Chandan Mishra]]></dc:creator>
+		<pubDate>Tue, 23 Sep 2014 09:25:27 +0000</pubDate>
+				<category><![CDATA[Analytics]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://opencontrail.org/?p=1693</guid>
+
+					<description><![CDATA[Overview OpenContrail analytics platform provides a rich interface to query analytics data stored. Before we venture into actual API details, let us look at over all architecture of analytics query...]]></description>
+										<content:encoded><![CDATA[<h5>Overview</h5>
+<p>OpenContrail analytics platform provides a rich interface to query analytics data stored.</p>
+<p>Before we venture into actual API details, let us look at over all architecture of analytics query processing:<br />
+<span id="more-1693"></span></p>
+<p><img loading="lazy" decoding="async" class="alignnone wp-image-5693" src="http://www.opencontrail.org/wp-content/uploads/2014/09/sept23_post_image1.jpg" alt="sept23_post_image1" width="610" height="458" data-id="5693" /></p>
+<p>Analytics query APIs are available as rest APIs and are conceptualized as queries on logical tables. Currently OpenContrail UI uses analytics query API but any other non-contrail client can leverage these rest APIs too.</p>
+<p>All analytics logical tables look like following:</p>
+<p><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5695" src="http://www.opencontrail.org/wp-content/uploads/2014/09/sept23_post_image2.jpg" alt="sept23_post_image2" width="597" height="87" data-id="5695" /></p>
+<p>All rows in logical tables have three different types of rows:</p>
+<ol>
+<li>Timestamp column</li>
+<li>Index columns: Taken together they are unique per row.</li>
+<li>Columns</li>
+</ol>
+<p>For example “Flow Series Table” looks like following:</p>
+<p><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5696" src="http://www.opencontrail.org/wp-content/uploads/2014/09/sept23_post_image3.jpg" alt="sept23_post_image3" width="633" height="116" data-id="5696" /></p>
+<p>Columns shaded above are index columns.</p>
+<h5> Query API Parameters</h5>
+<p>OpenContrail analytics query API is modeled on SQL Just to remind the readers a typical SQL query on a table looks like:</p>
+<p>SELECT col1, col2, … coln FROM  tablename WHERE index1=value1.</p>
+<p>We do not yet support the SQL syntax but the parameters of the analytics query API and SQL query are similar.</p>
+<p>Each analytics query has following parameters:</p>
+<ol>
+<li>Time range: Timestamp range of rows over which the query has to be performed.</li>
+<li>FROM parameter: The name of the logical table that is being queried.</li>
+<li>SELECT parameters: It contains the list of columns that need to be returned in the result.</li>
+<li>WHERE parameters: It contains the clauses based on index column values to determine the rows from which results have to be shown.</li>
+<li>FILTER parameters: It indicates how the result should be filtered after database query and before being returned to the API invoker.</li>
+<li>SORT parameters: It indicates if and how the result should be sorted.</li>
+</ol>
+<p><strong><em>In rest of the blog we will take example of a simple query to return all ingress TCP flows which were active in last 12 hours with source vn as default-domain:default-project:ip-fabric. As part of query result we also want to get the setup time of the flows.</em></strong></p>
+<p><strong><em> </em></strong>Below is the UI screen of this query:</p>
+<p><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5697" src="http://www.opencontrail.org/wp-content/uploads/2014/09/sept23_post_image4.jpg" alt="sept23_post_image4" width="1433" height="492" data-id="5697" /></p>
+<pre><span style="font-family: 'courier new', courier;"><code>{
+ "table":"FlowRecordTable",
+ "start_time":"now-43200s",
+ "end_time":"now",
+ "select_fields":["vrouter","sourcevn","sourceip","sport","destvn","destip","dport","protocol","direction_ing","setup_time"],
+ "limit":150000,
+ "where":[[
+ {"name":"sourcevn","value":"default-domain:default-project:ip-fabric","op":1},
+ {"name":"protocol","value":"6","op":1}
+ ]],
+ "dir":1
+ }</code></span></pre>
+<h5>Table name</h5>
+<p>Logical table on which the query is performed is indicated by JSON field “table”. In our example query, we are query “FlowRecordTable” whose rows correspond to each flow record.</p>
+<h5>Query time range</h5>
+<p>You always have to provide the time range of the analytics data over which the query is applicable.  Time range is indicated by JSON fields: <strong>“start_time” </strong>and <strong>“end_time”</strong>.</p>
+<p>Values of these JSON fields can be absolute time or relative time (like in our example query). In case of absolute time you just specify the date-time string.</p>
+<h5>Direction</h5>
+<p>In case of flow queries you should always specify direction using “dir” JSON field. For egress traffic value of 0 is used while for ingress traffic value of 1 is used.</p>
+<h5>Select fields</h5>
+<p>“select_fields” JSON field indicate the fields/columns of the logical table which should be returned as part of the query result. Semantic of this is same as SELECT operation in SQL language.</p>
+<h5>WHERE clause</h5>
+<p>WHERE clause has similar semantic as the WHERE operator in SQL language.</p>
+<p>WHERE clause is represented by “where” JSON field.</p>
+<p>Value of “where” field is represented by:<br />
+Where_clause := [AND_Clause1, AND_Clause2, … AND_ClauseN]<br />
+AND_Clause := [Match_Clause1, Match_Clause2, … Match_ClauseK]<br />
+Match_Clause := { “name” : &lt;field_name&gt;, “value”: &lt;value_name&gt;, “op”: &lt;op&gt;}</p>
+<p>Basically where_clause is an OR expression of AND clauses to pick a subset of rows from the logical table. Match clauses indicate the fields to match against.</p>
+<p>In our example query, Match_clauses are:</p>
+<p>{&#8220;name&#8221;:&#8221;sourcevn&#8221;,&#8221;value&#8221;:&#8221;default-domain:default-project:ip-fabric&#8221;,&#8221;op&#8221;:1}</p>
+<p>{&#8220;name&#8221;:&#8221;protocol&#8221;,&#8221;value&#8221;:&#8221;6&#8243;,&#8221;op&#8221;:1}</p>
+<p>“name” indicates the field to match against. “value” is the value  used for,matching/filering rows.  “op” indicates the matching operation. Value of “1”  for “op” implies equality operator.</p>
+<p>You can represent any kind of Boolean expression in the WHERE clause.</p>
+<h5>Post processing the query results</h5>
+<p>You can ask the analytics engine to do some post-processing after the basic query processing. This can include sorting, filtering.</p>
+<p>In our example query, we use “limit” JSON field to indicate maximum number of records to return. This is always helpful as analytics API client may not be able to handle unlimited amount of data.</p>
+<h5>Conclusion</h5>
+<p>OpenContrail Analytics Query API is a rich API which allows you to drill down to the right information you need from the analytics engine. Example discussed above is just the tip of the iceberg of possibilities with the API. Do refer to the reference guide for full details.</p>
+<p><strong>Reference Guide: </strong><a href="http://www.juniper.net/techpubs/en_US/contrail2.2/topics/task/configuration/analytics-apis-vnc.html" target="_blank">http://www.juniper.net/techpubs/en_US/contrail2.2/topics/task/configuration/analytics-apis-vnc.html</a></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Statistics in OpenContrail Analytics</title>
+		<link>https://tungsten.io/statistics-in-opencontrail-analytics/</link>
+		
+		<dc:creator><![CDATA[Anish Mehta]]></dc:creator>
+		<pubDate>Tue, 09 Sep 2014 01:52:48 +0000</pubDate>
+				<category><![CDATA[Analytics]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://opencontrail.org/?p=1717</guid>
+
+					<description><![CDATA[A wealth of operational data is available in a distributed, multi-tier cloud infrastructure deployment. From the activity of VMs, to the flow of networking traffic, to the performance metrics of...]]></description>
+										<content:encoded><![CDATA[<p>A wealth of operational data is available in a distributed, multi-tier cloud infrastructure deployment. From the activity of VMs, to the flow of networking traffic, to the performance metrics of the applications themselves. If only we could use and correlate all this data to debug known problems and anticipate potential issues, and to build closed loop control systems to manage infrastructure and applications. This requires the ability to easily report and retrieve different kinds of metrics. If we have the APIs, we can build rich applications that deliver on all these promises. This blog post describes the OpenContrail approach for achieving these goals.<br />
+<span id="more-1717"></span></p>
+<p>Lets take the example of networking traffic flowing between Virtual Networks. For a given VN, we want to analyze the packets and bytes flowing between this VN and other VNs over a given time period. We need to slice-and-dice this information according to VNs involved, and according to the VRouters that host the VMs that sit on the VNs.</p>
+<p>VRouterAgent processes on the VRouters periodically reports these traffic stats to the collector, which stores them in the Cassandra database. The user can query for these stats via the analytics API. The schema of the data drives the treatment of this information on the both the storage end and on the query end.</p>
+<h6> <strong>Storage of Stats</strong></h6>
+<p>The Sandesh framework is used to both express the schema and to generate the code to transport the information to the collector. (See this blog entry for details: <a href="http://opencontrail.org/sandesh-a-sdn-analytics-interface/"><strong>Sandesh – A SDN Analytics Interface</strong></a>)</p>
+<p>In this case, we send the information using the Virtual Network Sandesh UVE message. The sandesh definition is as follows:</p>
+<pre><span style="font-family: 'courier new', courier;"><code>struct InterVnStats {
+ 1: string                   other_vn;
+ 2: string                   vrouter;
+ 3: u64                      in_tpkts;
+ 4: u64                      in_bytes;
+ 5: u64                      out_tpkts;
+ 6: u64                      out_bytes;
+ }
+ struct UveVirtualNetworkAgent {
+ 1: string                   name (key="ObjectVNTable")
+ 2: optional bool            deleted
+ …
+ 23: optional list&lt;InterVnStats&gt; vn_stats (tags=".other_vn,.vrouter")
+ …
+ }
+ uve sandesh UveVirtualNetworkAgentTrace {
+ 1: UveVirtualNetworkAgent               data;
+ }</code></span></pre>
+<p>The “tags” annotation identifies the “vn_stats” attribute as a list of statistic samples. The stat samples will be stored against multiple tags. This makes it efficient to retrieve and aggregate stats samples that match given tags. The UVE key is always used as a tag called “name”. The Source of the message (hostname where the sending process is running) is also always used as a tag called “Source”.  All the tags listed in the “tags” annotations are also used.  The “tags” annotation is expected to be a comma separated list. Any entry starting with “.” indicates an attribute of the stat list struct. (InterVnStats in this case). Other entries would refer to the UVE struct (UveVirtualNetworkAgent in this case).</p>
+<p>The VRouterAgent can send multiple samples of this stat in the same sandesh message (note that vn_stats is a list).  All these stat samples will share the same timestamp (the timestamp of the sandesh message), but each stat sample will the assigned its own UUID.</p>
+<p>At the current time, the VRouterAgent reports the inter-VN stats for all the VNs present on it every 30 seconds. All packet counts and byte counts are reported in terms of the change in the counter since the last report. This allows us to easily query for the aggregate of these counts over an arbitrary time period.</p>
+<h6><strong>Querying of Stats</strong></h6>
+<p>OpenContrail’s Analytics API provides a SQL-Like interface for querying any time-series information, like Statistics. (See this blog entry for details : <a href="http://opencontrail.org/opencontrail-analytics-query-api">OpenContrail Analytics Query API</a> )</p>
+<p>The table name for the query depends on the UVE struct name and the stat attribute name. In this case, it will be StatTable.UveVirtualNetworkAgent.vn_stats</p>
+<p>The following schema is exposed for this stats query:</p>
+<p>http://10.84.25.31:8081/analytics/table/StatTable.UveVirtualNetworkAgent.vn_stats/schema</p>
+<pre><code><span style="font-family: 'courier new', courier;">   type: "STAT",</span>
+<span style="font-family: 'courier new', courier;"> columns:  [</span>
+<span style="font-family: 'courier new', courier;"> { datatype: “string”, index: true, name: “name” },</span>
+<span style="font-family: 'courier new', courier;"> { datatype: “string”, index: true, name: “String” },</span>
+<span style="font-family: 'courier new', courier;"> { datatype: "int", index: false, name: "T" },</span>
+<span style="font-family: 'courier new', courier;"> { datatype: "int", index: false, name: "T=" },</span>
+<span style="font-family: 'courier new', courier;"> { datatype: "uuid", index: false, name: "UUID"},</span>
+<span style="font-family: 'courier new', courier;"> { datatype: "int", index: false, name: "COUNT(vn_stats)" },</span>
+<span style="font-family: 'courier new', courier;"> { datatype: "string", index: true, name: "vn_stats.other_vn"},</span>
+<span style="font-family: 'courier new', courier;"> { datatype: "string", index: true, name: "vn_stats.vrouter" },</span>
+<span style="font-family: 'courier new', courier;"> { datatype: "int", index: false, name: "vn_stats.in_tpkts" },</span>
+<span style="font-family: 'courier new', courier;"> { datatype: "int", index: false, name: SUM(vn_stats.in_tpkts)"},</span>
+<span style="font-family: 'courier new', courier;"> { datatype: "int", index: false, name: "vn_stats.in_bytes” },</span>
+<span style="font-family: 'courier new', courier;"> { datatype: "int", index: false, name: "SUM(vn_stats.in_bytes)” },</span>
+<span style="font-family: 'courier new', courier;"> { datatype: "int", index: false, name: "vn_stats.out_tpkts" },</span>
+<span style="font-family: 'courier new', courier;"> { datatype: "int", index: false, name: "SUM(vn_stats.out_tpkts)" },</span>
+<span style="font-family: 'courier new', courier;"> { datatype: "int", index: false, name: "vn_stats.out_bytes” },</span>
+<span style="font-family: 'courier new', courier;"> { datatype: "int", index: false, name: "SUM(vn_stats.out_bytes)” },</span>
+<span style="font-family: 'courier new', courier;"> ]</span>
+<span style="font-family: 'courier new', courier;"> }</span>
+ </code>
+ All the column names listed above can be used in the “select” clause. Those that have index=true can also used be in the “where” clause.</pre>
+<p>The select clause controls the columns that appear in the query output. Lets look into how we support retrieval of stats samples and aggregation of these samples.</p>
+<p>The field “T” refers to the timestamp in microseconds. “T=” refers to a rounded-down timestamp.  For example, T=60 will report the timestamp rounded down to a number divisible by 60 seconds. This capability is used to group together all samples that belong to a 60 second time period. This feature is called “binning”.</p>
+<p>The fields that start with SUM and COUNT are aggregate fields. These aggregate fields are provided for every numerical attribute. Except for the aggregate fields, the combination of other fields is guaranteed to be unique in each row of the output.</p>
+<p>Using this uniqueness property, in conjunction with binning and aggregation, gives us powerful ways of slicing-and-dicing data, as the examples will illustrate.</p>
+<h6><strong>Query Examples</strong></h6>
+<p>Queries can be issued via the Analytics API:</p>
+<p>POST to http://10.84.25.31:8081/analytics/query</p>
+<p>The “contrail-stats” command can also be used from the command line:</p>
+<pre><span style="font-family: 'courier new', courier;"><code># contrail-stats --help
+ usage: contrail-stats [-h] [--opserver-ip OPSERVER_IP]
+ [--opserver-port OPSERVER_PORT]
+ [--start-time START_TIME] [--end-time END_TIME]
+ [--last LAST]
+ [--table {AnalyticsCpuState.cpu_info,ConfigCpuState.cpu_info,ControlCpuState.cpu_info,ComputeCpuState.cpu_info,SandeshMessageStat.msg_info,GeneratorDbStats.table_info,GeneratorDbStats.errors,FieldNames.fields,FieldNames.fieldi,QueryPerfInfo.query_stats,UveVirtualNetworkAgent.vn_stats,DatabasePurgeInfo.stats}]
+ [--dtable DTABLE] [--select SELECT [SELECT ...]]
+ [--where WHERE [WHERE ...]] [--sort SORT [SORT ...]]</code></span></pre>
+<p><strong>1. Query for samples</strong></p>
+<p>What are the raw samples reported from vRouter nodea8 for the virtual network default-domain:demo:vn1 over the last 60 seconds?</p>
+<pre><span style="font-family: 'courier new', courier;"><code># contrail-stats --table UveVirtualNetworkAgent.vn_stats --where "name=default-domain:demo:vn1 AND vn_stats.vrouter=nodea8" --select T vn_stats.other_vn UUID vn_stats.out_bytes vn_stats.in_bytes --last 1m
+ {"start_time": "now-1m", "sort_fields": [], "end_time": "now", "select_fields": ["T", "vn_stats.other_vn", "UUID", "vn_stats.out_bytes", "vn_stats.in_bytes"], "table": "StatTable.UveVirtualNetworkAgent.vn_stats", "where": [[{"suffix": null, "value2": null, "name": "name", "value": "default-domain:demo:vn1", "op": 1}, {"suffix": null, "value2": null, "name": "vn_stats.vrouter", "value": "nodea8", "op": 1}]]}</code></span></pre>
+<p><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5689" src="http://www.opencontrail.org/wp-content/uploads/2014/09/sept8_post_image1.jpg" alt="sept8_post_image1" width="814" height="1000" data-id="5689" /></p>
+<p><strong>2. Query for total aggregates</strong></p>
+<p>What is the total traffic exchanged between Virtual Network default-domain:demo:vn1 and every other Virtual Network over the last 1 hour?</p>
+<pre><span style="font-family: 'courier new', courier;"><code># contrail-stats --table UveVirtualNetworkAgent.vn_stats --where "name=default-domain:demo:vn1" --select vn_stats.other_vn "SUM(vn_stats.out_bytes)" "SUM(vn_stats.in_bytes)" "COUNT(vn_stats)" --last 1h
+ {"start_time": "now-1h", "sort_fields": [], "end_time": "now", "select_fields": ["vn_stats.other_vn", "SUM(vn_stats.out_bytes)", "SUM(vn_stats.in_bytes)", "COUNT(vn_stats)"], "table": "StatTable.UveVirtualNetworkAgent.vn_stats", "where": [[{"suffix": null, "value2": null, "name": "name", "value": "default-domain:demo:vn1", "op": 1}]]}</code></span></pre>
+<p><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5690" src="http://www.opencontrail.org/wp-content/uploads/2014/09/sept8_post_image2.jpg" alt="sept8_post_image2" width="889" height="593" data-id="5690" /></p>
+<p>Each row of the query output above represents a unique value of vn_stats.other_vn. Furthermore, SUM(vn_stats.out_bytes) for a given row is obtained by adding together all the samples that had the given value of vn_stats.other_vn. Also, COUNT(vn_stats) tells us the number of samples that this output row represents. (since there is a single vRouter in this setup sending one sample every 30s for each output row if the query above , we are seeing 120 samples per row for a 1 hour query)</p>
+<p><strong> 3. Query for binning</strong></p>
+<p>What is the traffic between Virtual Network default-domain:demo:vn1 and Virtual Network default-domain:demo:vn2 over the last 1 hour, with binning period of 300 seconds?</p>
+<pre><span style="font-family: 'courier new', courier;"><code># contrail-stats --table UveVirtualNetworkAgent.vn_stats --where "name=default-domain:demo:vn1 AND vn_stats.other_vn=default-domain:demo:vn2" --select T=300 "SUM(vn_stats.out_bytes)" "SUM(vn_stats.in_bytes)" --last 1h
+ {"start_time": "now-1h", "sort_fields": [], "end_time": "now", "select_fields": ["T=300", "SUM(vn_stats.out_bytes)", "SUM(vn_stats.in_bytes)"], "table": "StatTable.UveVirtualNetworkAgent.vn_stats", "where": [[{"suffix": null, "value2": null, "name": "name", "value": "default-domain:demo:vn1", "op": 1}, {"suffix": null, "value2": null, "name": "vn_stats.other_vn", "value": "default-domain:demo:vn2", "op": 1}]]}</code></span></pre>
+<p><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5691" src="http://www.opencontrail.org/wp-content/uploads/2014/09/sept8_post_image3.jpg" alt="sept8_post_image3" width="689" height="1114" data-id="5691" /></p>
+<p>This is a “binning” query. The time period is specified using T=&lt;x&gt; in the select clause. We want to sum up 300 seconds worth of samples in each output row. This is useful for drawing graphs, with T on the X axis and the aggregated traffic on the Y axis. Each point on the graph would represent 300 seconds of aggregated traffic.</p>
+<p>Since the T= column reports the timestamp rounded down to 300 seconds, all samples within a 300 second window get mapped into a single output row.  The SUM(vn_stat.out_bytes) column for the output row is then derived by adding together the vn_stat.out_bytes values of all those samples.</p>
+<h6><strong>Conclusion</strong></h6>
+<p>OpenContrail provides a generic, schema-driven way of reporting and querying for statistics. The slicing-and-dicing algorithms are based on an abstract binning-and-aggregation model, and do not depend on the semantics of the data itself. Only the agent generating the samples and the application making the query need to understand the semantics of the data. This makes it possible to add new sample-generating agents and analytics applications in an agile way by simply adding schemas; modification of core OpenContrail Analytics software is not needed.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Operational State in the OpenContrail system:  UVE &#8211; User Visible Entities through Analytics API</title>
+		<link>https://tungsten.io/operational-state-in-the-opencontrail-system-uve-user-visible-entities-through-analytics-api/</link>
+		
+		<dc:creator><![CDATA[Anish Mehta]]></dc:creator>
+		<pubDate>Sat, 07 Jun 2014 23:35:23 +0000</pubDate>
+				<category><![CDATA[Analytics]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://opencontrail.org/?p=1556</guid>
+
+					<description><![CDATA[Every element of the layered, horizontally scalable OpenContrail system has operational state to report. It’s important to present this operation state to the user with the right abstractions that make...]]></description>
+										<content:encoded><![CDATA[<p>Every element of the layered, horizontally scalable OpenContrail system has operational state to report. It’s important to present this operation state to the user with the right abstractions that make the system simpler to understand and manage, and yet provide enough details when required.</p>
+<p>Consider the Virtual Network. There may be VM’s in multiple compute nodes that are attached to the same virtual network. So, operational state about this VirtualNetwork exists on VRouterAgent processes on these multiple compute nodes.  We want to present a consolidated view of this VirtualNetwork across all these compute nodes.<br />
+<span id="more-1556"></span></p>
+<p>But, wait – there’s more. VRouterAgents on Compute nodes are not the only processes that report Operational State of a VirtualNetwork – the SchemaTransformer on the Config Node also reports which other Virtual Network the given VirtualNetwork is connected to. So, we actually need to present a consolidated view of this VirtualNetwork across the whole system – compute nodes and config nodes.</p>
+<p>In an earlier <a href="http://opencontrail.org/sandesh-a-sdn-analytics-interface/">Blog post</a>, my colleague, Megh Bhatt, talked about Sandesh &#8211; OpenContrail’s Analytics Interface. One of the features of Sandesh is the UVE mechanism, which allows processes to report their Operational State in a way that facilitates the aggregation of state across process types and process instances.  This helps fulfill the promise of presenting the right abstractions for managing the OpenContrail system.</p>
+<p><img loading="lazy" decoding="async" class="alignnone wp-image-5713 size-full" src="http://www.opencontrail.org/wp-content/uploads/2014/06/Anish_Mehta_Blogpost_Image1.png" alt="Anish_Mehta_Blogpost_Image1" width="960" height="899" data-id="5713" /></p>
+<p style="text-align: center;"><strong>Figure 1 UVE Data Structure for Virtual Network</strong></p>
+<p><strong>Aggregating across Process Instances</strong></p>
+<p>Lets go back to the VirtualNetwork example</p>
+<p>Here is part of the SandeshUVE for Virtual Network, as reported by VRouterAgents:</p>
+<pre><code><span style="font-family: 'courier new', courier;"> struct UveVirtualNetworkAgent {</span>
+<span style="font-family: 'courier new', courier;"> 1: string name(key="ObjectVNTable")</span>
+<span style="font-family: 'courier new', courier;"> 2: optional bool deleted</span>
+<span style="font-family: 'courier new', courier;"> 3: optional i32 total_acl_rules</span>
+<span style="font-family: 'courier new', courier;"> 4: optional i32 in_bandwidth_usage (aggtype="sum")</span>
+<span style="font-family: 'courier new', courier;"> 5: optional list vm_list (aggtype="union")</span>
+<span style="font-family: 'courier new', courier;"> }</span>
+<span style="font-family: 'courier new', courier;"> uve sandesh UveVirtualNetworkAgentTrace {</span>
+<span style="font-family: 'courier new', courier;"> 1: UveVirtualNetworkAgent data;</span>
+<span style="font-family: 'courier new', courier;"> }</span>
+ </code></pre>
+<p>As explained in the Sandesh blog, all analytics information is recorded at the “Analytics Collector”, which can be scaled horizontally. The processes in the OpenContrail system act as “Analytics Generators”.  They maintain a connection to one of the Collectors, and send information to it.</p>
+<p>VRouterAgents from multiple compute nodes are Generators who are sending this “UveVirtualNetworkAgent “ structure to their Analytics Collector independently, but we are presenting a single instance of this structure, aggregated across all generators, via the Analytics REST API. The annotation “aggtype” controls this aggregation on a per-attribute basis.</p>
+<ol>
+<li>No aggtype annotation</li>
+</ol>
+<p>For these attributes, we expect that all generators will send the same value. There is certain number of ACL rules configured on this VirtualNetwork, and all VRouterAgents should be operating with the same rules. If all these Generators are actually sending the same value, we will just display that value. Otherwise, we display each unique value along with a list of Generators reporting that unique value.</p>
+<ol start="2">
+<li>aggtype=”sum”</li>
+</ol>
+<p>For these attributes (which much be integers), we will add together the values sent by each generator and present the sum.</p>
+<p>A VirtualNetwork is occupying some input bandwidth on each compute node where it had some VirtualMachines. We need to report the aggregate input bandwidth occupied by this VirtualNetwork across the entire system.</p>
+<ol start="3">
+<li>aggtype=”union”</li>
+</ol>
+<p>For these attributes (which much be lists of strings), we will treat each list as a set, take a union of the sets, and present the result.</p>
+<p>Each VRouterAgent has multiple VirtualMachines that are attached to this VirtualNetwork. We want to report a system-wide list of all VirtualMachines that are on this VirtualNetwork.</p>
+<p><strong>UVE Cache in the Generators</strong></p>
+<p>Generators report their Operational States to Collectors, which write themto a database. Based on user request, Operational State is presented out of the database via the Analytics REST API. This mechanism must tolerate component failures.</p>
+<p>We have High-Availability measure in place to handle failures in each of these layers of Analytics. Explaining all of these is beyond the scope of this discussion, but there is one mechanism in particular that applies to UVEs.</p>
+<p>Consider a case where the Collector loses contact with a Generator and at the same time, there are multiple UVEs to which this Generator may have been contributing some state. The Collector will in effect remove this Generator’s contribution from all these UVEs.</p>
+<p>However, subsequently, this Generator might re-establish contact with this Collector, or with another Collector. The goal is to get this Generator’s state information back. For this reason, we maintain a UVE Cache in each Generator. When a Generator connects to a Collector, the first step is to sync its UVE Cache with the Collector, so that we always reflect the correct, latest state for any connected Generator.</p>
+<p>The system-wide UVE state is accessible via the Analytics REST API, but the UVE cache of any Generator is accessible via IntrospectE.g.: (the VRouterAgent’s Introspect port is 8085)</p>
+<p><a href="http://opencontrail.org/wp-content/uploads/2014/06/Anish_Mehta_Blogpost_Image2.png"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5714" src="http://www.opencontrail.org/wp-content/uploads/2014/06/Anish_Mehta_Blogpost_Image2.png" alt="Anish_Mehta_Blogpost_Image2" width="972" height="845" data-id="5714" /></a></p>
+<p style="text-align: center;"><strong>Figure 2 UVE Cache for Virtual Network on VRouterAgent</strong></p>
+<p><strong>Conclusion</strong></p>
+<p>All processes in the OpenContrail system act as “Analytics Generators”.  These generators maintain a robust and resilient connection to one of the Analytics Collectors, and they send their collector various kinds of information – Operational State, System Logs and Statistics (such as flow/traffic information).</p>
+<p>UVE – User Visible Entities feature is the mechanism of OpenContrail that allows processes to report their Operational State in a way that facilitates the aggregation of state across process types and process instances. This mechanism also guarantees a consistent and updated view of Operational State in the face of system failures of Analytics Generators, Analytics Collectors and their connections.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Sandesh – A SDN Analytics Interface</title>
+		<link>https://tungsten.io/sandesh-a-sdn-analytics-interface/</link>
+		
+		<dc:creator><![CDATA[Megh Bhatt]]></dc:creator>
+		<pubDate>Thu, 23 Jan 2014 08:56:25 +0000</pubDate>
+				<category><![CDATA[Analytics]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://opencontrail.org/?p=1213</guid>
+
+					<description><![CDATA[In a previous blog posting titled “Debugging and System Visibility in a SDN Environment”, OpenContrail Software Engineer and my colleague, Anish Mehta, gave an overview of the challenges and opportunities...]]></description>
+										<content:encoded><![CDATA[<p style="text-align: justify;">In a previous blog posting titled “<a href="http://opencontrail.org/debugging-and-system-visibility-in-a-sdn-environment/">Debugging and System Visibility in a SDN Environment</a>”, OpenContrail Software Engineer and my colleague, Anish Mehta, gave an overview of the challenges and opportunities facing SDN Analytics.<br />
+<span id="more-1213"></span> A SDN analytics solution needs to have the right abstractions, aggregation, and syncing mechanisms to report and present information that can be used by humans to operate a multi-tenant datacenter. Open APIs for both the northbound and the southbound analytics interface of the SDN controller are crucial to operate in a multi-vendor environment. The southbound interface here refers to the interface to gather information from both virtual and physical routers, gateways and network services appliances. Traditionally, the southbound interface consists of protocols like syslog, sFlow, netFlow, SNMP used by network elements to report information. Proprietary CLI commands generally display the current operational state of the network elements. OpenContrail Analytics node uses REST as the northbound interface and Sandesh as the southbound interface as shown below.</p>
+<p><a href="http://opencontrail.org/wp-content/uploads/2014/01/sandesh_analytics_blogpost_picture.png"><img loading="lazy" decoding="async" class="size-full wp-image-5744 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2014/01/sandesh_analytics_blogpost_picture.png" alt="sandesh_analytics_blogpost_picture" width="517" height="500" data-id="5744" /></a></p>
+<p style="text-align: center;" align="center"><strong>Figure 1: OpenContrail Analytics Node</strong></p>
+<p style="text-align: justify;">In this blog post, we will present an overview of “Sandesh” &#8211; A southbound interface protocol that is used by the OpenContrail Analytics engine to gather information from the OpenContrail virtual routers and other software modules like the control-node, and the configuration manager, which run as part of the controller. The name Sandesh comes from Sanskrit and means message. Sandesh consists of three components:</p>
+<p style="text-align: justify;">1. An Interface Definition Language (IDL) and code generator based on <a href="http://thrift.apache.org">Apache Thrift</a> that allows users/developers to specify messages.<br />
+2. XML-based protocol that is used between the generators of the information and the collector of the information, which is the analytics engine<br />
+3. A back-end library used by the generators that integrates the generated code into an asynchronous queue based sending mechanism.</p>
+<p style="text-align: justify;">The languages currently supported are C++, Python, and C. The C language support is limited to serialization and deserialization.</p>
+<p style="text-align: justify;">The blog post will concentrate on the IDL and explain how the IDL allows the specification of abstractions, aggregation, and syncing mechanisms to be applied by the analytics engine to the messages defined in the IDL. The <a href="https://github.com/Juniper/contrail-sandesh">Juniper /contrail-sandesh</a> Github repository contains source code to help you get started. Readers interested in learning more about the XML-based protocol and the back-end library can look under the <a href="https://github.com/Juniper/contrail-sandesh/tree/master/library/cpp/protocol">library/cpp/protocol</a> for C++ and <a href="https://github.com/Juniper/contrail-sandesh/tree/master/library/python/pysandesh/protocol">library/python/pysandesh/protocol</a> for Python based implementation.</p>
+<h6 style="text-align: justify;">Sandesh IDL and code generator:</h6>
+<p style="text-align: justify;">The Sandesh code generator allows developers to define data types and messages to be sent to the analytics engine or the collector in a simple definition file. Taking that file as input, the code generator produces code to be used to send the messages to the collector. The code generator frees the developer from the burden of writing a load of boilerplate code to serialize and transport the objects to the collector. The developers are exposed a simple API to send the messages and the generated code along with the back-end library handles the grunt work of actually doing the low-level serialization/deserialization and send/receive. The data types supported in the IDL file are bool, byte, i16, i32, i64, string, list, map, struct, sandesh, u16, u32, u64, const static string.  The sandesh data-type is the top-level data type and identifies a unique message type being sent from the generator to the collector. Developers can define different types of sandesh based on the need to convey different types of information to the collector. Annotations are used in the IDL file to convey additional information like the abstraction to index the message against, aggregation mechanisms like sum, append, and union. For example, the annotation (key=&lt;Table-Name&gt;) is used to indicate that the message should be stored in a particular indexed table like the Virtual Network table in the analytics database.</p>
+<p style="text-align: justify;">The sandesh code generator is used to transform the Sandesh IDL File (.sandesh) into source code, which is used by the generators. To generate the source from a sandesh file, user can run:</p>
+<pre style="text-align: justify;"><span style="font-family: 'courier new', courier;"><code>sandesh --gen &lt;language&gt; &lt;sandesh filename&gt;</code></span></pre>
+<p style="text-align: justify;">For example, for a sandesh file – vns.sandesh, running sandesh &#8211;gen cpp vns.sandesh produces the following auto-generated C++ code:</p>
+<pre style="text-align: justify;"><span style="font-family: 'courier new', courier;"><code>vns_types.h, vns_types.cpp, vns_constants.h, vns_constants.cpp, vns_html.cpp, vns_html_template.cpp
+ vns_request_skeleton.cpp, vns.html, vns.xsl, vns.xml
+ style.css</code></span></pre>
+<p style="text-align: justify;">Similarly, running sandesh &#8211;gen py vns.sandesh produces the gen_py and vns python packages.  Following files are auto-generated in the vns package:</p>
+<pre style="text-align: justify;"><span style="font-family: 'courier new', courier;"><code>ttypes.py, constants.py, http_request.py, vns.xml, vns.xsl, vns.html, request_skeleton.py, style.css, index.html</code></span></pre>
+<p style="text-align: justify;">The source code for the sandesh code generator can be accessed under the <a href="https://github.com/Juniper/contrail-sandesh/tree/master/compiler">compiler/</a> directory.</p>
+<h6 style="text-align: justify;">Sandesh Types</h6>
+<p style="text-align: justify;">Generators need to convey different types of information like system logs indicating occurrence of a system event, object state change information, statistics information, lightweight tracing needed for deep dive debugging, information to display current state of data structures. Developers can define different types of sandesh to address each of the above use cases.</p>
+<p style="text-align: justify;">1. systemlog<br />
+<i>Use Case:</i><br />
+Structured log replacement for syslog.<br />
+<i>Example:</i></p>
+<pre style="text-align: justify;"><span style="font-family: 'courier new', courier;"><code>systemlog sandesh BgpPeerTableMessageLog {
+ 1: string PeerType;
+ 2: "Peer"
+ 3: string Peer;
+ 4: "in table";
+ 5: string Table;
+ 6: ":";
+ 7: string Message;
+ }</code></span></pre>
+<p style="text-align: justify;"><i>Notes:</i></p>
+<p style="text-align: justify;">systemlog can optionally have a (key=”&lt;Table-Name”&gt;) annotation and this can be used to corelate logs across different network elements. For example, a (key=”IPTable”) can be used to corelate logs pertaining to a specific IP address across the physical routers and the virtual routers / SDN control plane. The const static strings defined in the message above – elements 2, 4, and 6 are only used for display purposes when querying the logs from the analytics database.</p>
+<p style="text-align: justify;"><b>2. objectlog</b></p>
+<p style="text-align: justify;"><i>Use Case:</i></p>
+<p style="text-align: justify;">Logging state transitions and lifetime events for objects (VirtualMachine, VirtualNetwork). Objectlog is useful for performing historical state queries on an object. Objects have an object-id, which is indicated using the annotation (key=&#8221;&lt;Object-TableName&gt;&#8221;). For example, RoutingInstanceInfo below has name as the key.</p>
+<p style="text-align: justify;"><i>Example:</i></p>
+<pre><span style="font-family: 'courier new', courier;"><code> struct RoutingInstanceInfo {
+ 1: string name (key="ObjectRoutingInstance");
+ 2: optional string route_distinguisher;
+ 3: optional string operation;
+ 4: optional string peer;
+ 5: optional string family;
+ 6: optional list&lt;string&gt; add_import_rt;
+ 7: optional list&lt;string&gt; remove_import_rt;
+ 8: optional list&lt;string&gt; add_export_rt;
+ 9: optional list&lt;string&gt; remove_export_rt;
+ 10: string hostname;
+ }
+ objectlog sandesh RoutingInstanceCollector {
+ 1: RoutingInstanceInfo routing_instance;
+ }</code></span></pre>
+<p style="text-align: justify;"><i>Notes:</i></p>
+<p style="text-align: justify;">It is best practice to add the <i>optional </i>keyword to elements whose values do not change frequently and thus do not need to be sent with each message.</p>
+<p style="text-align: justify;"><b>3. uve  (User Visible Entities)</b></p>
+<p style="text-align: justify;"><i>Use Case:</i></p>
+<p style="text-align: justify;">UVEs (User Visible Entities) are used represent the system-wide state of externally visible objects. uve is a special case of objectlog. UVEs are used to display the operational state of an object like VirtualMachine or VirtualNetwork, by aggregating information from uve sandesh messages across different generator types (configuration manager, virtual router, control node) and across nodes. uve like objectlog need the key annotation.</p>
+<p style="text-align: justify;"><i>Details and Example:</i></p>
+<p style="text-align: justify;">For example, consider the VirtualNetwork uve sandesh definition. We specify its state in two “tiers” – configuration manager and virtual router.  The configuration manager tier is defined in <a href="https://github.com/Juniper/contrail-controller/blob/master/src/config/uve/virtual_network.sandesh">virtual_network.sandesh</a> in the src/controller/config/uve directory and the virtual router tier is defined in <a href="https://github.com/Juniper/contrail-controller/blob/master/src/vnsw/agent/uve/virtual_network.sandesh">virtual_network.sandesh</a> in the src/controller/vnsw/agent/uve directory in the <a href="https://github.com/Juniper/contrail-controller">Juniper/contrail-controller</a> Github repository. For each tier, we return a single structure, even though a given virtual network might be present on many software modules in that tier. A VirtualNetwork might be present on many virtual routers; these virtual routers are expected to send uve sandesh messages when any attribute of the VirtualNetwork changes state. The virtual router tier of the VirtualNetwork UVE definition looks like:</p>
+<pre style="text-align: justify;"><span style="font-family: 'courier new', courier;"><code> struct UveInterVnStats {
+ 1: string                  other_vn (aggtype="listkey")
+ 2: i64                     out_tpkts;
+ 3: i64                     in_tpkts;
+ }
+ struct UveVirtualNetworkAgent {
+ 1: string        name(key="ObjectVNTable")
+ 2: optional bool deleted
+ 3: optional i32  total_acl_rules
+ 4: optional i32  total_analyzers(aggtype=”sum”)
+ 5: optional i64  in_tpkts       (aggtype="counter")
+ 7: optional i64  out_tpkts      (aggtype="counter")
+ 9: optional list&lt;UveInterVnStats&gt;stat(aggtype="append")
+ 11: optional list&lt;string&gt; vm_list (aggtype="union")
+ }
+ uve sandesh UveVirtualNetworkAgentTrace {
+ 1: UveVirtualNetworkAgent         data;
+ }</code></span></pre>
+<p style="text-align: justify;">UVEs are special case of Objectlog and hence each UVE has an object-id, which is denoted using the (key=&#8221;&lt;Object-TableName&gt;&#8221;) annotation.  The annotation needs to consistent across all the tiers of the UVEs to allow correlation and aggregation to be performed by the analytics engine.</p>
+<p style="text-align: justify;">The “aggtype” annotation allows the developer to choose how the analytics engine should aggregate the attribute when sent across multiple generators and tiers.  For example, for the “aggtype=sum” annotation on an attribute, the analytics engine reports an aggregate value that is a sum of the values sent by all generators. In the VirtualNetwork uve sandesh definition, each virtual router tracks the number of analyzer instances attached to a VirtualNetwork using the attribute “total_analyzers”. The aggregate value reported by the analytics engine should be a sum of the values of this attribute across all virtual routers on which the VirtualNetwork exists.</p>
+<p style="text-align: justify;"><b>4. trace</b></p>
+<p style="text-align: justify;"><i>Use Case:</i></p>
+<p style="text-align: justify;">Light-weight in memory buffer logs for frequently occurring events</p>
+<p style="text-align: justify;"><i>Example:</i></p>
+<pre style="text-align: justify;"><span style="font-family: 'courier new', courier;"><code> trace sandesh XmppRxStream {
+ 1: "Received xmpp message from: ";
+ 2: string IPaddress;
+ 3: "Port";
+ 4: i32 port;
+ 5: "Size: ";
+ 6: i32 size;
+ 7: "Packet: ";
+ 8: string packet;
+ 9: "$";
+ }</code></span></pre>
+<p style="text-align: justify;"><b>5. traceobject</b></p>
+<p style="text-align: justify;"><i>Use Case:</i></p>
+<p style="text-align: justify;">Light-weight in memory buffer logs for frequently occurring object state transitions</p>
+<p style="text-align: justify;"><i>Example:</i></p>
+<pre><span style="font-family: 'courier new', courier;"><code> traceobject sandesh RoutingInstanceCreate {
+ 1: string name;
+ 2: list&lt;string&gt; import_rt;
+ 3: list&lt;string&gt; export_rt;
+ 4: string virtual_network;
+ 5: i32 index;
+ }</code></span></pre>
+<p style="text-align: justify;"><i>Notes about </i><i>trace</i><i> and </i><i>traceobject</i><i>:</i></p>
+<p style="text-align: justify;">Developer needs to create a Sandesh Trace Buffer with a given size wherein the trace and traceobject sandesh are stored. HTTP introspect (explained in the request and response sandesh) can be used to request viewing of the trace buffer. Tracing to the buffer can be enabled or disabled, and multiple types of trace and traceobject sandesh can be traced into a single trace buffer.</p>
+<p style="text-align: justify;"><b>6. request and response</b></p>
+<p style="text-align: justify;"><i>Use Case:</i></p>
+<p style="text-align: justify;">Request is used to send commands from requestor to generator. Response is used for response from generator to requestor. Request and response are used to dump internal data structures and provide operational information from the software modules needed for in-depth debugging.</p>
+<p style="text-align: justify;"><i>Example:</i></p>
+<pre><span style="font-family: 'courier new', courier;"><code> request sandesh SandeshLoggingParamsSet {
+ 1: bool enable;
+ 2: string category;
+ 3: string level;
+ }
+ response sandesh SandeshLoggingParams {
+ 1: bool enable;
+ 2: string category;
+ 3: string level;
+ }</code></span></pre>
+<p style="text-align: justify;"><i>Notes: </i><i></i></p>
+<p style="text-align: justify;">The developer is expected to provide the implementation of the request handling function. For the above example, in C++ it will be implementation of SandeshLoggingParamsSet::HandleRequest function and for python a bound method named handle_request is expected to be present in SandeshLoggingParamsSet.</p>
+<h6 style="text-align: justify;">HTTP Introspect</h6>
+<p style="text-align: justify;">Sandesh is also used to implement support for debugging in the OpenContrail controller and virtual router software modules. The debugging facility is called HTTP Introspect. The sandesh code generator produces HTML forms for each request sandesh and associated stylesheets that are required to render response sandesh when invoked with the –gen html option. Each software module contains an embedded web/HTTP server which developers can use to dump internal state of data structures, view trace messages, and perform other extensive debugging.</p>
+<p style="text-align: justify;">For example, to debug the BGP neighbor peering status on the control-node, the developer has defined a request sandesh in <a href="https://github.com/Juniper/contrail-controller/blob/master/src/bgp/bgp_peer.sandesh">bgp_peer.sandesh</a> as:</p>
+<pre><span style="font-family: 'courier new', courier;"><code> request sandesh BgpNeighborReq {
+ 1: string ip_address;
+ 2: string domain;
+ }
+ struct BgpNeighborResp {
+ 1: string peer;             // Peer name
+ 2: string peer_address (link="BgpNeighborReq");
+ 3: u32 peer_asn;
+ response sandesh BgpNeighborListResp {
+ 1: list&lt;BgpNeighborResp&gt; neighbors;
+ }</code></span></pre>
+<p style="text-align: justify;">To debug, developer can access the web page at http://&lt;IP-Address of control-node&gt;:8083/Snh_BgpNeighborReq?ip_address=&amp;domain= using curl or the web browser and get the XML data corresponding to the response sandesh from the control-node.</p>
+<p style="text-align: justify;">The developers specify the commands supported by the web server (GETs) by defining a request sandesh. The data is returned in a response sandesh. The collector can also send a request sandesh and the response sandesh sent to the collector will be stored in the analytics database. Request and response sandesh thus provide a RESTful API to debugging the software modules.</p>
+<h6 style="text-align: justify;">Wrapping Up</h6>
+<p style="text-align: justify;">Monitoring and running a multi-tenant data-center requires strong SDN analytics. Exposing the right network abstractions and having appropriate aggregation and syncing mechanisms are crucial for analytics to scale in massively distributed systems. The importance of open APIs cannot be understated in achieving the goal of SDN analytics to enable humans to cost-effectively monitor and operate a multi-tenant, multi-vendor data center.</p>
+<p style="text-align: justify;">Most modern network operating systems support C++, and Python, and by using Sandesh as the southbound interface, OpenContrail Analytics solution can be used to provide a consolidated view and deep insight across virtual and physical networks and events even in a multi-vendor environment.  As the blog post illustrates, Sandesh is an open southbound interface and protocol that enables developers to expose the right abstractions and aggregation mechanisms required for SDN analytics. Integrating Sandesh on existing physical routers and switches in a multi-vendor environment is just a matter of defining the right abstractions and aggregation mechanisms in the IDL and using the back-end library. In future blog entries we will discuss the OpenContrail Analytics Engine aggregation and syncing mechanisms as well as the statistics collection mechanisms in detail.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Debugging and System Visibility in a SDN Environment</title>
+		<link>https://tungsten.io/debugging-and-system-visibility-in-a-sdn-environment/</link>
+		
+		<dc:creator><![CDATA[Anish Mehta]]></dc:creator>
+		<pubDate>Tue, 10 Dec 2013 22:14:06 +0000</pubDate>
+				<category><![CDATA[Analytics]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://opencontrail.org/?p=938</guid>
+
+					<description><![CDATA[The benefits of SDN, and the advantages of cloud computing have been well documented.  However, when moving to this new distributed environment, there better be a way to have clear...]]></description>
+										<content:encoded><![CDATA[<p style="text-align: justify;">The benefits of SDN, and the advantages of cloud computing have been well documented.  However, when moving to this new distributed environment, there better be a way to have clear visibility and understanding of how the network is performing.  When issues arise, it is essential to have the diagnostic and troubleshooting capability to solve them before any business impact to any tenant.</p>
+<p><span id="more-938"></span></p>
+<p style="text-align: justify;">Looking through /var/log/messages alone just won&#8217;t cut it anymore.  An Operational CLI with auto-completion features isn&#8217;t enough either.  A distributed, horizontally scalable SDN Controller needs to provide more…</p>
+<p style="text-align: justify;">Data-center Monitoring Software integrates the monitoring of compute, storage, networking and applications in the data center. As compute and storage have been virtualized, more powerful tools have developed for managing and orchestrating them. Software and application management frameworks such as chef and puppet also help with managing distributed applications. There are customizable log collection and analysis tools that help monitor applications as well.</p>
+<p style="text-align: justify;">But, as we start looking at network virtualization, it becomes evident that the traditional abstractions and mechanisms for monitoring the network are often somewhat fragmented. There are centralized software applications that monitor network elements using interfaces such as netflow and SNMP. But these mechanisms can suffer from inconsistent implementations across equipment and often do not expose information at the right granularity or abstraction. When troubleshooting is needed, we can find ourselves correlating operational state and counters using CLIs across many individual network elements.</p>
+<p style="text-align: justify;">SDN Analytics calls for presenting a <b>seamless single logical view</b> of the network in one place.</p>
+<p style="text-align: justify;">SDN controllers represent some fundamental changes to how networking software and systems are built -– we need system-wide abstractions for expressing services, and horizontal scalability of the software itself.  The debugging and visibility needed for these systems must present information along the axes of basic user abstractions (Virtual Networks, Virtual Machines and their connectivity).  It&#8217;s vital that monitoring the modern multi-tenant virtualized datacenter be no more complex than the user-abstractions themselves.  That&#8217;s the principal charter for SDN Analytics.</p>
+<p style="text-align: justify;"><b>Abstractions for Analytics:</b></p>
+<p style="text-align: justify;">One of the fundamental concepts of SDN is the ability to express user configuration in a centralized way, instead of as a mixture of lower-level configuration on multiple network elements of different types. In terms of user configuration, lets take the example of a tenant with Virtual Networks that have VMs inside them and interact with other Virtual and Physical networks according to certain forwarding policies.  You have software processing elements that translate the Virtual Network configuration into networking protocol constructs such as BGP Route Targets or VXLAN Identifiers. You have other software elements that implement the control protocols, and yet others that serve as the data-forwarding plane and possibly enforce ACL rules.</p>
+<p style="text-align: justify;">For monitoring and troubleshooting, it&#8217;s important to manage this complexity appropriately. In this case, we need an aggregate view of what&#8217;s happening with this Virtual Network, even though we are dealing with state that is distributed across multiple processing elements of different types.   If there are connectivity problems, we may need to check for consistency of state across processing elements.  This must also be tied to the topology of the data-forwarding elements.  Besides state information and configuration information, we need packet counters at each point, and a way to visualize and analyze the topology.</p>
+<p style="text-align: justify;"><b>State, Stats and History from a Distributed System:</b></p>
+<p style="text-align: justify;">Reporting useful state from a distributed system is a matter of having the right abstractions, and having aggregation and syncing mechanisms. Syncing mechanisms have always been present in some form in network protocols; we just need to apply a similar level of rigor to SDN Analytics. We can think of the processing elements of a SDN system themselves as Network Elements forming a network. In that case, having a state aggregation mechanism is akin to a traditional NMS system correlating the operational state of Network Elements. This state aggregation enables us to view the <b>current state</b> of the overall system.</p>
+<p style="text-align: justify;">But troubleshooting a system is not just a matter of the looking at the current state of the system &#8211; we are often interested in how we got there. Having more granular data is an asset, as long as you can present it in a timely and actionable way. Take an example of a multi-tier application with a web front-end and database back-end. If the application is not able to serve its customers with the right SLA&#8217;s (e.g. transaction latency is much higher than expected), network troubleshooting starts with traffic flows that are attributable to the application. We&#8217;ll need the ability to slice-and-dice traffic statistics for these flows end-to-end between Virtual Network boundaries and even VMs. This can span multiple data-forwarding elements. And, we need to do it in real-time. Doing this at scale, for a large data-center, is challenging. Horizontal software scaling techniques, such as those used in NoSQL database paradigms, can help.</p>
+<p style="text-align: justify;"><b>The Open Software Environment:</b></p>
+<p style="text-align: justify;">Managing the datacenter&#8217;s compute, storage, networking and applications is a fast-moving field. Architectures and solutions evolve along with data-center functional requirements, economics and available technology. SDN Analytics must provide <b>northbound</b> interfaces (the interface to provide information) that allow for easy integration with other orchestration and monitoring software applications. Customers may be using 3rd-party vendor applications, and/or developing software internally under their own DevOps model.</p>
+<p style="text-align: justify;">Complex software systems need to support intelligent, proactive monitoring. For example, consider a software bug in routing that results in excessive memory being used by a control plane process. By automatically tracking the memory use of a particular processing element over time, or comparing it to other similar processing elements, we can display outliers that deserve further troubleshooting analysis. SDN Analytics needs to support such detection natively, as well as provide northbound APIs for other software to this.</p>
+<p style="text-align: justify;">Open APIs are required for <b>southbound</b> interfaces (the interface to gather information) as well. SDN controllers don&#8217;t operate in a vacuum. The network will have a variety of both virtual and physical routers, gateways and network services appliances, and from different vendors. SDN Analytics should provide a consolidated view of all these elements.  For example, we should be able to correlate events reported by a physical router with events happening in the SDN control plane.  Its possible to extend this further, and correlate with other applications operating in the data-center. Support for standards such as netflow and syslog is helpful. In all these cases, the ability to slice-and-dice the information and search though the vast sea of data is vital.</p>
+<p style="text-align: justify;">In future blog entries we will discuss the OpenContrail Analytics solution, and examples of how it addresses these challenges and opportunities. SDN enables powerful solutions for getting agility, security, utilization and performance from the multi-tenant datacenter. Strong Analytics is necessary for humans to actually operate it.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

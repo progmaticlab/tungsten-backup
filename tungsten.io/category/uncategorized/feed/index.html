@@ -1,0 +1,755 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Uncategorized Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/uncategorized/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/uncategorized/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Fri, 23 Aug 2019 23:24:49 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>Uncategorized Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/uncategorized/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Getting Started with Tungsten Fabric using tf-devstack</title>
+		<link>https://tungsten.io/getting-started-with-tungsten-fabric-using-tf-devstack/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Fri, 23 Aug 2019 23:24:07 +0000</pubDate>
+				<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8172</guid>
+
+					<description><![CDATA[To help potential users test out Tungsten Fabric quickly, the community recommends installing tf-devstack on a. This post outlines how to do that. As a part of my first Google...]]></description>
+										<content:encoded><![CDATA[<p>To help potential users test out Tungsten Fabric quickly, the community recommends installing tf-devstack on a. This post outlines how to do that.</p>
+<p>As a part of my first Google Summer of Code (<a href="https://summerofcode.withgoogle.com">GSOC</a>) experience, tf-devstack has been a great walkthrough of how to deploy Tungsten Fabric from published containers or building directly from the source using instances spawned in AWS, Openstack, or your local laptop. Find the latest instance of tf-devstack in the <a href="https://github.com/tungstenfabric/tf-devstack">Tungsten Fabric repository</a>.</p>
+<p>In this walk through, I will be showing how to setup tf-devstack referring to the link above on whatever system you chose. The most exciting thing about the tf-devstack is that this tool brings up Tungsten Fabric along with Kubernetes on a single node deployment. With this Kubernetes deployment, Tungsten Fabric offers many capabilities, such as pod addressing, network isolation, gateway services, load balancing in services, etc.</p>
+<p><strong>Recommendations for Hardware/Software requirements:</strong></p>
+<ul>
+<li>CentOS 7 (x86_64) &#8211; with Updates HVM</li>
+<li>xlarge instance type</li>
+<li>50 GiB disk Storage</li>
+</ul>
+<p><strong>Quick start on an </strong><strong>AWS instance: </strong></p>
+<ol>
+<li>Create an instance using the specifications in the previous section. This walkthrough uses AWS.</li>
+<li>SSH into the instance launched using the public IP address.</li>
+</ol>
+<p><em>ssh centos@&lt;public_instance_ipaddress&gt;</em></p>
+<ol start="3">
+<li>Get root access</li>
+</ol>
+<p><em>sudo su</em></p>
+<ol start="4">
+<li>In case of centos, yum may be used to install git to clone the repository –</li>
+</ol>
+<p><em> yum install -y git</em></p>
+<ol start="5">
+<li>Clone the repository and start the contrail networking deployment process–</li>
+</ol>
+<p><em>git clone https://github.com/tungstenfabric/tf-devstack</em></p>
+<p><em>cd tf-devstack</em></p>
+<p><em>export K8S_VERSION=1.12.7</em></p>
+<p><em>./startup.sh</em></p>
+<p>This script allows the root user to connect to a host via ssh, install and configure docker, build contrail-dev-control container and helps the user start the contrail networking deployment process.</p>
+<p><strong>Known errors – </strong></p>
+<ol>
+<li>Permission denied or unable to establish connection –It is important to map the private IP address with the public IP address in order to gain access to the UI for the contrail deployed on the instance. Thus, the user should not forget to add the inbound security rule for a custom TCP connection on port 8143 since the contrail works on port 8143.</li>
+</ol>
+<ol start="2">
+<li>Occasional errors prevent deployment of Kubernetes on a VirtualBox machine; retry can help. Also, keep in mind this is not idempotent, hence there might be broken connections which the user might not be able to figure out. Hence, spawning a new instance may be recommended.</li>
+</ol>
+<p><strong>Getting Access to the Tungsten Fabric UI &#8211; </strong></p>
+<p>After being successfully able to run the scripts above to get started you may be prompted with the username and id with the service deployed on the public IP address with the help of which you may be able to log into the Tungsten Fabric UI.</p>
+<p><img fetchpriority="high" decoding="async" class="alignnone  wp-image-8174" src="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-1B-300x187.png" alt="" width="497" height="310" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-1B-300x187.png 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-1B-1024x640.png 1024w" sizes="(max-width: 497px) 100vw, 497px" /></p>
+<p><img decoding="async" class="alignnone  wp-image-8173" src="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blof-2B-300x187.png" alt="" width="496" height="309" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blof-2B-300x187.png 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blof-2B-1024x640.png 1024w" sizes="(max-width: 496px) 100vw, 496px" /></p>
+<p><strong>Creating Workloads in Kubernetes – </strong></p>
+<p>Users must keep in mind that Kubernetes sometimes prevents from pushing pods/workloads to the control nodes. Also, having a single node working, the user needs to remove the taint while working with the following command hence removing the taint from the host.</p>
+<p>kubectl taint nodes NODENAME node-role.kubernetes.io/master-, where NODENAME is name from &#8220;kubectl get node&#8221;</p>
+<p>It’s time to relax and start your service now with Kubernetes!</p>
+<ol>
+<li><strong>Create a basic test.yaml</strong></li>
+</ol>
+<p>Follow the link <a href="https://github.com/kubernetes/examples">https://github.com/kubernetes/examples</a> to learn on how to create a sample test.yaml for your first service deployment. Here is one example that I am using from the link below &#8211;<em>https://github.com/paulbouwer/hello-kubernetes</em></p>
+<p>Refer to the wiki pages for kubernetes for basic references on how it works.</p>
+<ol start="2">
+<li><strong>use Kubectl to upgrade/operate the cluster and deploy the objects.</strong></li>
+</ol>
+<p>This service may also be used to deploy your first Hello World service. <em>kubectl apply -f test.yaml</em></p>
+<p>&nbsp;</p>
+<p><img decoding="async" class="alignnone  wp-image-8182" src="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-hello-k8s-300x41.jpg" alt="" width="541" height="74" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-hello-k8s-300x41.jpg 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-hello-k8s.jpg 950w" sizes="(max-width: 541px) 100vw, 541px" /></p>
+<ol start="3">
+<li>Check the status of your pods using:</li>
+</ol>
+<p><em>kubectl get pods</em></p>
+<p><img loading="lazy" decoding="async" class="alignnone  wp-image-8179" src="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-3-300x56.jpg" alt="" width="546" height="102" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-3-300x56.jpg 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-3.jpg 964w" sizes="(max-width: 546px) 100vw, 546px" /></p>
+<p>Congratulations, you are now a master of Kubernetes who has deployed the service simple using the tf-devstack. Never thought it would be this easy :p</p>
+<p>At last, the user may be able to check the endpoints of their service and test it out.</p>
+<p><img loading="lazy" decoding="async" class="alignnone  wp-image-8180" src="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-Blog-4-300x40.jpg" alt="" width="563" height="75" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-Blog-4-300x40.jpg 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-Blog-4.jpg 1006w" sizes="(max-width: 563px) 100vw, 563px" /></p>
+<p><img loading="lazy" decoding="async" class="alignnone  wp-image-8181" src="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-Blog-5-300x139.jpg" alt="" width="563" height="261" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-Blog-5-300x139.jpg 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-Blog-5.jpg 981w" sizes="(max-width: 563px) 100vw, 563px" /></p>
+<p>In order to reach your end points, try using the curl command as per the screenshot above and see your application deployed now.</p>
+<p>Lastly, to be able to enable logs enable the dstat service and check the performance for your system. Tcpdump may be used as well.</p>
+<p>I hope you enjoyed reading about and the implementation of your very own network containerized environment using tf-devstack.</p>
+<p><strong>ABOUT THE AUTHOR</strong></p>
+<p><em>Nishita Sikka is  a graduate student at Northeastern University, pursuing an MS in computer system networking and telecommunications. Her Google Summer Of Code experience with Tungsten Fabrics has allowed her explore more on cloud technologies, automation tools, and networking.  She worked with Ansible and Kubernetes aid is making her way with Python and learning to integrate networking with automation. Besides being super passionate about working on independent projects and practicing code, she enjoys sports and Crossfit.</em></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Introducing Tungsten Fabric 5.1</title>
+		<link>https://tungsten.io/introducing-tungsten-fabric-5-1/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Wed, 12 Jun 2019 20:11:14 +0000</pubDate>
+				<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8155</guid>
+
+					<description><![CDATA[The Tungsten Fabric (TF) community is excited and proud to announce our latest release, 5.1. The TF community has been hard at work on both community and technical challenges to...]]></description>
+										<content:encoded><![CDATA[<p><span style="font-weight: 400"><img loading="lazy" decoding="async" class="size-medium wp-image-8156 alignleft" src="https://tungsten.io/wp-content/uploads/sites/73/2019/06/TungstenFabric_Stacked_Gradient_3000px-2-300x144.png" alt="" width="300" height="144" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/06/TungstenFabric_Stacked_Gradient_3000px-2-300x144.png 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/06/TungstenFabric_Stacked_Gradient_3000px-2-1024x492.png 1024w" sizes="(max-width: 300px) 100vw, 300px" />The Tungsten Fabric (TF) community is excited and proud to announce our latest release, 5.1. The TF community has been hard at work on both community and technical challenges to ensure a rich and vibrant community to solve the toughest networking challenges regardless of public cloud, orchestrator, or workload. The 5.1 release reflects that effort. It is an excellent time to take a look at Tungsten Fabric as a developer or an operator for your networking needs in this multi-cloud world. Here is a quick summary of the TF 5.1 release highlights.</span></p>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">Code quality first: all known P1 and P2 bugs are squashed prior to release!</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">New features for containers and hybrid cloud to make life awesome for developers.</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">Performance and scalability enhancements to delight network operators.</span></li>
+</ul>
+<p><b>Additional information on what’s new in the 5.1 release</b></p>
+<p><span style="font-weight: 400">Here are some of the Tungsten Fabric 5.1 benefits and features in more depth!</span></p>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">A strong commitment to code quality.</span>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">The TF community has learned a lot over the years about how to create feature-rich networking for all orchestrators and public clouds. The latest release of TF squashes over 1600 P1 and P2 bugs prior to release, and there are currently zero known P1 and P2 issues! Special thanks to all TF community members for your dedication to optimizing development practices and the countless hours of effort on rigorous software testing.</span></li>
+</ul>
+</li>
+<li style="font-weight: 400"><span style="font-weight: 400">Networking feature enhancements for a variety of customer use cases.</span>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">Tungsten Fabric 5.1 now supports container service chaining by supporting containers with multiple network interfaces. Service chaining is a powerful, differentiating feature of TF which is now available for all cloud-native / container workloads.</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">The TF 5.1 control plane also supports extended communities allowing operators to build flexible routing policies to integrate with your existing network designs.</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">Finally, are you trying to offer “cloud router” VRF services using BGP to your customers? The TF 5.1 implementation of </span><a href="https://blueprints.launchpad.net/juniperopenstack/+spec/bgp-as-a-service"><span style="font-weight: 400">BGPaaS</span></a><span style="font-weight: 400"> now includes support for selectively peering with control nodes, so you can integrate VNFs running BGP while guaranteeing high availability when control nodes fail.</span></li>
+</ul>
+</li>
+<li style="font-weight: 400"><span style="font-weight: 400">High performance networking.</span>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">TF 5.1 continues its dedication to high performance networking through supporting “fat flows” to optimize flow setup for high performance use cases. In scenarios where TF must support millions of flows for use cases such as subscriber internet access, fat flow support allows network operators to aggregate flows reducing latency in flow setup.</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">TF 5.1 also features a number of flow table optimizations to reduce performance bottlenecks. Specifically, the TF vrouter now leverages Cuckoo hashing to remove performance bottlenecks where vrouter must perform numerous flow table lookups under heavy load.</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">TF 5.1 introduces DPDK optimizations through batch processing to increase data plane performance. We want to meet your most demanding throughput needs!</span></li>
+</ul>
+</li>
+</ul>
+<p><b>Many clouds; one (Tungsten) Fabric</b></p>
+<p><span style="font-weight: 400">TF’s  mission is to provide the network fabric for any cloud, any orchestrator, and any workload. Take a look at some of our latest enhancements to support this multi-cloud world.</span></p>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">Tungsten Fabric as a networking overlay for any orchestrator and any workload.</span>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">TF 5.1 supports the following orchestrators with its latest release.</span>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">Kubernetes 1.12</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">OpenShift 3.11</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">OpenStack Ocata and newer</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">VMware vCenter</span> <span style="font-weight: 400">6.7</span></li>
+</ul>
+</li>
+</ul>
+</li>
+<li style="font-weight: 400"><span style="font-weight: 400">Tungsten Fabric in public cloud.</span>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">Multi-cloud is table stakes for nearly every customer running workloads in public cloud. Tungsten Fabric 5.1 supports AWS and Azure with GCP support in progress to support developer’s and operator’s mult-cloud needs!</span></li>
+</ul>
+</li>
+</ul>
+<p><b>Want to learn more about the 5.1 release?</b></p>
+<p><span style="font-weight: 400">The Tungsten Fabric community documents all new features as blueprints. Check out all new 5.1 features </span><a href="https://jira.tungsten.io/projects/TFP"><span style="font-weight: 400">here</span></a><span style="font-weight: 400">. (Note for those familiar with Tungsten Fabric and its history, we migrated blueprints from GitHub to Jira.)</span></p>
+<p><b>Getting Started and Next Steps</b></p>
+<p><span style="font-weight: 400">Are you just getting started with TF or do you need a refresher? First, check out our </span><a href="https://tungstenfabric.github.io/website/Tungsten-Fabric-Architecture.html"><span style="font-weight: 400">architecture document</span></a><span style="font-weight: 400">. Then, try kicking the tires on </span><a href="https://tungstenfabric.github.io/website/Tungsten-Fabric-15-minute-deployment-with-k8s-on-AWS.html"><span style="font-weight: 400">Tungsten Fabric Carbide</span></a><span style="font-weight: 400"> to launch a working TF cluster with Kubernetes in AWS in 15 minutes. We also have a tf-devstack project in beta with a number of community members trying it out before making it official. With our instance of tf-devstack, developers will be able to try out Tungsten Fabric on their laptops quickly and easily. Stay tuned for an announcement on our blog in the coming weeks.</span></p>
+<p><span style="font-weight: 400">Finally, we heard the community requests to clarify the release process and cycle. This is still a work in progress to meet the needs of all members of the community, but rest assured you will always be able to access the latest release in the </span><a href="https://hub.docker.com/u/tungstenfabric/"><span style="font-weight: 400">Tungsten Fabric Docker Hub</span></a><span style="font-weight: 400">. </span></p>
+<p><b>Do you have suggestions for us?</b></p>
+<p><span style="font-weight: 400">Join us in our </span><a href="https://tungsten.io/community/"><span style="font-weight: 400">community</span></a><span style="font-weight: 400"> via regular meetings, Slack, or our mailing lists and bring your feedback. We want to hear from developers and operators alike, and we welcome your contributions! </span></p>
+<p>&nbsp;</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>A very warm welcome to our new GSoC interns, Nishita and Fayaz!</title>
+		<link>https://tungsten.io/a-very-warm-welcome-to-our-new-gsoc-interns-nishita-and-fayaz/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Wed, 15 May 2019 01:42:57 +0000</pubDate>
+				<category><![CDATA[Community]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[Interns]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8137</guid>
+
+					<description><![CDATA[We&#8217;re very excited to introduce the two latest additions to the Tungsten Fabric community: Our Google Summer of Code (GSoC) interns! Despite being a relatively young project[*], Tungsten Fabric (TF)...]]></description>
+										<content:encoded><![CDATA[<p>We&#8217;re very excited to introduce the two latest additions to the Tungsten Fabric community: Our Google Summer of Code (GSoC) interns!</p>
+<p>Despite being a relatively young project[*], Tungsten Fabric (TF) received a lot of interest from GSoC applicants. After all the dust had settled from the initial flurry of questions we ended up with eight excellent candidates…but only two internships. While all of the applicants were great, our two new community members really impressed us with their knowledge and enthusiasm.</p>
+<div id="attachment_8139" style="width: 160px" class="wp-caption alignleft"><img loading="lazy" decoding="async" aria-describedby="caption-attachment-8139" class="wp-image-8139 size-thumbnail" src="https://tungsten.io/wp-content/uploads/sites/73/2019/05/nishita_sikka-150x150.jpeg" alt="" width="150" height="150"><p id="caption-attachment-8139" class="wp-caption-text">Nishita Sikka</p></div>
+<p><strong>Nishita Sikka</strong>&nbsp;will be working on the&nbsp;<a href="https://wiki.tungsten.io/display/TUN/GSoC+2019#GSoC2019-ExtendContrailAnsibleDeployertoSupportSoftwareUpgrades" rel="nofollow">Extend Contrail Ansible Deployer to Support Software Upgrades</a>&nbsp;project along with her mentor Darien Hirotsu from&nbsp;<a href="https://www.redapt.com/" rel="nofollow">Redapt</a>. She&#8217;s a graduate student at Northeastern University, studying computer system networking and telecommunications.</p>
+<p><em>&#8220;As a part of my previous and current projects, I am exploring cloud technologies, automation tools, and networking. Making my way with Python and learning to integrate networking with automation I have learned a whole lot and would say this opportunity with GSOC would make this journey even better. Besides being super passionate about working on independent projects and practicing code, I enjoy sports and Crossfit.&#8221;</em></p>
+<div id="attachment_8140" style="width: 160px" class="wp-caption alignright"><img loading="lazy" decoding="async" aria-describedby="caption-attachment-8140" class="wp-image-8140 size-thumbnail" src="https://tungsten.io/wp-content/uploads/sites/73/2019/05/fayaz_akhtar-150x150.jpg" alt="" width="150" height="150"><p id="caption-attachment-8140" class="wp-caption-text">Fayaz Akhtar</p></div>
+<p><strong>Fayaz Akhtar</strong>&nbsp;will be working on the&nbsp;<a href="https://wiki.tungsten.io/display/TUN/GSoC+2019#GSoC2019-QuickstartScriptsforTungstenfabricinKubernetes" rel="nofollow">Quickstart Scripts for Tungsten fabric in Kubernetes</a>&nbsp;project along with his mentor Syed Ahmed from&nbsp;<a href="https://www.cloudops.com/" rel="nofollow">CloudOps</a>. He&#8217;s a PhD candidate at Waterford Institute of Technology, studying the use of machine learning in software defined networks.</p>
+<p><em>&#8220;I have mostly been exploring the theoretical side of SDN, trying to resolve existing challenges through an analytical approach. I am also an avid Python programmer and have used it for scrapping and automation projects. Besides reading up on the latest research taking place, I also enjoy cooking and playing FPS games&#8221;</em></p>
+<p>We&#8217;re thrilled to have them join us and are looking forward to all of their contributions to the project and the community!</p>
+[*] Tungsten Fabric is only one and a half years old, but it owes a huge debt to its former incarnation of Open Contrail, which had five great years before handing over the reins to TF.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>An Adventure in Multi-Cloud Networking with Kubernetes and Tungsten Fabric</title>
+		<link>https://tungsten.io/an-adventure-in-multi-cloud-networking-with-kubernetes-and-tungsten-fabric/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Wed, 03 Apr 2019 14:56:02 +0000</pubDate>
+				<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8120</guid>
+
+					<description><![CDATA[-Guest post from our friends at CloudOps With a couple weeks before KubeCon and an impending presentation, I embarked on a small adventure to try networking together two different Kubernetes...]]></description>
+										<content:encoded><![CDATA[
+<figure class="wp-block-image"><a href="https://www.cloudops.com/2019/04/an-adventure-in-multi-cloud-networking-with-kubernetes-and-tungsten-fabric/"><img decoding="async" src="https://www.cloudops.com/wp-content/uploads/2019/04/WillStevens-500x300.png" alt="" /></a></figure>
+
+
+
+<p style="text-align:right"><em>-Guest post from our friends at CloudOps</em></p>
+
+
+
+<p>With a couple weeks before KubeCon and an impending presentation, I embarked on a small adventure to try networking together two different Kubernetes clusters with Tungsten Fabric, the goal being to do a live demo at the Tungsten Fabric Developers Summit.</p>
+
+
+
+<p>The demo was designed to be a simplified illustration of the broader hybrid/multi-cloud use case of connecting two distinct networks in the context of Kubernetes. This use case is especially interesting in the context of migrating a set of services to Kubernetes, while still maintaining connectivity to other services in the legacy network. &nbsp;I knew Tungsten Fabric (TF) supported connecting different sites together through BGP, but I had never actually installed or used Tungsten Fabric. I expected it to be a ‘trial by fire’ experience, so off I set on an adventure!</p>
+
+
+
+<p>As with most of my experimentation, I knew that my compass on this journey would be the automation to produce the results I wanted. Only through automation can I be sure that I am able to consistently reproduce my setup and ensure that my demo will go off without incident. Given our experience automating Kubernetes (K8s) at CloudOps, I already had a starting point. That said, our automation is very extensive and is a bit draconian when it comes to network security and who can talk to who. &nbsp;Since I didn’t know the connectivity requirements that TF was going to need, I decided to step back and implement an extremely bare bones K8s deployment in order to minimize the moving pieces.</p>
+
+
+
+<p>After a bit of searching, I found the following two references which covered the initial configuration I was trying to achieve: (an earlier version of)&nbsp;<a href="https://tungstenfabric.github.io/website/Tungsten-Fabric-Centos-one-line-install-on-k8s.html">TF one line install on K8s</a>&nbsp;and&nbsp;<a href="https://github.com/Juniper/contrail-controller/wiki/Install-K8s-using-Kubeadm">Install K8s using kubeadm</a>&nbsp;(which covers the disabling of the default CNI config). These two references offered a solid basis for getting TF deployed as the container network interface (CNI) for K8s. &nbsp;</p>
+
+
+
+<p>As I got into the deploy, test, fix, redeploy cycle of getting an initial working environment in place, I ran into a few issues with the documentation. This created some challenges.</p>
+
+
+
+<ul><li>The command specified in the ‘TF one line install’ guide has some issues with the static website generation removing specific parts of the command. Because of this, the information on the website is not actually correct or useable and you need to find the actual&nbsp;<a href="https://github.com/tungstenfabric/website/blob/master/Tungsten-Fabric-Centos-one-line-install-on-k8s.md">source code of the website</a>&nbsp;to be able to know what the working commands are. I believe this is due to the fact that the special characters of `{{` and `}}` are treated as variables in the static site generation platform, so they are replaced with empty strings.</li><li>No minimum hardware requirements are documented for running TF. It took me a few tries and some time on the&nbsp;<a href="https://tungstenfabric.slack.com/">TF Slack channel</a>&nbsp;to understand that I needed at least 32GB of RAM and over 50GB of disk space to launch TF.</li><li>The supported versions of Docker and Kubernetes are not published (from what I can tell). When I was doing my testing, the latest version of K8s was not supported (not sure if that is still the case), but the documentation would ideally specify which versions of K8s are supported when deploying TF as a CNI.</li></ul>
+
+
+
+<p>The majority of the challenges I faced regarding the lack of documentation were overcome by the feedback I received from the TF community through its active Slack channel.</p>
+
+
+
+<p>At this point, I was pretty confident I had gotten through the weeds and was well on my way, but this is when things got really interesting. As I watched all my TF pods coming up in K8s, it looked like everything was coming up correctly and then poof, my connection to the host was lost. Alright, no worries, I will just SSH back into the VM and pick up where I left off. That was easier said than done as my VM no longer responded to SSH. I had my VM configured to use SSH keys and I didn’t have a local password. Without SSH, I lost all access to the VM. I even had problems setting a password on the VM because the functionality required network connectivity and it seemed that the networking stack on my host was completely borked.</p>
+
+
+
+<p>After troubleshooting and communicating with the community on Slack, Moh Ahmed (@Moh), one of the engineers from&nbsp;<a href="https://www.cengn.ca/">CENGN</a>&nbsp;pointed me towards the root cause. &nbsp;Essentially, the ‘TF one line install’ script configures the following, `VROUTER_GATEWAY: {{ K8S_MASTER_IP }}`, but unfortunately this is not correct. Instead of the IP of the K8s master, the `VROUTER_GATEWAY` variable should be set to the gateway of the underlay network. After making this change and redeploying, everything came up and I had a working Tungsten Fabric deployment as the CNI for my Kubernetes cluster. There is still a small hiccup with the connectivity to the node as TF modifies the host’s networking stack, but everything comes back as expected.</p>
+
+
+
+<p>Now that I have a working K8s cluster with TF acting as my CNI, I just needed to spin up a second K8s cluster with the same config and then BGP peer them together, or so I thought. Setting up the second K8s cluster with TF was easy due to my automation. Additionally, configuring the BGP peering between the two TF deployments was also very easy. All I needed to do was register each TF deployment with the other as a BGP Router after changing the default BGP AS unique identifier on one of the TF deployments so they each had a unique AS number. I was amazed by how easy this configuration was, even for someone who had never worked with TF before. Now I was able to ping services between two different K8s clusters. &nbsp;Life is good. However, I found that over time things started to act up. I could only ping K8s services in one direction and not in the other direction, and other such things. I was pretty sure this was a configuration problem on my part and not TF since, if I am honest, I didn’t expect this configuration to work at all. I was using the same IP space in both clusters for the pod subnet, service subnet and the IP fabric subnet and I expected this to cause problems when the two environments were BGP peered together.</p>
+
+
+
+<p>So how do I change which CIDR / subnet is used when deploying these K8s + TF environments so their subnets don’t overlap? Naturally, I started by adding the `–pod-network-cidr` and `–service-cidr` flags to the `kubeadm init` command, but this did not have the desired effect. Tungsten Fabric still used the default subnets even though Kubernetes was configured to use different CIDRs. I could not find any documentation on the TF website or any related resources for how to modify these subnets. After reviewing the code and doing some trial and error, I was able to isolate that the configuration should be applied to the `kube-manager-config` ConfigMap in K8s. Once I confirmed that, I had to figure out what the field names were that controlled the relevant configuration since I was not able to find any documentation which covered this information. I was able to isolate and verify that setting the following fields, `KUBERNETES_POD_SUBNETS`, `KUBERNETES_SERVICE_SUBNETS`, `KUBERNETES_IP_FABRIC_SUBNETS`, in the ConfigMap, combined with the addition of the config flags to the `kubeadm init` command to reference the same CIDRs, produced the expected result.</p>
+
+
+
+<p>Here is the resulting ConfigMap which I used to configure custom CIDRs for my deployment:</p>
+
+
+
+<pre class="wp-block-preformatted">```<br>apiVersion: v1<br>kind: ConfigMap <br>metadata:<br>   name: kube-manager-config<br>   namespace: kube-system <br>data:<br>   KUBERNETES_API_SERVER: {{ K8S_MASTER_IP }}   <br>   KUBERNETES_API_SECURE_PORT: "6443"<br>   K8S_TOKEN_FILE: "/tmp/serviceaccount/token"<br>   # --- additional config below --- #<br>   KUBERNETES_POD_SUBNETS: 10.48.0.0/12<br>   KUBERNETES_SERVICE_SUBNETS: 10.112.0.0/12<br>   KUBERNETES_IP_FABRIC_SUBNETS: 10.80.0.0/12 <br>``` </pre>
+
+
+
+<p>Once I ensured that the two K8s + TF deployments did not have overlapping IP ranges, all of the strange behaviour disappeared and everything worked as expected. While it was a bit of a journey to deploy this implementation, it was not due to a lack of quality of Tungsten Fabric. In fact, I found Tungsten Fabric to be very easy to work with and quite mature as a product once up and running. The fact that I could simply BGP peer two environments together and everything ‘just worked’ is amazing. I have evaluated a lot of different software and will say that I have been very impressed with the architecture and implementation of Tungsten Fabric. That said, the majority of the stumbling blocks I faced were related to a lack of documentation, or errors in the documentation. This problem is well understood in the TF community and it is being actively worked on. As the TF project continues its transition into the&nbsp;<a href="https://www.linuxfoundation.org/press-release/2018/08/linux-foundation-networking-lfn-continues-rapid-global-growth-with-addition-of-eight-new-members/">Linux Foundation Networking (LFN)</a>&nbsp;governance body, there is a lot of focus on improving its accessibility and predictability. With this community focus on making TF more widely available to the growing audience who are solving for SDN requirements, I think TF will see a flourish of renewed interest in this mature networking platform.</p>
+
+
+
+<p>Cross-project, cross-community components make it easier for users to control their destinies in the cloud and in their networks. This use case does so in three ways. It discourages vendor lock-in because it is an open source multi-cloud solution, platform lock-in because of its use of Kubernetes, and network lock-in because of its use of TF. At the end of the day, an application is only as good as its networking. By bridging CNCF and LFN projects, this use case could help users make their applications cloud native without compromising on the networking.</p>
+
+
+
+<p>In closing, I want to highlight a few references:</p>
+
+
+
+<ul><li>If you are interested in using TF, I would strongly recommend you review the&nbsp;<a href="https://tungstenfabric.github.io/website/Tungsten-Fabric-Architecture.html">Tungsten Fabric Architecture</a>&nbsp;document. It provides a comprehensive overview of the inner workings of TF and will orient your understanding of the different components and their importance.</li><li>All of my automation to deploy K8s with TF as a CNI is&nbsp;<a href="https://github.com/cloudops/k8s_tf_demo">available on github</a>. I would like to point out that this automation is by no means production grade and as the project evolves, it may become outdated. I will try to periodically review the implementation and update it to remain functional, but if nothing else, it acts as an overview of the moving parts of using TF as the CNI in K8s.</li></ul>
+
+
+
+<p>We at CloudOps look forward to ramping up our engagement in the TF community (especially as it relates to using TF as the CNI for K8s across multiple clouds) and supporting the community’s efforts to be more accessible to the broader market.</p>
+
+
+
+<p>If you’ll be at the Open Networking Summit this week, I’ll be giving a&nbsp;<a href="https://events.linuxfoundation.org/events/open-networking-summit-north-america-2019/features-and-add-ons/lf-networking-demos/">Linux Foundation Networking Demo</a>&nbsp;at the LFN Booth. This demo will show TF complementing service meshes, like Istio and Hashicorp’s Consul Connect. It will highlight TF’s cloud-agnostic network overlay implementation for Kubernetes, as well as compare its integration with service meshes in the context of handling both legacy and cloud native workloads.</p>
+
+
+
+<p>To learn more about Kubernetes, sign up for one of our hands-on&nbsp;<a href="https://www.cloudops.com/workshops/">Docker and Kubernetes workshops</a>&nbsp;with the option of using TF as the CNI.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Tungsten Fabric as SDN for Akraino Based Network Edges</title>
+		<link>https://tungsten.io/tungsten-fabric-as-sdn-for-akraino-based-network-edges/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Mon, 04 Mar 2019 03:55:04 +0000</pubDate>
+				<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[NFV]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8100</guid>
+
+					<description><![CDATA[Originally published on CalSoft Posted on&#160;February 28, 2019&#160;by&#160;Sagar Nangare SDN is a crucial technology in a roadmap for a dynamic and intelligent network, be it enterprise level connecting several devices...]]></description>
+										<content:encoded><![CDATA[
+<p><a href="https://blog.calsoftinc.com/2019/02/tungsten-fabric-sdn-akraino-based-network-edges.html" target="_blank" rel="noreferrer noopener" aria-label="Originally published on CalSoft (opens in a new tab)">Originally published on CalSoft</a></p>
+
+
+
+<p>Posted on&nbsp;<a href="https://blog.calsoftinc.com/2019/02/tungsten-fabric-sdn-akraino-based-network-edges.html">February 28, 2019</a>&nbsp;by&nbsp;<a href="https://blog.calsoftinc.com/author/sagar-nangare">Sagar Nangare</a></p>
+
+
+
+<p>SDN is a crucial technology in a roadmap for a dynamic and intelligent network, be it enterprise level connecting several devices on-premises or branches across the wide area (SD-WAN). With the power of SDN technology, telecom operators are taking it to achieve central control over the network and compute nodes.</p>
+
+
+
+<p>As the 5G going mainstream disruption for telecom as well as technology business players, there is a growing need to handle data flows within the network in real time along with smartly minimizing bandwidth usage plus latency. The emergence of SDN and NFV technologies had majorly set up a foundation to build a network having expected requirements for end users along with a dynamic and central control for service providers or enterprises.</p>
+
+
+
+<p>In this article, let us discuss about SDN stack,&nbsp;<a href="https://tungsten.io/start/" target="_blank" rel="noreferrer noopener">Tungsten Fabric</a>&nbsp;and how it can be used for 5G-network edge cloud that is based on&nbsp;<a href="https://www.lfedge.org/projects/akraino/">Akraino Edge Stack</a>.</p>
+
+
+
+<p><a href="https://tungsten.io/">Tungsten Fabric</a>&nbsp;is an open source SDN initiative from Juniper and merged into Linux Foundation as a community project. TF provides a single point of control, visibility, and management for networking &amp; security for different types of data center deployments or clouds. It has taken SDN technology to next level by</p>
+
+
+
+<ul><li>Providing consistent network functionality and enforcing security policies for different types of workloads (virtual machines, containers, bare metal) orchestrated with different available orchestrators (OpenStack, Kubernetes, VMware , etc)</li><li>Providing production grade networking &amp; security stack for Data Center and Public Clouds (AWS, Azure, GCP) &amp; Edge cloud deployments</li></ul>
+
+
+
+<p>Tungsten Fabric evolved as a network software stack for providing an SDN solution for Telco Cloud and NFV use cases<del>.</del></p>
+
+
+
+<p>To understand the application of TF for telco cloud, let us discuss about the PoC&nbsp;<a href="https://wiki.akraino.org/display/AK/Akraino+Network+Cloud+and+TF+Integration">proposed</a>&nbsp;by Juniper’s Sukhdev Kapur to Linux Foundation’s Akraino community (an open source software stack for network edges). This proof of concept is approved by the Akraino.</p>
+
+
+
+<p><strong>Tungsten Fabric Integration with Akraino based Network Edge Cloud</strong></p>
+
+
+
+<p>TF, by integrating with Akraino Edge Stack, can act as unified SDN controller to enhance many features for 5G core and edge nodes, including</p>
+
+
+
+<ul><li>Enabling distributed edge computing using TF remote compute architecture,</li><li>A common SDN controller for different workloads in network cloud i.e. CNF, VNF, PNFs</li><li>Service chaining at different types of edge sites or clouds (public or private)</li><li>Common security policy enforcement for all nodes</li><li>Advanced networking performance features: SR/IOV, DPDK, BGP-VPN, IPSec/TLS Support, etc</li></ul>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://blog.calsoftinc.com/wp-content/uploads/2019/02/Akraino-Network-Cloud-TF-Integration-Blueprint.png" alt="" class="wp-image-4810" /><figcaption>Figure – Akraino Network Cloud &amp; TF Integration (Blueprint)</figcaption></figure>
+
+
+
+<p><em>Image source:&nbsp;<a href="https://wiki.akraino.org/display/AK/Network+Cloud+Family+-+Reference+Architecture">Akraino Reference architecture</a></em></p>
+
+
+
+<p>You can see from above image, like other open source projects, TF place at edge platform software component, enhancing with new feature set to act as unified SDN controller for any type of workload &amp; compute orchestration.</p>
+
+
+
+<p><strong>Deployment</strong></p>
+
+
+
+<p>Tungsten fabric is composed of components like controller and vRouter; plus additional components for analytics and third party integration. In this PoC, TF integrates with Kubernetes (CNI) and OpenStack (Neutron) as SDN plugin to enable rich networking capabilities and lifecycle management of VMs and containers where TF components or control functions deployed.</p>
+
+
+
+<p>The configuration declared at the central data center is enforced on edge nodes to set up consistent network and security policies. The deployment and life cycle management of Tungsten Fabric can be done with tools like Ansible or Helm. These configuration files are termed as playbooks if Ansible is used or charts in case of Helm. These tools provides benefits of automation and management of components, further reducing operational costs for edge deployments.</p>
+
+
+
+<p>Tungsten fabric along with Helm offers a seamless solution where TF services are deployed in containers using a microservices architecture to enable advantages like self-healing, updates, CI/CD, etc. Helm uses Kubernetes to declare charts for subsequent microservices, allowing greater automation in managing TF services. In this case, Kubernetes become a single orchestrator to manage lifecycle of all control operations. Such integrated solution evolved as Tungsten Fabric Helm (TF Helm).</p>
+
+
+
+<p>OpenStacks’s Airship (Armada) is an umbrella project with which TF integrates for installation using helm charts and set up interaction with edge nodes using CNI and Neutron.</p>
+
+
+
+<p>The basic idea behind this PoC is to define an architecture for a distributed Edge Cloud keeping operational and deployment cost low. Another objective is to build a network where failure of any edge node application should not hamper availability and functionality of edge network to avoid traffic loss. To implement such architecture, a solution proposed in this PoC exercise utilizes the same TF based on a single SDN cluster that spans across all the edge nodes. A central SDN cluster located at main data center will have TF installed with Kubernetes and OpenStack orchestrators along with TF control components. Dedicated control functions, which handles compute and networking operations for all edge nodes, are located at the central data center, and connected to vRouter (TF component) set at the edge nodes using set of gateways. The dedicated control function is logically present at the Primary POP to control vRouters of the edge nodes located on the remote POPS. MP-BGP protocol is used between SDN Gateways and control functions, and XMPP is used for communication between vRouters and dedicated control functions.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://blog.calsoftinc.com/wp-content/uploads/2019/02/Interconnection-between-component-of-data-center-with-edge-POPs.png" alt="" class="wp-image-4811" /><figcaption>Figure – Interconnection between component of data center with edge POPs</figcaption></figure>
+
+
+
+<p>To have an end-to-end data transmission, an overlay network is established between edge nodes and central data centers in which MPLS over IP (MPLSoXoIP) is used. Communication between gateways can optionally use IPsec encryption to protect network data.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://blog.calsoftinc.com/wp-content/uploads/2019/02/2.png" alt="" class="wp-image-4812" /><figcaption>Figure – Secure data and network with overlay network</figcaption></figure>
+
+
+
+<p><strong>Summary</strong></p>
+
+
+
+<p>TF has emerged as a leading SDN solution with every release. Deployment of TF using helm charts and orchestration of every type of workloads from a diverse set of clouds has increased the potential of TF for Telco use case. Akraino Edge Stack is pre-integrated with a set of projects, which promotes various orchestrations and performance benefits. Integration of TF with Akraino edge stack enable enhanced features and utilizes remote compute architecture of TF. A solution can orchestrate all types of workloads like PNFs, VNFs and CNF, implement service chaining at edge sites, workload and data transfer security, automating deployment of control functions and workloads, and more.</p>
+
+
+
+<p><strong><em>Republished with Permission from Republished with permission from </em></strong><a rel="noreferrer noopener" href="https://blog.calsoftinc.com/2019/02/tungsten-fabric-sdn-akraino-based-network-edges.html" target="_blank"><strong><em>CalSoft.</em></strong></a></p>
+
+
+
+<p><strong><em>About the author</em></strong></p>
+
+
+
+<p><em>Sagar Nangare is technology blogger, currently serving&nbsp;<a href="https://urldefense.proofpoint.com/v2/url?u=https-3A__calsoftinc.com_&amp;d=DwMFaQ&amp;c=HAkYuh63rsuhr6Scbfh0UjBXeMK-ndb3voDTXcWzoCI&amp;r=Y9QaEJ2cs4La8kQDqQ-N2rBJnxrPyFqAIO8efLhSqZ0&amp;m=8ToqEPYme7wCk2CZy01mmL8Y5T9FiF4E0mhEwhaU27c&amp;s=KqnJF-1Qbjb1_jI40uohUwGCiT8mFL0WZo-StdvVmVA&amp;e=" target="_blank" rel="noreferrer noopener">Calsoft Inc.</a>&nbsp;as a digital strategist.</em></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Join the Tungsten Fabric community at ONS 2018 in Amsterdam</title>
+		<link>https://tungsten.io/join-the-tungsten-fabric-community-at-ons-2018-in-amsterdam/</link>
+		
+		<dc:creator><![CDATA[Robert Cathey]]></dc:creator>
+		<pubDate>Wed, 19 Sep 2018 18:38:11 +0000</pubDate>
+				<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://tf.lfprojects.linuxfoundation.org/?p=8015</guid>
+
+					<description><![CDATA[Join us at ONS Europe 2018 to learn more about open source networking and security at scale. We have four ways to engage with Tungsten Fabric: Come to our Meetup...]]></description>
+										<content:encoded><![CDATA[<p>Join us at ONS Europe 2018 to learn more about open source networking and security at scale. We have four ways to engage with Tungsten Fabric:</p>
+<p><strong>Come to our Meetup</strong> at Restaurant La Vina, Wednesday, Sept. 26, 7-10 pm. Devs and ONS Europe attendees are invited to join us for good wine, great food, and useful info on open source multi-cloud networking with Tungsten Fabric. Register at <a href="http://tungsten.io/amsterdam">http://tungsten.io/amsterdam</a></p>
+<p><strong>Catch the Presentation</strong> titled, “Keep Your Sanity and Your Hair: More Secure Networking with Kubernetes, OpenStack and Bare Metal,” Tuesday, Sept. 25, 4:10 pm: <a href="http://sched.co/Fmrw">http://sched.co/Fmrw</a></p>
+<p><strong>Attend the Workshop</strong> Thursday, Sept. 27, 4:05 &#8211; 5:15 pm <a href="http://sched.co/Fn18">http://sched.co/Fn18</a></p>
+<p><strong>Take in the demos</strong> at the LFN Booth:</p>
+<ul>
+<li><a href="https://events.linuxfoundation.org/events/open-networking-summit-europe-2018/features-and-add-ons/lf-networking-demos/#">Service Mesh and SDN: At-Scale Cluster Load Balancing (Tungsten Fabric, Linux OS, Istio, Envoy, Kubernetes, HAProxy)</a> &#8211; Presented by Juniper Networks</li>
+<li><a href="https://events.linuxfoundation.org/events/open-networking-summit-europe-2018/features-and-add-ons/lf-networking-demos/#">SDN Deployment with Multi Data-Path Options (Tungsten Fabric, FD.io)</a> &#8211; Presented by Sofioni Networks &amp; ATS</li>
+</ul>
+<p>We hope to see you in Amsterdam!</p>
+<p>For more information, contact Tungsten Fabric Community Director Greg Elkinbard on Slack.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>@ContrailBot &#8211; Bot as a Service (BaaS)</title>
+		<link>https://tungsten.io/contrailbot-bot-as-a-service-baas/</link>
+		
+		<dc:creator><![CDATA[Savithru Lokanath]]></dc:creator>
+		<pubDate>Mon, 24 Oct 2016 14:02:46 +0000</pubDate>
+				<category><![CDATA[Automation]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7224</guid>
+
+					<description><![CDATA[As computers become smarter, many new technologies have emerged. One technology which has taken a significant leap in the past few years is Artificial Intelligence &#38; many new services have...]]></description>
+										<content:encoded><![CDATA[<p><iframe loading="lazy" src="https://www.youtube.com/embed/06aEYYb4cMg" width="560" height="315" frameborder="0" allowfullscreen="allowfullscreen"></iframe><br />
+As computers become smarter, many new technologies have emerged. One technology which has taken a significant leap in the past few years is Artificial Intelligence &amp; many new services have been built around this.</p>
+<p>In this blog, we’ll look at one such service which is getting attention off late, called ChatOps (Chat Operations). ChatOps constitute a <strong>“ChatBot”</strong> or simply <strong>“Bot”</strong>, which are asynchronous conversational interfaces that help users to interact with applications. There are many bots out there, which can help you book flight tickets, order food, etc. <em>“Bot as a Service (BaaS)”</em> &amp; <em>“Artificial-Intelligence as a Service (AIaaS)”</em> are the new buzzwords.</p>
+<p>Taking it one step further, I introduce you to a bot which I call the <strong>“Contrail-Bot”</strong>. The bot interacts with the OpenContrail SDN controller &amp; has a complete overview of the cloud (OpenContrail + OpenStack) infrastructure. By interfacing with OpenContrail, the bot offers the cloud-admin an interactive tool to build &amp; manage the OpenStack infrastructure. The cloud-admin strikes a conversation by making requests to the <strong>Contrail-Bot</strong> &amp; the bot will in turn translate these requests into a language that the OpenContrail SDN controller understands (Python/REST/CLI). The response from the controller is translated back &amp; presented to the cloud-admin in a human readable format.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/10/contrail-chatbot-blog-image1.png"><img loading="lazy" decoding="async" class="size-full wp-image-7225 alignnone" src="http://www.opencontrail.org/wp-content/uploads/2016/10/contrail-chatbot-blog-image1.png" alt="contrail-chatbot-blog-image1" width="752" height="155" data-id="7225" /></a></p>
+<p>I started developing the <strong>Contrail-Bot</strong> with a couple of objectives in mind,</p>
+<ul>
+<li>I should be able to know if my cloud-services are all healthy &amp; are running fine</li>
+</ul>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/10/contrail-chatbot-blog-image2.png"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-7230" src="http://www.opencontrail.org/wp-content/uploads/2016/10/contrail-chatbot-blog-image2.png" alt="contrail-chatbot-blog-image2" width="732" height="323" data-id="7230" /></a></p>
+<ul>
+<li>I should be able to execute all Linux commands on the target nodes (Power-User mode)</li>
+</ul>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/10/contrail-chatbot-blog-image3.png"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-7226" src="http://www.opencontrail.org/wp-content/uploads/2016/10/contrail-chatbot-blog-image3.png" alt="contrail-chatbot-blog-image3" width="1036" height="147" data-id="7226" /></a></p>
+<ul>
+<li>I should be able to reimage &amp; provision servers quickly with the OS &amp; build of my choice (Contrail-Server-Manager integration)</li>
+</ul>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/10/contrail-chatbot-blog-image4.png"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-7227" src="http://www.opencontrail.org/wp-content/uploads/2016/10/contrail-chatbot-blog-image4.png" alt="contrail-chatbot-blog-image4" width="1040" height="496" data-id="7227" /></a></p>
+<ul>
+<li>I should be able to monitor my cloud &amp; minimize downtime (Get real-time text/call alerts)</li>
+</ul>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/10/contrail-chatbot-blog-image5.png"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-7228" src="http://www.opencontrail.org/wp-content/uploads/2016/10/contrail-chatbot-blog-image5.png" alt="contrail-chatbot-blog-image5" width="1024" height="362" data-id="7228" /></a></p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/10/contrail-chatbot-blog-image6.png"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-7229" src="http://www.opencontrail.org/wp-content/uploads/2016/10/contrail-chatbot-blog-image6.png" alt="contrail-chatbot-blog-image6" width="447" height="390" data-id="7229" /></a></p>
+<p>As the <strong>Contrail-Bot</strong> evolves, I plan to introduce AI, which will allow the bot to learn continuously from user requests &amp; take intelligent decisions (Eg. running diagnostic tests, healing the network, etc.) in the event of a failure.</p>
+<p>Let the bot revolution begin!</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>OpenContrail User Group Meeting &#8211; Tokyo</title>
+		<link>https://tungsten.io/ocug-tokyo/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Fri, 06 Nov 2015 01:19:40 +0000</pubDate>
+				<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6837</guid>
+
+					<description><![CDATA[On October 29th, we had our OpenContrail User Group Meeting where folks who have used OpenContrail shared their experiences in a casual way. All the speakers have deployed OpenContrial into production and some...]]></description>
+										<content:encoded><![CDATA[<p><img loading="lazy" decoding="async" class="wp-image-6838 alignnone" src="http://www.opencontrail.org/wp-content/uploads/2015/11/OCUG_Tokyo.png" alt="OCUG_Tokyo" width="650" height="180" data-id="6838" /></p>
+<p>On October 29th, we had our OpenContrail User Group Meeting where folks who have used OpenContrail shared their experiences in a casual way. All the speakers have deployed OpenContrial into production and some of them even contributed code back to the OpenContrail source code. The recordings for this  session is now available and you can listen to their stories below.</p>
+<p>The OCUG meeting was organized in conjunction with OpenStack Summit. The videos related to OepnContrail from OpenStack main conference event are posted in this <a href="http://www.opencontrail.org/recap-opencontrail-openstack-summit-tokyo/">blog</a>.</p>
+<p>A huge thanks to everyone who participated in this meeting!</p>
+<div class="col span_6" data-animation="" data-delay="0"> [video_lightbox_youtube video_id=&#8221;AYCxTsbCVfY&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3>Allegro Tech</h3>
+<p>Speaker: Michal Dopierala &amp; Krzysztof Kowalik from Allegro Tech.</p>
+<p></div>
+<div class="col span_6 col_last" data-animation="" data-delay="0"> [video_lightbox_youtube video_id=&#8221;ueQN2XB2Row&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3>Cloudwatt/Orange Labs</h3>
+<p>Speakers: Edouard Thuleau &amp; Jean Philippe Braun  from Cloudwatt and  Thomas Morin from Orange Labs.</p>
+<p></div><div class="clear"></div>
+<p>[hr margin=&#8221;40px 0px 40px 0px&#8221;]</p>
+<div class="col span_6" data-animation="" data-delay="0"></p>
+<p>[video_lightbox_youtube video_id=&#8221;3PJMaC0fyrQ&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3>Intercloud Systems</h3>
+<p>Speaker: Nabeel Asim, Chief Technologist – NFV and SDN from Intercloud Systems</p>
+<p></div>
+<div class="col span_6 col_last" data-animation="" data-delay="0">[video_lightbox_youtube video_id=&#8221;C8Cm3dckGUs&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3>Lithium Technologies</h3>
+<p>Spekaer: Lachlan Evenson, Team Lead, Cloud Platform Engineering from Lithium Technologies</p>
+<p></div><div class="clear"></div>
+<p>[hr margin=&#8221;40px 0px 40px 0px&#8221;]</p>
+<div class="col span_6" data-animation="" data-delay="0">[video_lightbox_youtube video_id=&#8221;SiWF8-L0wb4&#8243; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3>NTT i3</h3>
+<p>Speaker: Ichiro Fukuda, Chief Architect, Infrastructure from NTT i3</p>
+<p></div>
+<div class="col span_6 col_last" data-animation="" data-delay="0">[video_lightbox_youtube video_id=&#8221;1kd7dJROql0&#8243; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3>tcpCloud</h3>
+<p>Speakers: Jakub Pavlík, Chief Architect – Cloud Operations &amp; Filip Pytloun from tcpCloud.</p>
+<p></div><div class="clear"></div>
+<p>[hr margin=&#8221;40px 0px 40px 0px&#8221;]</p>
+<div class="col span_6" data-animation="" data-delay="0">[video_lightbox_youtube video_id=&#8221;M672Rj6Au6Q&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3>Workday</h3>
+<p>Speakers: Edgar Magana,  Cloud Operations Architect from Workday</p>
+<p></div>
+<div class="col span_6 col_last" data-animation="" data-delay="0"></div><div class="clear"></div>
+<p>[hr margin=&#8221;40px 0px 40px 0px&#8221;]</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Recap : OpenContrail @ OpenStack Summit Tokyo</title>
+		<link>https://tungsten.io/recap-opencontrail-openstack-summit-tokyo/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Thu, 05 Nov 2015 00:29:12 +0000</pubDate>
+				<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6816</guid>
+
+					<description><![CDATA[Last week, over 5,000 people have attended the OpenStack Summit at Tokyo. The event was a great success with the presence of many technology and business leaders both as speakers...]]></description>
+										<content:encoded><![CDATA[<p><img loading="lazy" decoding="async" class="size-full wp-image-6832 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2015/11/opencontrail-openstack-tokyo-banner.jpg" alt="opencontrail-openstack-tokyo-banner" width="555" height="233" data-id="6832" /></p>
+<p>Last week, over 5,000 people have attended the <a href="https://www.openstack.org/summit/tokyo-2015/" target="_blank">OpenStack Summit</a> at Tokyo. The event was a great success with the presence of many technology and business leaders both as speakers and audience. OpenContrail had a huge presence with 6 speaking sessions, 2 brown bag talks along with the <a href="http://www.opencontrail.org/event/ocug-tokyo/">OpenContrial User Group Meeting</a>. If you missed the opportunity to attend the event in person, you came to the right place. All the sessions were recorded and posted by the OpenStack Summit organizers.</p>
+<p>Check below for the videos related to OpenContrail sessions at the summit. The videos for OpenContrail User Group meeting are posted in this <a href="http://www.opencontrail.org/ocug-tokyo/">blog</a>. You can watch similar videos about user talks, demos and presentations at the <a href="http://www.opencontrail.org/videos/">videos</a> page.</p>
+<p>[hr margin=&#8221;40px 0px 40px 0px&#8221;]</p>
+<h1>Virtual Brown Bag Sessions</h1>
+<div class="col span_6" data-animation="" data-delay="0"> [video_lightbox_youtube video_id=&#8221;T7o3gjLXZRg&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3 id="watch-headline-title" class="yt">Open source approach to secure multi-tenancy via OpenStack in VMware clusters</h3>
+<p>In this brown bag session at OpenStack Summit, Aniket Daptari, Sr. Product manager from Juniper Networks talks about how OpenContrial helps in implementing secure multitenancy within VMWare clusters along with a customer use case.</p>
+<p></div>
+<div class="col span_6 col_last" data-animation="" data-delay="0"><br />
+<br />
+[video_lightbox_youtube video_id=&#8221;VRBMTBz96DA&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3 id="watch-headline-title" class="yt">Open source secure multi-tenancy in containerized and hybrid environments</h3>
+<p>&nbsp;</p>
+<p>In this brown bag session, Aniket Daptari, Sr. Product manager from Juniper Networks covers what modern cloud applications leveraging micro-services architecture look like, and what are the infrastructure needs they impose.</p>
+<p></div><div class="clear"></div>
+<p>[hr margin=&#8221;40px 0px 40px 0px&#8221;]</p>
+<h1>Main Conference Speaking Sessions</h1>
+<div class="col span_6" data-animation="" data-delay="0"> [video_lightbox_youtube video_id=&#8221;0I0kZrKXht0&#8243; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3 class="yt watch-title-container"><span id="eow-title" class="watch-title " dir="ltr" title="Extending OpenStack Heat to Orchestrate Security Policies and Network Function Service Chains">Extending OpenStack Heat to Orchestrate Security Policies and Network Function Service Chains</span></h3>
+<p>Some Neutron plugins like OpenContrail not only implement the APIs specified by Neutron but also extend the API set to provide additional functionality. Some examples include the ability to specify security policies and the ability to define sequences of network functions to be applied to selected tenant traffic. This session highlights some of these functionalities.</p>
+<p></div>
+<div class="col span_6 col_last" data-animation="" data-delay="0"><br />
+<br />
+[video_lightbox_youtube video_id=&#8221;wZWVVKnFxIk&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3 class="yt watch-title-container"><span id="eow-title" class="watch-title " dir="ltr" title="Software-Defined WAN Implementation to Optimize Enterprise Branch Networking">Software-Defined WAN Implementation to Optimize Enterprise Branch Networking</span></h3>
+<p>Connecting an Enterprise Branch to the Enterprise Headquarters and Data Center in a seamless way, with centralized provisioning and monitoring, is something that all Telcos desire to accomplish for their enterprise customers in the immediate term. Check out the video for more info.</p>
+<p></div><div class="clear"></div>
+<div class="col span_6" data-animation="" data-delay="0"> [video_lightbox_youtube video_id=&#8221;ircjEXfYkJM&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3 class="yt watch-title-container"><span id="eow-title" class="watch-title " dir="ltr" title="Apply, Rinse, Repeat. (re)Build OpenStack Ready Infrastructure Like a Pro [Crowbar + Contrail]">Apply, Rinse, Repeat. (re)Build OpenStack Ready Infrastructure Like a Pro [Crowbar + Contrail]</span></h3>
+<p>The work of running OpenStack has been getting easier; unfortunately, it&#8217;s still just as hard to operate the underlying physical data center. In this presentation, we&#8217;re going to talk about how to use open source tools build a consistent and repeatable underlay for your OpenStack infrastructure using OpenCrowbar and OpenContrail.</p>
+<p></div>
+<div class="col span_6 col_last" data-animation="" data-delay="0"><br />
+<br />
+[video_lightbox_youtube video_id=&#8221;WA4Zw7E6ETw&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3 class="yt watch-title-container"><span id="eow-title" class="watch-title " dir="ltr" title="SaaS Experience: Building OpenStack on OpenStack CI With SDN and Containers">SaaS Experience: Building OpenStack on OpenStack CI With SDN and Containers</span></h3>
+<p>Workday as a SaaS leader in human resources management and finances has faced a number of challenges in adopting and deploying open-source technologies such as OpenStack and OpenContrail. One of these challenges was to find a quick way to evaluate and validate Open source technologies in development environment before considering those for production.</p>
+<p></div><div class="clear"></div>
+<div class="col span_6" data-animation="" data-delay="0"> [video_lightbox_youtube video_id=&#8221;CEkhGUxD2oM&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3 class="yt watch-title-container"><span id="eow-title" class="watch-title " dir="ltr" title="Gohan: An Open-source Service Development Engine for SDN/NFV Orchestration">Gohan: An Open-source Service Development Engine for SDN/NFV Orchestration</span></h3>
+<p>Gohan is an API server for XaaS Services. Using gohan webui front-end, you can define new XaaS API on the fly. Resource status will be synced with agents, who will realize XaaS service, using etcd.</p>
+<p></div>
+<div class="col span_6 col_last" data-animation="" data-delay="0"><br />
+<br />
+[video_lightbox_youtube video_id=&#8221;JYAdeLUhXp8&#8243; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3 class="yt watch-title-container"><span id="eow-title" class="watch-title " dir="ltr" title="Decomposing Lithium's Monolith With Kubernetes and OpenStack">Decomposing Lithium&#8217;s Monolith With Kubernetes and OpenStack</span></h3>
+<p>Application developers are rapidly moving to container-based models for dynamic service delivery and efficient cluster management. In this session, we will discuss a OpenStack production environment that is rapidly evolving to leverage a hybrid cloud platform to deliver containerized micro services in a SaaS Development/Continuous Integration environment.</p>
+<p></div><div class="clear"></div>
+<p>[hr margin=&#8221;40px 0px 40px 0px&#8221;]</p>
+<h1>Panel Talks</h1>
+<p>&nbsp;</p>
+<div class="col span_6" data-animation="" data-delay="0"> [video_lightbox_youtube video_id=&#8221;luKvMe3LJzI&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3 class="yt watch-title-container"><span id="eow-title" class="watch-title " dir="ltr" title="Containers Are Hot, but How Do They Network? Moderated by Eric Hanselman, 451 Research">Containers Are Hot, but How Do They Network?</span></h3>
+<p>While containers have been around for decades, they are only now becoming the rage for developers and DevOps practitioners alike. Indeed, they have seen a sudden surge in popularity and are rapidly becoming the standard for developing, packaging and deploying applications.</p>
+<p></div>
+<div class="col span_6 col_last" data-animation="" data-delay="0"><br />
+<br />
+[video_lightbox_youtube video_id=&#8221;7N_zeC89cxE&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3 class="yt watch-title-container"><span id="eow-title" class="watch-title " dir="ltr" title="OpenStack Consumption Models: Three User Perspectives">OpenStack Consumption Models: Three User Perspectives</span></h3>
+<p>Deploying, managing, and maintaining an OpenStack powered cloud are a part of daily life for every operator. In this panel, we will take a critical view of the various options that are available for building an OpenStack cloud.</p>
+<p></div><div class="clear"></div>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Contrail Alerts</title>
+		<link>https://tungsten.io/contrail-alerts/</link>
+		
+		<dc:creator><![CDATA[Anish Mehta]]></dc:creator>
+		<pubDate>Sun, 25 Oct 2015 02:41:49 +0000</pubDate>
+				<category><![CDATA[Analytics]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6765</guid>
+
+					<description><![CDATA[OpenContrail networking provides network virtualization to data center applications using a layered, horizontally scalable software system.  We have the abstractions in place to present the operational state of this system...]]></description>
+										<content:encoded><![CDATA[<p>OpenContrail networking provides network virtualization to data center applications using a layered, horizontally scalable software system.  We have the abstractions in place to present the operational state of this system <a href="http://www.opencontrail.org/operational-state-in-the-opencontrail-system-uve-user-visible-entities-through-analytics-api/).">(Operational State in the OpenContrail system: UVE – User Visible Entities through Analytics API)</a>. The system is architected to be as simple as possible to operate for the functionality it delivers. An important element of this is Contrail Alerts – in addition to providing detailed operational state in a easy-to-navigate way, we also need to clearly highlight unusual conditions that may require more urgent administrator attention and action.</p>
+<p>We provide Alerts on a per-UVE basis. Contrail Analytics will raise (or clear) instances of these alerts (alarms) using python-coded “rules” that examine the contents of the UVE and the object’s configuration. Some rules will be built-in. Others can be added using python Entry-Point based plugins.</p>
+<p>See Contrail Alerts features in a demo:</p>
+<p>[video_lightbox_youtube video_id=&#8221;fUgP2KtAy9A&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]</p>
+<h3>Contrail Analytics APIs for Alerts</h3>
+<p>There is an API to get the list of supported alerts as follows:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_alerts_blogpost_image1.png"><img loading="lazy" decoding="async" class="wp-image-6766 alignleft" src="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_alerts_blogpost_image1.png" alt="contrail_alerts_blogpost_image1" width="600" height="566" data-id="6766" /></a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>Lets look at an example.</p>
+<p>We have a system configured with 2 BGP peers as gateways, but those gateways themselves have not been configured with this system’s control node yet. Based on the state of these peers, we raise an alarm against the control-node UVE.</p>
+<p>We can look at the alarms being reported on this system via the following API:</p>
+<pre><span style="font-family: 'courier new', courier;">GET <em>http://&lt;analytics-ip&gt;:&lt;rest-api-port&gt;/analytics/alarms</em></span></pre>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_alerts_blogpost_image2.png"><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6767" src="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_alerts_blogpost_image2.png" alt="contrail_alerts_blogpost_image2" width="938" height="657" data-id="6767" /></a></p>
+<p>The API reports the type of alarm, severity, a description which lists the reason why it exists, whether its been acknowledged yet, and the timestamp. We provide an API for acknowledging alarms as follows:</p>
+<pre><span style="font-family: 'courier new', courier;">POST http://:/analytics/alarms/acknowledge
+
+Body: {“table”: , “name”: , “type”: , “token”: }</span></pre>
+<p>When the alarm condition is resolved, the alarm will be deleted automatically, whether or not it has been acknowledged.<br />
+The alarm is also shown along with the rest of the UVE if the UVE GET API is used:</p>
+<pre><span style="font-family: 'courier new', courier;">GET http://:/analytics/uves/control-node/</span></pre>
+<p>In addition to these GET APIs, a streaming interface is also available for both UVEs and Alarms. That interface is described in detailed in the <a href="http://www.opencontrail.org/contrail-analytics-streaming-api/">Contrail Analytics Streaming API</a> blogpost.</p>
+<h3>Alarm Processing and Plugins</h3>
+<p>New Alerts can be added to the Contrail Analytics by installing python plugins onto the Analyics Nodes. Consistent hashing techniques are used to distribute alarm processing among all functioning Analytics Nodes (the hash is based on the UVE Key). So, the python plugin for an Alert must be installed on each Analytics Node.<br />
+Let us look at the plugin for the alert used in the example above.</p>
+<p>This module plugin is here:<br />
+controller/src/opserver/plugins/alarm_bgp_connectivity/</p>
+<p>We install this plugin as follows:(from alarm_bgp_connectivity/setup.py)</p>
+<pre><span style="font-family: 'courier new', courier;">#
+# Copyright (c) 2013 Juniper Networks, Inc. All rights reserved.
+#
+
+from setuptools import setup, find_packages
+
+setup(
+    name='alarm_bgp_connectivity',
+    version='0.1dev',
+    packages=find_packages(),
+    entry_points = {
+        'contrail.analytics.alarms': [
+            'ObjectBgpRouter = alarm_bgp_connectivity.main:BgpConnectivity',
+        ],
+    },
+    zip_safe=False,
+    long_description="BGPConnectivity alarm"
+)</span></pre>
+<p>“ObjectBGPRouter” represents the control-node UVE.<br />
+See UVE_MAP in controller/src/analytics/viz.sandesh</p>
+<p>The implementation is as follows (from alarm_bgp_connectivity/main.py)</p>
+<pre><span style="font-family: 'courier new', courier;">from  opserver.plugins.alarm_base import AlarmBase
+
+class BgpConnectivity(AlarmBase):
+    """Not enough BGP peers are up in BgpRouterState.num_up_bgp_peer"""
+
+    def __call__(self, uve_key, uve_data):
+        err_list = []
+        if not uve_data.has_key("BgpRouterState"):
+            return self.__class__.__name__, AlarmBase.SYS_WARN, err_list
+
+        ust = uve_data["BgpRouterState"]
+
+        l,r = ("num_up_bgp_peer","num_bgp_peer")
+        cm = True
+        if not ust.has_key(l):
+            err_list.append(("BgpRouterState.%s != None" % l,"None"))
+            cm = False
+        if not ust.has_key(r):
+            err_list.append(("BgpRouterState.%s != None" % r,"None"))
+            cm = False
+        if cm:
+            if not ust[l] == ust[r]:
+                err_list.append(("BgpRouterState.%s != BgpRouterState.%s" \
+                        % (l,r), "%s != %s" % (str(ust[l]), str(ust[r]))))
+
+        return self.__class__.__name__, AlarmBase.SYS_WARN, err_list</span></pre>
+<p>This plugin code is called anytime a control-node UVE changes. It can examine the contents of the UVE can decide whether an alarm should be raise or not. In this case, we compare the “BgpRouterState.num_bgp_peer” attribute of the UVE with the “BgpRouterState.num_up_bgp_peer” attribute.</p>
+<h3>Contrail UI</h3>
+<p>A dashboard listing all Alarms present in the system is also available in Contrail UI as follows:<br />
+<a href="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_alerts_blogpost_image3.png"><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6768" src="http://www.opencontrail.org/wp-content/uploads/2015/10/contrail_alerts_blogpost_image3.png" alt="contrail_alerts_blogpost_image3" width="1273" height="761" data-id="6768" /></a></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

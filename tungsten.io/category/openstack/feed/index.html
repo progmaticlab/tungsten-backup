@@ -1,0 +1,1411 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>OpenStack Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/openstack/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/openstack/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Tue, 25 Jul 2023 20:59:21 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>OpenStack Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/openstack/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Tungsten Fabric as a Kubernetes CNI plugin</title>
+		<link>https://tungsten.io/tungsten-fabric-as-a-kubernetes-cni-plugin/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Mon, 09 Aug 2021 17:42:32 +0000</pubDate>
+				<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[LF Networking]]></category>
+		<category><![CDATA[LFN]]></category>
+		<category><![CDATA[Open Source]]></category>
+		<category><![CDATA[Tungsten Fabric]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8358</guid>
+
+					<description><![CDATA[This is a contributed blog from LF Networking Member CodiLime. Originally published here. CNI (Container Networking Interface) is an interface between container runtime and network implementation. It allows different projects,...]]></description>
+										<content:encoded><![CDATA[
+<p><em><strong>This is a contributed blog from LF Networking Member CodiLime. <a href="https://codilime.com/tungsten-fabric-as-a-kubernetes-cni-plugin/" target="_blank" rel="noreferrer noopener">Originally published here</a></strong>.</em></p>
+
+
+
+<p><strong>CNI (Container Networking Interface) is an interface between container runtime and network implementation. It allows different projects, like&nbsp;<a href="https://codilime.com/tungsten-fabric-architecture-an-overview/">Tungsten Fabric</a>, to provide their implementation of the CNI plugins and use them to manage networking in a&nbsp;<a href="https://codilime.com/glossary/kubernetes/">Kubernetes</a>&nbsp;cluster. In this blog post, you will learn how to use Tungsten Fabric as a Kubernetes CNI plugin to ensure network connectivity between containers and bare metals. You will also see an example of a nested deployment of a Kubernetes cluster into OpenStack VM with a TF CNI plugin.</strong></p>
+
+
+
+<p>The CNI interface itself is very simple. The most important operations it has to implement are ADD and DEL. As the names suggest, ADD’s role is to add a container to the network and DEL’s is to delete it from the network. That’s all. But are these functions performed?&nbsp;</p>
+
+
+
+<p>First things first: a kubelet is a Kubernetes daemon running on each node in a cluster. When the user creates a new pod, the Kubernetes API server orders a kubelet running on the node where the pod has been scheduled to create the pod. The kubelet will then create a network namespace for the pod, and allocate it by running the so-called “pause” container. One of the roles of this container is to maintain the network namespace which will be shared across all the containers in the pod. That’s why the containers inside the pod can “talk” to each other using the loopback interface. Then, for each container defined in the pod, the kubelet will call the CNI plugin.&nbsp;</p>
+
+
+
+<p>But how does it know how to use each plugin? First, it looks for the CNI configuration file in a predefined directory ( /etc/cni/net.d&nbsp;<a href="https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni" target="_blank" rel="noreferrer noopener">by default</a>). When using Tungsten Fabric, the kubelet is going to find a file like this:</p>
+
+
+
+<pre class="wp-block-code"><code>{
+    "cniVersion": "0.3.1",
+    "contrail" : {
+        "cluster-name"  : "&lt;CLUSTER-NAME&gt;",
+        "meta-plugin"   : "&lt;CNI-META-PLUGIN&gt;",
+        "vrouter-ip"    : "&lt;VROUTER-IP&gt;",
+        "vrouter-port"  : &lt;VROUTER-PORT&gt;,
+        "config-dir"    : "/var/lib/contrail/ports/vm",
+        "poll-timeout"  : &lt;POLL-TIMEOUT&gt;,
+        "poll-retries"  : &lt;POLL-RETRIES&gt;,
+        "log-file"      : "/var/log/contrail/cni/opencontrail.log",
+        "log-level"     : "&lt;LOG-LEVEL&gt;"
+    },
+    "name": "contrail-k8s-cni",
+    "type": "contrail-k8s-cni"
+  }</code></pre>
+
+
+
+<p>This file, among other parameters, specifies the name of the CNI plugin and IP (vrouter-ip) and port (vrouter-port) of the vRouter agent. By looking at this file, the kubelet knows it should use the CNI plugin binary called “contrail-k8s-cni”. It looks for it in a predefined directory ( /opt/cni/bin&nbsp;<a href="https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni" target="_blank" rel="noreferrer noopener">by default</a>) and, when it wants to create a new container, executes it with the command ADD passed through environment variables together with other parameters like: path to the pod’s network namespace, container id and container network interface name. The contrail-k8s-cni binary (you can find its source code&nbsp;<a href="https://github.com/tungstenfabric/tf-controller/tree/master/src/container/cni" target="_blank" rel="noreferrer noopener">here</a>) will read those parameters and send appropriate requests to the vRouter Agent.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/bb1cb15886dadd0311a7daf94482d72eab948af1/7fa29/img/codilime_tungsten-fabric-compute-with-kubernetes.png" alt="Tungsten Fabric compute with Kubernetes"/></figure>
+
+
+
+<p><strong>Fig 1. Tungsten Fabric compute with Kubernetes&nbsp;<a href="https://d33wubrfki0l68.cloudfront.net/bb1cb15886dadd0311a7daf94482d72eab948af1/7fa29/img/codilime_tungsten-fabric-compute-with-kubernetes.png" target="_blank" rel="noreferrer noopener">(Enlarge)</a></strong></p>
+
+
+
+<p>The vRouter Agent’s job is to create actual interfaces for the containers. But how does it know how to configure an interface? As you can see in the diagram above, it gets all this information from the Tungsten Fabric Control. So then how does the Tungsten Fabric Control know about all the pods, their namespaces, etc.? That’s where the Tungsten Fabric Kube Manager (you can find its source code&nbsp;<a href="https://github.com/tungstenfabric/tf-controller/tree/master/src/container/kube-manager" target="_blank" rel="noreferrer noopener">here</a>) comes in. It’s a separate service, launched together with other Tungsten Fabric SDN Controller components. It can be seen in the bottom left part of the diagram below.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/ae5f2aa3d9d32d1df4f649baa05ea40cd4f30dff/52ab7/img/codilime_tungsten-fabric-config-with-kubernetes.png" alt="Tungsten Fabric Config with Kubernetes"/></figure>
+
+
+
+<p><strong>Fig 2. Tungsten Fabric Config with Kubernetes&nbsp;<a href="https://d33wubrfki0l68.cloudfront.net/ae5f2aa3d9d32d1df4f649baa05ea40cd4f30dff/52ab7/img/codilime_tungsten-fabric-config-with-kubernetes.png" target="_blank" rel="noreferrer noopener">(Enlarge)</a></strong></p>
+
+
+
+<p>Kubemanager’s role is to listen for Kubernetes API server events like: pod creation, namespace creation, service creation, deletion. It listens for those events, processes them, and then creates, modifies or deletes appropriate objects in the Tungsten Fabric Config API. Tungsten Fabric Control will then find those objects and provide information about them to the vRouter agent. The vRouter Agent can then finally create the properly configured interface for the container. And that is how Tungsten Fabric can work as a Kubernetes CNI Plugin.</p>
+
+
+
+<p>Because Tungsten Fabric and Kubernetes are integrated, container-based workloads can be combined with virtual machines or bare metal server workloads. Moreover, rules for connectivity between those environments can all be managed in one place.</p>
+
+
+
+<h2 class="wp-block-heading">Tungsten Fabric nested deployment</h2>
+
+
+
+<p>From the networking point of view, virtual machines and containers are almost the same thing for Tungsten Fabric, so deployments that combine them are possible. Moreover, in addition to Kubernetes, Tungsten Fabric can also be integrated with OpenStack. Thanks to that, the two platforms can be combined. Let’s say that we have an already deployed OpenStack with Tungsten Fabric, but we want to deploy some of our workloads using containers. With Tungsten Fabric we can create what is called a nested deployment—OpenStack compute virtual machines with a Kubernetes cluster deployed on them with Tungsten Fabric acting as the CNI plugin.&nbsp;</p>
+
+
+
+<p>All of the Tungsten components need not be deployed as most of them are already running and controlling the OpenStack networking. However, on one of the nodes in the nested Kubernetes cluster, preferably the Kubernetes master node, we have to launch the Tungsten Fabric Kube Manager (described above). It will connect to the Kubernetes API Server in the nested cluster and to the Tungsten Fabric Config Api server deployed with OpenStack.&nbsp;</p>
+
+
+
+<p>Finally, the Tungsten Fabric CNI plugin and its configuration file must be present on each of the nested Kubernetes compute nodes. Please note that neither the Tungsten Fabric vRouter nor vRouter Agent need to be deployed on the nested Kubernetes nodes, as those components are already running on the OpenStack compute nodes and the Tungsten Fabric CNI plugin can send requests directly to them.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/b306396c1d01a92fc84cd1c46ebfd75aa05bf728/6a0c8/img/codilime_fig3.png" alt="Kubernetes on OpenStack with Tungsten Fabric Networking"/></figure>
+
+
+
+<p><strong>Fig 3. Kubernetes on OpenStack with Tungsten Fabric Networking&nbsp;<a href="https://d33wubrfki0l68.cloudfront.net/b306396c1d01a92fc84cd1c46ebfd75aa05bf728/6a0c8/img/codilime_fig3.png" target="_blank" rel="noreferrer noopener">(Enlarge)</a></strong></p>
+
+
+
+<p>A nested deployment of a Kubernetes cluster integrated with Tungsten Fabric is an easy way to start deploying container-based workloads, especially for enterprises that have been using OpenStack to manage their virtual machines. Network admins can use their Tungsten Fabric expertise and need not necessarily master new tools and concepts.</p>
+
+
+
+<h2 class="wp-block-heading">Summary</h2>
+
+
+
+<p>As you can see, a Kubernetes CNI plugin allows you to benefit from one of Tungsten Fabric’s key features—its ability to connect different workloads regardless of their function— containers, VMs or bare metals. Should you need to use containers and ensure their connectivity with your legacy infrastructure based on OpenStack, you can create a nested deployment of the Kubernetes cluster integrated with TF</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Tungsten Fabric architecture—an overview</title>
+		<link>https://tungsten.io/tungsten-fabric-architecture-an-overview/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Tue, 03 Aug 2021 00:14:33 +0000</pubDate>
+				<category><![CDATA[Analytics]]></category>
+		<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Linux Foundation]]></category>
+		<category><![CDATA[Open Source]]></category>
+		<category><![CDATA[Tungsten Fabric]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8350</guid>
+
+					<description><![CDATA[This is a contributed blog from LF Networking Member CodiLime. Originally published here. SDN or Software-Defined Networking is an approach to networking that enables the programmatic and dynamic control of...]]></description>
+										<content:encoded><![CDATA[
+<p><strong><em>This is a contributed blog from LF Networking Member CodiLime. </em></strong><a href="https://codilime.com/blog/tungsten-fabric-architecture-an-overview/"><strong><em>Originally published here</em></strong>.</a></p>
+
+
+
+<p><strong>SDN or Software-Defined Networking is an approach to networking that enables the programmatic and dynamic control of a network. It is considered the next step in the evolution of network architecture. To implement this approach effectively, you will need a mature SDN Controller such as Tungsten Fabric. Read our blog post to get a comprehensive overview of Tungsten Fabric architecture.</strong></p>
+
+
+
+<h2 class="wp-block-heading">What is Tungsten Fabric</h2>
+
+
+
+<p><a href="https://codilime.com/tungsten-fabric/">Tungsten Fabric</a>&nbsp;(previously OpenContrail) is an open-source&nbsp;<a href="https://codilime.com/glossary/sdn-controller/">SDN controller</a>&nbsp;that provides connectivity and security for virtual, containerized or bare-metal workloads. It is developed under the umbrella of&nbsp;<a href="https://tungsten.io/">the Linux Foundation</a>. Since most of its features are platform- or device agnostic, TF can connect mixed VM-container-legacy stacks. What Tungsten Fabric sees is only a source and target API. The technology stack that TF can connect includes:</p>
+
+
+
+<ul>
+<li>Orchestrators or virtualization platforms (e.g. OpenShift, Kubernetes, Mesos or VMware vSphere/Orchestrator)</li>
+
+
+
+<li>OpenStack (via a monolithic plug-in or an ML2/3 network driver mechanism)</li>
+
+
+
+<li>SmartNIC devices</li>
+
+
+
+<li>SR-IOV clusters</li>
+
+
+
+<li>Public clouds (multi-cloud or hybrid solutions)</li>
+
+
+
+<li>Third-party proprietary solutions</li>
+</ul>
+
+
+
+<p>One of TF’s main strengths is its ability to connect both the physical and virtual worlds. In other words, to connect in one network different workloads regardless of their nature. They can be Virtual Machines, physical servers or containers.</p>
+
+
+
+<p>To deploy Tungsten Fabric, you may need&nbsp;<a href="https://codilime.com/network-professional-services/">Professional Services (PS)</a>&nbsp;to integrate it with your existing infrastructure and ensure ease of use and security.</p>
+
+
+
+<h2 class="wp-block-heading">Tungsten Fabric components</h2>
+
+
+
+<p>The entire TF architecture can be divided into the&nbsp;<a href="https://codilime.com/glossary/control-plane/">control plane</a>&nbsp;and&nbsp;<a href="https://codilime.com/glossary/data-plane/">data plane</a>&nbsp;components. Control plane components include:</p>
+
+
+
+<ul>
+<li>Config—managing the entire platform</li>
+
+
+
+<li>Control—sending rules for network traffic management to vRouter agents</li>
+
+
+
+<li>Analytics—collecting data from other TF components (config, control, compute)</li>
+</ul>
+
+
+
+<p>Additionally, there are two optional components of the Config:</p>
+
+
+
+<ul>
+<li>Device Manager—managing underlay physical devices like switches or routers</li>
+
+
+
+<li>Kube Manager—observing and reporting the status of Kubernetes cluster</li>
+</ul>
+
+
+
+<p>Data plane or compute components include:</p>
+
+
+
+<ul>
+<li>vRouter and its agents—managing packet flow at the virtual interface vhost0 according to the rule defined in the control component and received using vRouter agents</li>
+</ul>
+
+
+
+<h2 class="wp-block-heading">TF Config—the brain of the platform</h2>
+
+
+
+<p>TF Config is the main part of the platform where network topologies are configured. It is the biggest TF component developed by the largest number of developers. In a nutshell, it is a database where all configurations are stored. All other TF components depend on the Config. The term itself has two meanings:</p>
+
+
+
+<ul>
+<li>VM where all containers are stored</li>
+
+
+
+<li>A container named “config” where the entire business logic is stored</li>
+</ul>
+
+
+
+<p>TF Config has two APIs: North API (provided by Config itself) and South API (provided by other control plane components). The first one is more important here because it is the API used for communication. The South API is used by Device Manager (also a part of TF and discussed later) and other tools.</p>
+
+
+
+<p>TF Config uses an intent-based approach. The network administrator does not need to define all conditions but only how the network is expected to work. Other elements are configured automatically. For example, you want to enable network traffic from one network to another. It is enough to define this intention, and all the magic is done under the hood.</p>
+
+
+
+<p>The schema transformer listens to the database to check if there is a new entry. When such an entry is added, it checks for lacking data and completes it using the Northbound API. In this way, network routings are created, a firewall is unblocked to enable the traffic to flow between these two networks, and the devices obtain all the data necessary to get the network up and running.&nbsp;</p>
+
+
+
+<p>An intent-based approach automates network creation. There are many settings that need to be defined when creating a new network, and it takes time to set up all of them. As a process, it is also error-prone. Using TF simplifies everything, as most settings are default ones and are completed automatically.</p>
+
+
+
+<p>When it comes to communication with Config, its API is shared via http. Alternatively, you can use a TF UI or cURL, a command line tool for file transfer with a URL syntax supporting a number of protocols including HTTP, HTTPS, FTP, etc. There is also a TF CLI tool.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/2e290badcc110dcce6a0552dbc336d7aff19ec7a/0799e/img/codilime_tungsten-fabric-config-with-openstack.png" alt="Tungsten Fabric Config with OpenStack" title="Fig 1. Tungsten Fabric Config with OpenStack"/></figure>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/ae5f2aa3d9d32d1df4f649baa05ea40cd4f30dff/7e06b/img/codilime_tungsten_fabric_config_with_kubernetes.png" alt="Tungsten Fabric Config with Kubernetes" title="Fig 2. Tungsten Fabric Config with Kubernetes"/></figure>
+
+
+
+<p></p>
+
+
+
+<h2 class="wp-block-heading">Managing physical devices with Device Manager</h2>
+
+
+
+<p>Device Manager is an optional component with two major functions. Both are related to fabric management, which is the management of underlay physical devices like switches or routers.</p>
+
+
+
+<p>First, it is responsible for listening to configuration events from the Config API Server and then for pushing required configuration changes to physical devices. Virtual Networks, Logical Routers and other overlay objects can be extended to physical routers and switches. Device Manager enables homogeneous configuration management of overlay networking across compute hosts and hardware devices. In other words, bare-metal servers connected to physical switches or routers may be a part of the same Virtual Network as virtual machines or containers running on compute hosts.</p>
+
+
+
+<p>Secondly, this component manages the life cycle of physical devices. It supports the following features:</p>
+
+
+
+<ul>
+<li>onboarding fabric—detect and import brownfield devices</li>
+
+
+
+<li>zero-touch provisioning—detect, import and configure greenfield devices</li>
+
+
+
+<li>software image upgrade—individual or bulk upgrade of device software</li>
+</ul>
+
+
+
+<p>Today only Juniper’s MX routers and QFX switches have&nbsp;<a href="https://github.com/tungstenfabric/tf-controller/tree/master/src/config/device-manager/device_manager/plugins/juniper/">an open-source plug-in</a>.</p>
+
+
+
+<h2 class="wp-block-heading">Device Manager: under the hood</h2>
+
+
+
+<p>Device Manager reports job progress by sending UVEs (User Visible Entities) to the Collector. Users can retrieve job status and logs using the Analytics API and it’s Query Engine. Device Manager works in full or partial mode. There can be only one active instance in the full mode. In this mode, it is responsible for processing events sent via RABBITMQ. It evaluates high-level intents like Virtual Networks or Logical Routers and translates them into a low-level configuration that can be pushed into physical devices. It also schedules jobs on the message queue that can be consumed by other instances running in partial mode. Those followers listen for new job requests and execute ansible scripts, which&nbsp; push the desired configuration to devices.</p>
+
+
+
+<p>Device Manager has the following components:</p>
+
+
+
+<ul>
+<li>device-manager—translates high-level intents into a low-level configuration</li>
+
+
+
+<li>device-job-manager—executes ansible playbooks, which configure routers and switches</li>
+
+
+
+<li>DHCP server—in a zero-touch provisioning use case, physical device gets management IP address from a local DHCP server running alongside device-manager</li>
+
+
+
+<li>TFTP server—in the zero-touch provision use case, this server is used to provide a script with the initial configuration</li>
+</ul>
+
+
+
+<h2 class="wp-block-heading">Kube Manager</h2>
+
+
+
+<p>Kube Manager is an additional component launched together with other Tungsten Fabric SDN Controller components. It is used to establish communication between Tungsten Fabric and Kubernetes, and is essential to their integration. In a nutshell, it listens to the Kubernetes API server events such as creation, modification or deletion of k8s objects (pods, namespaces or services). When such an event occurs, Kube Manager processes it and creates, modifies or deletes an appropriate object in the Tungsten Fabric Config API. Tungsten Fabric Control will then find those objects and send information about them along to the vRouter agent. After that, the vRouter agent can finally create the correctly configured interface for the container.&nbsp;</p>
+
+
+
+<p>The following example should clarify this process. Let’s say that an annotation is added to the namespace in Kubernetes, saying that the network in this namespace should be isolated from the rest of the network. Kube Manager gets the information about it and changes the setup of the TF object accordingly.</p>
+
+
+
+<h2 class="wp-block-heading">Control</h2>
+
+
+
+<p>The Control component is responsible for sending network traffic configurations to vRouter agents. Such configurations are received from the Config’s Cassandra database, which offers consistency, high availability and easy scalability. To represent the configuration and operational state of the environment, the IF-MAP (The Interface to Metadata Access Point) protocol is used. The control nodes exchange routes with one another using IBGP protocol to ensure that all control nodes have the same network state. Communication between Control and vRouter agents is done via Extensible Messaging and the Presence Protocol (XMPP)—a communications protocol for message-oriented middleware based on XML. Finally, the Control communicates with gateway nodes (routers and switches) using the BGP protocol.</p>
+
+
+
+<p>TF Control works similarly to a hardware router. Control is a control plane component responsible for steering the data plane and sending the traffic flow configuration to vRouter agents. For their part, hardware routers are responsible for handling traffic according to the instructions they receive from the control plane. In TF architecture, physical routers and their agent services work alongside vRouters and vRouter agents, as Tungsten Fabric can handle both physical and virtual worlds.</p>
+
+
+
+<p>TF Control communicates with a vRouter using XMPP, which is equivalent to a standard BGP session, though XMPP carries more information (e.g. configurations). Still, thanks to its reliance on XMPP, TF Control can send network traffic configurations to both vRouters and physical ones—the code used for communication is exactly the same.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/78293605fc2e819777b61ebc74e950624e0ebc2b/46b16/img/codilime_tungsten_fabric_control.png" alt="Tungsten Fabric Control" title="Fig. 3 Tungsten Fabric Control"/></figure>
+
+
+
+<p></p>
+
+
+
+<h2 class="wp-block-heading">Analytics</h2>
+
+
+
+<p>Analytics is a separate TF component that collects data from other components (config, control, compute). The following data are collected:</p>
+
+
+
+<ul>
+<li>Object logs (concrete objects in the TF structure)</li>
+
+
+
+<li>System logs</li>
+
+
+
+<li>Trace buffers</li>
+
+
+
+<li>Flow statistics in TF modules</li>
+
+
+
+<li>Status of TF modules (i.e. if they are working and what their state is)</li>
+
+
+
+<li>Debugging data (if a required data collection level is enabled in the debugging mode)</li>
+</ul>
+
+
+
+<p>Analytics is an additional component of Tungsten Fabric. TF works fine without it using just its main components. It can even be enabled as an additional plugin long after the TF solution was originally deployed.</p>
+
+
+
+<p>To collect the data coming from other TF components, an original Juniper protocol called Sandesh is used. The name comes from&nbsp;<a href="http://sandesh.com/">an Indian newspaper in Gujarati language</a>. “Sandesh” means “message” or “news”. Analogically, the protocol is the messenger that brings news about the SDN.</p>
+
+
+
+<p>In the Analytics component, there are two databases. One is based on the Cassandra database and contains historical data: statistics, logs, TF data flow information. It is commonly used for Analytics and Config components. Cassandra is the database that allows you to write data quickly, but it reads data more slowly. It is therefore used to write and store historical data. If there is a need to analyze how TF deployment worked over a longer period of time, this data can be read. In practice, such a need does not occur very often. This feature is most often used by developers to debug a problem.</p>
+
+
+
+<p>The second database is based on the Redis database and collects UVE (User Visible Entities) such as information about existing virtual networks, vRouters, virtual machines and about their actual state (whether it’s working or not). These are the components of the system infrastructure defined by users (in contrast to the elements created automatically under the hood by TF). Since the data about their state are dynamic, they are stored in the Redis database, which allows users to read them much more quickly than in the Cassandra database.&nbsp;</p>
+
+
+
+<p>All these TF components send data to the Collector, which writes them in either the Cassandra or Redis database. On the other side, there is an API Server which is sometimes called the Analytics API to distinguish it from the API Server, e.g. in the Config. This Analytics API provides a REST API for extracting data from the database.</p>
+
+
+
+<p>Apart from these, Analytics has one additional component, called QueryEngine. This is an indirect process taking a user query for historical data. The user sends an SQL-like query to the Analytics API (API Server) REST port. Then the query is sent to QueryEngine, which performs a database query in Cassandra and, via the Analytics API, sends the result back to the user.</p>
+
+
+
+<p>&nbsp;Figure 4 shows the Analytics Node Manager and Analytics Database Node Manager. In fact, there are many different node managers in the TF architecture that are used to monitor specific parts of the architecture and send reports about them. In our case, Analytics Node Manager monitors Collector, QueryEngine and API Server, while the Analytics Database Node Manager monitors databases in the Analytics component. In this way, Analytics also collects data on itself.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/ed127b73f4599b0f2fb94db2feca0d26b6878792/b3bb1/img/codilime_tungsten_fabric_analytics.png" alt="Tungsten Fabric Analytics" title="Fig. 4 Tungsten Fabric Analytics"/></figure>
+
+
+
+<p></p>
+
+
+
+<h2 class="wp-block-heading">The VRouter forwarder and agent</h2>
+
+
+
+<p>This component is installed on all compute hosts that run the workload. It provides Integrated routing and bridging functions for network traffic from and between Virtual Machines, Containers and external networks. It applies network and security rules defined by the Tungsten Fabric controller. This component is not mandatory, but it is required for any use case with virtualized workloads.&nbsp;</p>
+
+
+
+<ul>
+<li>Agent</li>
+</ul>
+
+
+
+<p>The agent is a user-space application that maintains XMPP sessions with the Tungsten Fabric controllers. It is used to get VRF (Virtual Routing and Forwarding) and ACLs (Access Control Lists) that are derived from high-level intents like Virtual Networks. The agent maintains a local database of VRFs and ACLs. This component reports its state to the Analytics API by sending Sandesh messages with UVEs (User Visible Entities) with logs and statistics. It is responsible for maintaining the correct forwarding state in Forwarder. The agent also handles some protocols like DHCP, DNS or ARP.</p>
+
+
+
+<p>Communication with the forwarder is achieved with the help of a KSync module, which uses Netlink sockets and shared memory between the agent and the forwarder. In some cases, application and kernel modules also use the pkt0 tap interface to exchange packets. Those mechanisms are used to update the flow table with flow entries based on the agent’s local data.</p>
+
+
+
+<ul>
+<li>Forwarder</li>
+</ul>
+
+
+
+<p>The forwarder performs packet processing based on flows pushed by the agent. It may drop the packet, forward it to the local virtual machine, or encapsulate it and send it to another destination.</p>
+
+
+
+<p>The forwarder is usually deployed as a kernel module. In that case, it is a software solution independent of NIC or server type. Packet processing in kernel space is more efficient than in user-space and provides some room for optimization. The drawback is that it can only be installed with a specific supported kernel version. For advanced users, modules for a different kernel version can be built. Default kernel versions are specified&nbsp;<a href="https://github.com/tungstenfabric/tf-packages">here</a>.</p>
+
+
+
+<p>This kernel module is released as a docker image that contains a pre-built module and user-space tools. When this image is run, it copies binaries to the host system and installs the kernel module on the host (it needs to be run in privileged mode). After successful installation, a vrouter module should be loaded into the kernel (“lsmod | grep vrouter”) and new tap interfaces pkt0 and vhost0 created. If problems occur, checking the kernel logs (“dmesg”) can help you arrive at a solution.</p>
+
+
+
+<p>The forwarder can also be installed as a userspace application that uses The Data Plane Development Kit (DPDK), which enables higher performance than the kernel module.</p>
+
+
+
+<ul>
+<li>Packet flow</li>
+</ul>
+
+
+
+<p>For every incoming packet from a VM, vRouter forwarder needs to decide how to process it. The options are DROP, FORWARD, MIRROR, NAT or HOLD. Information about what to do is stored in flow table entries. The forwarder is using packet headers to find a corresponding entry in the above-mentioned tables. With the first packet from a new flow, the entry might be empty. In that case, the vRouter forwarder sends this packet to the pkt0 interface, where the agent is listening. Using its local information about VRFs and ACLs, the agent pushes (using KSync and shared memory) a new flow to the forwarder and resends a packet. In other words, the vRouter forwarder doesn’t have full knowledge of how to process every packet in the system so it cooperates with the agent to get that knowledge. It is because this process may take some time that the first packet sent through the vRouter may come with a visible delay.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/ce7df33860634d6884826a143b59fff25354c849/9bb3f/img/codilime_tungsten-fabric-compute-with-openstack.png" alt="Tungsten Fabric Compute with OpenStack" title="Fig. 5 Tungsten Fabric Compute with OpenStack"/></figure>
+
+
+
+<p></p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/bb1cb15886dadd0311a7daf94482d72eab948af1/f69c8/img/codilime_tungsten_fabric_compute_with_kubernetes.png" alt="Tungsten Fabric Compute with Kubernetes" title="Fig. 6 Tungsten Fabric Compute with Kubernetes"/></figure>
+
+
+
+<p></p>
+
+
+
+<h2 class="wp-block-heading">Tungsten Fabric with OpenStack and Kubernetes—an overview</h2>
+
+
+
+<p>To sum up, Figures 7 and 8 provide an overview of the TF integration with Openstack and Kubernetes, respectively.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/66268e490e805fb49cfee8bea9e0da362f9bdd17/31273/img/codilime_tungsten-fabric-with-openstack.png" alt="Tungsten Fabric with Openstack" title="Fig. 7 Tungsten Fabric with Openstack"/></figure>
+
+
+
+<p></p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/b2f1d82056fa087b400a34859992f4e7f5fc36ff/1af44/img/codilime_tungsten_fabric_with_kubernetes.png" alt="Tungsten Fabric with Kubernetes" title="Fig. 8 Tungsten Fabric with Kubernetes"/></figure>
+
+
+
+<p></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Deployments and management made easy with Openstack &#038; Opencontrail Helm</title>
+		<link>https://tungsten.io/deployments-and-management-made-easy-with-openstack-opencontrail-helm/</link>
+		
+		<dc:creator><![CDATA[Ranjini Rajendran]]></dc:creator>
+		<pubDate>Mon, 06 Nov 2017 22:52:17 +0000</pubDate>
+				<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[Orchestration]]></category>
+		<category><![CDATA[SDN]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7625</guid>
+
+					<description><![CDATA[Note: This blog is co&#8211;authored by Ranjini Rajendran and Madhukar Nayakbomman from Juniper Networks. OpenStack provides modular architecture to enable IaaS for primarily managing virtualized workloads. However, this open source platform is a...]]></description>
+										<content:encoded><![CDATA[<p>Note: This blog is <em>co</em>&#8211;<em>authored</em> by Ranjini Rajendran and Madhukar Nayakbomman from Juniper Networks.</p>
+<p>OpenStack provides modular architecture to enable IaaS for primarily managing virtualized workloads. However, this open source platform is a complex piece of architecture, one that provides organizations with a tall order problem for dealing with configuration and management of  applications. One of the biggest challenge or pain point that Cloud administrators experience is around life cycle management of Openstack enabled Cloud environments.</p>
+<p>To simplify the life cycle management of Openstack components, Openstack-helm project was started during the Barcelona Openstack Summit in 2016. In October 2017, Openstack-helm became an official Openstack Project.</p>
+<p>&nbsp;</p>
+<h3>What is Helm</h3>
+<p>Well, think of it as the apt-get / yum of Kubernetes, it is a package manager for Kubernetes. If you deploy applications to Kubernetes, Helm makes it incredibly easy to</p>
+<ul>
+<li>version deployments</li>
+<li>package deployments</li>
+<li>make a release of it</li>
+<li>and deploy, delete, upgrade and</li>
+<li>even rollback those deployments</li>
+</ul>
+<p>as “charts”.</p>
+<p>“Charts” being the terminology that Helm uses for a package of configured Kubernetes resources.</p>
+<h3>What is Openstack-Helm ?</h3>
+<p>Openstack-Helm project enables deployment, maintenance and upgrades of loosely coupled Openstack services and its dependencies as kubernetes pods. The different components of Openstack like glance, keystone, nova, neutron, heat etc are deployed as kubernetes pods. More details about the openstack-helm charts can be found at:</p>
+<p><a href="https://github.com/openstack/openstack-helm">https://github.com/openstack/openstack-helm</a></p>
+<h3>OpenContrail Helm charts</h3>
+<p>Recently, OpenContrail components have been containerized. There are mainly three containers in Opencontrail &#8211;</p>
+<ul>
+<li>OpenContrail Controller (config and control nodes)</li>
+<li>OpenContrail Analytics (Analytics node)</li>
+<li>OpenContrail Analytics DB (Analytics Database node)</li>
+</ul>
+<p>There is now support for  OpenContrail Helm charts for deployment, maintenance, and upgrade of these  Opencontrail Container pods. The details on OpenContrail Helm charts can be found here:</p>
+<p><a href="https://github.com/Juniper/contrail-docker/tree/master/kubernetes/helm/contrail">https://github.com/Juniper/contrail-docker/tree/master/kubernetes/helm/contrail</a></p>
+<p>The video below shows the integration of OpenContrail helm charts with Openstack-helm and how easy it is to upgrade OpenContrail using helm charts with minimal downtime for existing tenant workloads.</p>
+<p><iframe src="https://www.youtube.com/embed/nDZvJEkkt2U" width="560" height="315" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p>&nbsp;</p>
+<p>You can also see this at Openstack Sydney summit session on Tuesday 7<sup>th</sup> November at 5:50 pm. <a href="https://www.openstack.org/summit/sydney-2017/summit-schedule/events/19938">https://www.openstack.org/summit/sydney-2017/summit-schedule/events/19938</a></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>OpenContrail Containers Now on DockerHub</title>
+		<link>https://tungsten.io/opencontrail-containers-now-on-dockerhub/</link>
+		
+		<dc:creator><![CDATA[James Kelly]]></dc:creator>
+		<pubDate>Mon, 11 Sep 2017 07:01:13 +0000</pubDate>
+				<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Docker]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenShift]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[4.0]]></category>
+		<category><![CDATA[4.0.1]]></category>
+		<category><![CDATA[containers]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7579</guid>
+
+					<description><![CDATA[Yes, a most powerful of warriors – patience – offers a gift today: at last, new OpenContrail container images are on Docker Hub. If you were paying attention, you know...]]></description>
+										<content:encoded><![CDATA[<p><img fetchpriority="high" decoding="async" class="alignnone wp-image-7580" src="http://www.opencontrail.org/wp-content/uploads/2017/09/colorful-2567060_1280.jpg" alt="" width="500" height="361" /></p>
+<p>Yes, a most powerful of warriors – patience – offers a gift today: at last, new OpenContrail container images are on <a href="https://hub.docker.com/u/opencontrail/">Docker Hub</a>.</p>
+<p>If you were paying attention, you know that OpenContrail software was recently containerized. The control and management components were packaged into 4 containers, and the vRouter’s kernel module deployment is container-enabled too.</p>
+<p>This new canonical way to deploy OpenContrail was eagerly anticipated, simplifying the day-1 user experience. News of the package refactoring was revealed in a <a href="http://www.opencontrail.org/container-networking-made-simple-with-opencontrail-and-kubernetes/">past blog</a> that also covered integration with Kubernetes. The formal software containerization support in Juniper’s Contrail Networking followed this June in the release of version 4.0.</p>
+<p>The support of networking containers as endpoints came a while ago however. Some of us have been using it <a href="https://engineering.riotgames.com/news/running-online-services-riot-part-iii">in production</a> and others have been musing with that support paired with Kubernetes; it’s been 2^9 days since my early <a href="http://www.opencontrail.org/getting-to-gifee-with-sdn-demo/">demo</a> of OpenContrail with Kubernetes and OpenShift (see the newer <a href="https://www.youtube.com/watch?v=LKL3vLErsvY&amp;t=43s">demo</a> now).</p>
+<p>That original open-sourced demo was in fact using Docker container images that Juniper uploaded to Docker Hub way back for version 2.20. After none of the subsequent releases made it to Docker Hub, you may have been wondering if those images were a one-hit wonder: nope. While the community is rolling a CI/CD <a href="https://github.com/Juniper/contrail-controller/wiki/OpenContrail-Continuous-Integration-(CI)">pipeline</a> for OpenContrail’s core elements, today’s posting of the version 4.0.1 images is an intermediate step until that fully codifies.</p>
+<p>The containerization of the OpenContrail software itself, may understandably lead you to associate it with other container tools like CNI, Kubernetes, Mesos or OpenShift – all of which are supported – but it’s worth noting that the containerized deployment is also used <a href="https://gitlab.com/gokulpch/OpenContrail-Kolla/blob/master/README.md">with OpenStack</a> Kolla. That being said, it’s exciting to imagine the possibility of deploying OpenContrail containers directly on top of container orchestration platforms, bringing their features to bear to manage an OpenContrail deployment. This is exactly what’s being planned with the help of Helm. In the meantime, it’s still click-click easy with the server manager GUI, and equally simple with <a href="https://github.com/Juniper/contrail-ansible">Ansible</a>, which also affords you the opportunity to deploy your SDN as code a la DevNetOps, perhaps upholding your application stack and DevOps; now there’s a dynamic duo!</p>
+<p>The new Docker Hub images shouldn’t lower the barrier to entry, with any luck, they should remove it entirely. For example, if you’re working with Kubernetes, you’ve already done enough learning and lifting to get that going, and the hope is to keep you focused on that: until you want to dig into SDN, the OpenContrail networking and security features just work. To make that a reality, the download and <a href="https://github.com/Juniper/contrail-docker/wiki/Provision-Contrail-CNI-for-Kubernetes">installation of OpenContrail</a> needs to be simple and steady, and then get out of your way. Hopefully that’s what you’ll find. If you do, please support the community by giving us some stars on <a href="https://hub.docker.com/u/opencontrail/">Docker Hub</a>, and tell others about your experience.</p>
+<p>&nbsp;</p>
+<p><strong>Recap of key resources:</strong></p>
+<ul>
+<li><a href="https://github.com/Juniper/contrail-docker/wiki/Provision-Contrail-CNI-for-Kubernetes">Installation with Kubernetes</a></li>
+<li><a href="https://gitlab.com/gokulpch/OpenContrail-Kolla/blob/master/README.md">Installation with OpenStack</a></li>
+<li><a href="https://github.com/Juniper/contrail-controller/wiki">OpenContrail Wiki</a></li>
+</ul>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>OpenContrail &#8211; Enabling Advancements in Cloud Infrastructure Adoption</title>
+		<link>https://tungsten.io/opencontrail-enabling-advancements-in-cloud-infrastructure-adoption/</link>
+		
+		<dc:creator><![CDATA[Geoff Sullivan]]></dc:creator>
+		<pubDate>Fri, 14 Apr 2017 18:19:18 +0000</pubDate>
+				<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[Orchestration]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Service Provider]]></category>
+		<category><![CDATA[Use Case]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7458</guid>
+
+					<description><![CDATA[OpenContrail has solidified its position as the top SDN and network automation solution for OpenStack, and recently announced it&#8217;s integration into Kubernetes (K8s) and thus OpenShift (recent versions are powered by Kubernetes.) What does this mean for...]]></description>
+										<content:encoded><![CDATA[<p><a href="http://www.opencontrail.org/wp-content/uploads/2017/04/AAEAAQAAAAAAAAm9AAAAJDIwMDFhYWI3LWI2YWYtNDVhNC1iOTMwLTFiNGNjODZkYTdhZg.png"><img decoding="async" class="aligncenter wp-image-7460" src="http://www.opencontrail.org/wp-content/uploads/2017/04/AAEAAQAAAAAAAAm9AAAAJDIwMDFhYWI3LWI2YWYtNDVhNC1iOTMwLTFiNGNjODZkYTdhZg.png" alt="" width="651" height="350" data-id="7460" /></a></p>
+<p>OpenContrail has solidified its position as the top SDN and network automation solution for <a href="https://www.openstack.org/" target="_blank" rel="nofollow noopener">OpenStack</a>, and <a href="http://www.opencontrail.org/the-best-sdn-for-openstack-now-for-kubernetes/" target="_blank" rel="nofollow noopener">recently announced</a> it&#8217;s integration into <a href="https://kubernetes.io/" target="_blank" rel="nofollow noopener">Kubernetes (K8s)</a> and thus <a href="https://www.openshift.com/" target="_blank" rel="nofollow noopener">OpenShift</a> (recent versions are powered by Kubernetes.) What does this mean for the organization mapping out their cloud infrastructure architecture?</p>
+<h3>VMware -&gt; OpenStack -&gt; Kubernetes</h3>
+<p>At this juncture in cloud adoption, service providers and enterprises alike are defining their ever evolving stacks. The emergence of containers has changed the game &#8211; changing the conversation from &#8220;OpenStack or Kubernetes?&#8221; to &#8220;OpenStack and Kubernetes.&#8221; In many cases VMware is still in the mix somewhere. The combination of these platforms allows an organization to select the best hosting platform for each workload, based on it&#8217;s own unique characteristics:</p>
+<ul>
+<li>Aging monolithic application that will be deprecated in the next few years? Keep it where it is (VMware.)</li>
+<li>Distributed multi-tier web app? Perhaps OpenStack is a good candidate.</li>
+<li>Highly variable, net new microservices based application(s) &#8211; Kubernetes will allow the individual microservices to scale up and down independently of one another.</li>
+</ul>
+<p>While all of this choice provides flexibility, it introduces complexity &#8211; especially on the network with each of the three platforms with three different networking stacks.</p>
+<h3>How Contrail enables Successful Cloud Adoption</h3>
+<p>Introducing Contrail into a heterogeneous cloud/virtualization environment will help an organization move towards SDN adoption based on open standards. One SDN solution to manage them all! Furthermore, it isn&#8217;t realistic or likely for an organization to go from VMware to OpenStack to Kubernetes all at once &#8211; that is too much change to manage and it introduces risk. Because of it&#8217;s interoperability with all of these platforms, introducing Contrail will allow an organization to stitch together their virtualization/container platforms on their terms as their infrastructure evolves with the applications that sit atop it.</p>
+<p>Check out how Contrail integrates with VMware, OpenStack, Kubernetes and OpenShift:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2017/04/AAEAAQAAAAAAAA2YAAAAJDA1ZDg2MGU3LWU4OTAtNDA2NS1hMjJhLTgwMzVhZjM4ZmRiMQ.png"><img loading="lazy" decoding="async" class="size-full wp-image-7459 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2017/04/AAEAAQAAAAAAAA2YAAAAJDA1ZDg2MGU3LWU4OTAtNDA2NS1hMjJhLTgwMzVhZjM4ZmRiMQ.png" alt="" width="960" height="458" data-id="7459" /></a></p>
+<ul>
+<li><a href="http://www.opencontrail.org/integrating-vmware-esxi-with-openstack-opencontrail/" target="_blank" rel="nofollow noopener">Integrating VMware ESXi with OpenStack, OpenContrail</a></li>
+<li><a href="http://www.juniper.net/techpubs/en_US/contrail2.2/topics/task/configuration/vcenter-integration-vnc.html" target="_blank" rel="nofollow noopener">Installing Contrail with VMware vCenter</a></li>
+<li><a href="http://www.opencontrail.org/opencontrail-kubernetes-integration/" target="_blank" rel="nofollow noopener">OpenContrail Kubernetes Integration</a></li>
+<li><a href="https://www.youtube.com/user/OpenContrail" target="_blank">Video Demo: OpenContrail integration with OpenShift, Kubernetes</a></li>
+</ul>
+<h3>3 ways to get Getting Started with OpenContrail</h3>
+<ul>
+<li>Try it yourself! &#8211; <a href="http://www.opencontrail.org/opencontrail-quick-start-guide/" target="_blank" rel="nofollow noopener">OpenContrail Quick Start Guide</a> (Software <em>Installation guide</em> for <em>OpenContrail)</em></li>
+<li>Try OpenContrail Sandbox &#8211; <a href="http://www.opencontrail.org/sandbox/" target="_blank" rel="nofollow noopener">The Contrail Sandbox</a> is a cloud based testing environment that can help you evaluate Contrail Networking product on our infrastructure free of cost</li>
+<li><a href="http://mailto:gsullivan@juniper.net/" target="_blank" rel="nofollow noopener">Let&#8217;s Chat &#8211; Shoot me an email!</a></li>
+</ul>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Automating Contrail Cloud Solution</title>
+		<link>https://tungsten.io/automating-contrail-cloud-solution/</link>
+		
+		<dc:creator><![CDATA[Ramanathan Sethuraman]]></dc:creator>
+		<pubDate>Mon, 09 Jan 2017 00:03:24 +0000</pubDate>
+				<category><![CDATA[Automation]]></category>
+		<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Network Services]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7279</guid>
+
+					<description><![CDATA[Executive summary: Contrail Cloud solution is an open cloud network automation product that uses software-defined networking (SDN) technology to orchestrate the creation of virtual networks with high scalability. It exposes a set...]]></description>
+										<content:encoded><![CDATA[<h3>Executive summary:</h3>
+<p>Contrail Cloud solution is an open cloud network automation product that uses software-defined networking (SDN) technology to orchestrate the creation of virtual networks with high scalability. It exposes a set of REST APIs for northbound interaction with cloud orchestration tools, as well as other applications. Contrail Cloud solution has multiple components like Contrail controller, Openstack controller and vRouters.</p>
+<p>This product creates Virtual Machines on the compute nodes, attach Virtual Machine to the virtual network and connect the Virtual Machine to the storage.</p>
+<p>This Document gives details on REST APIs to automate the following,</p>
+<ul>
+<li>Verifying hypervisor status</li>
+<li>Create Virtual Machine or delete Virtual Machine</li>
+<li>Create virtual Networks</li>
+<li>Attach Virtual Machine to virtual network</li>
+<li>Verifying Virtual Machine status</li>
+<li>Get information about existing Virtual Machines</li>
+</ul>
+<h3>Description:</h3>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2017/01/Automating_Contrail_Cloud_Platform_Image1.jpg"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-7280" src="http://www.opencontrail.org/wp-content/uploads/2017/01/Automating_Contrail_Cloud_Platform_Image1.jpg" alt="" width="459" height="433" data-id="7280" /></a></p>
+<p>In contrail cloud solution Openstack server is responsible for creation of Virtual Machines.Openstack</p>
+<p>server has inventory of all the Hypervisors.When a VM creation is requested through openstack Horizon GUI or through RESTAPI commands,NOVA component in openstack controller will connect to the Hypervisor (which has sufficient resources to create VM) and request for VM creation.</p>
+<p>After VM is created, NEUTRON component in Openstack controller will connect to the Contrail controller and request for attaching the VM to the specefic Virtual Network.Contrail controller will then connect to the vrouter in the  Hypervisor (through XMPP protocol) and request for routing instance creation for the specefic virtual network.The same sequence operation repeated for each VM creation.</p>
+<p>When the VMs are created on multiple hypervisors.They exchange routes between them.Then MPLS-OVER-GRE/MPLS-OVER-UDP Tunnels created between them.</p>
+<p>RESTAPIs can be used for automating VM creation, VM deletion and other operations described.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2017/01/Automating_Contrail_Cloud_Platform_Image2.jpg"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-7281" src="http://www.opencontrail.org/wp-content/uploads/2017/01/Automating_Contrail_Cloud_Platform_Image2.jpg" alt="" width="696" height="492" data-id="7281" /></a></p>
+<p>This picture shows the implementation details of Contrail cloud solution.In this topology PE2 &amp; PE3 will be acting as local Datacenter gateway.PE1 will be the remote Datacenter gateway.</p>
+<p>All compute nodes, controllers are attached to IP fabric.The IP Fabric is not aware of the virtual Networks to which the virtual machines are attached.There is no need for the IP fabric to know virtual network details.Between PE2 (&amp;PE3) and compute nodes and between the compute nodes TUNNEL overlays is implemented.So all traffic between compute nodes to PE2/PE3 or between compute nodes will be encapsulated with TUNNEL header.IP fabric is aware of the IP addresses present in the Tunnel header(as these IP addresses are part of underlay/IP fabric network.</p>
+<p>Contrail controllers will be managing the compute nodes (vRouters) using XMPP.PE2 &amp;PE3  will talk to Contrail controllers with BGP.The vRouters in contrail cloud will act similar to PE router in L3 VPN environment.</p>
+<p>When a VM in a vRouter need to send traffic to VM in another vRouter in the same datacenter,</p>
+<p>the source vRouter will encapsulate the packets with Tunnel header and then forward it to the IP fabric.After the destination vRouter receives the packet it will decapsulate the packets and forward it to the VM.</p>
+<p>When vRouter need to send traffic to vRouters in another datacenter it will encapulate packets with Tunnel header and forward it to PE2 or PE3.PE2 or PE3 will decapsulate the MPLS-OVER-UDP header and then encapsulate it with MPLS headers and forward it to PE1.PE1 decapsulate MPLS header and forward the packets to the node in remote Datacenter.</p>
+<h3>Automating Contrail/Openstack Controller:</h3>
+<p>This section gives details on Contrail/Openstack controller Automation.A sample perl code with RESTAPI details given for each operations like virtual network creation,VM creation,VM deletion etc..Perl module LWP::UserAgent and use JSON qw( decode_json encode_json) should be sourced for this.</p>
+<h4>Virtual Machine creation:</h4>
+<p><strong>OpenStack Token-id and Tenant id:</strong></p>
+<p>This section gives details on automating VM creation.Before starting VM creation we need to get the token-id and tenant id from the openstack controller.This token id is required to execute any operational commands in the openstack controller.Tenant id is required to find the right openstack project.The sample code given below gives details on this . The Openstack component keystone provides this token-id.</p>
+<p>Keystone is the identity service used by OpenStack for authentication (authN) and high-level authorization (authZ). It currently supports token-based authN and user-service authorization.</p>
+<p>In this sample code “$OS_tenant_name” is the project name.This name can be found on openstack Horizon GUI(identity-&gt;Projects).Project name is required to find the correct tenant id.The “$CMDpath” shows  the syntax of RESTAPI command to get token-id from openstack controller.The tenant id and token id collected here will be used in next steps.</p>
+<pre><span style="font-family: 'courier new', courier;">my openstack_ip = ‘1.1.1.1’;
+      	     	my  $KEYSTONEport     =  "5000";               
+        		my $OS_tenant_name = "PROJECTNAME";
+        		my $OS_user = "admin";
+        		my $OS_password = ‘xxxxxx’;
+                 	my $CMDpath= "/v2.0/tokens";
+        	my $APIport=$KEYSTONEport;
+        	my $url= "http://".$openstack_ip.":".$APIport.$CMDpath;
+             my $body =
+        	{
+               	"auth"   =&gt;
+                      	   {
+                         	       "tenantName"  =&gt; "$OS_tenant_name",
+                               	 "passwordCredentials" =&gt;
+                                                {
+                                              	  "username"  =&gt; "$OS_user",
+                                              	  "password"  =&gt; "$OS_password"
+                                                }
+                          }                     
+         };               
+        	my $request  = HTTP::Request-&gt;new( POST =&gt; $url );
+        	my $bjson = encode_json $body;
+        	$request-&gt;content_type("application/json");
+        	$request-&gt;authorization_basic( "$OS_user", "$OS_password" );
+        	$request-&gt;content($bjson);
+        	my $http = LWP::UserAgent-&gt;new-&gt;request($request);
+        	my @y = $http-&gt;{_content};
+        	my $mes         = JSON::decode_json($y[0]);
+         
+        	my $token_id = $mes-&gt;{'access'}{'token'}{'id'};
+        	my $token_exp = $mes-&gt;{'access'}{'token'}{'expires'};
+        	my $tenant_id = $mes-&gt;{'access'}{'token'}{'tenant'}{'id'};
+        	print("\n\n *******  token_id is $token_id and token_exp is $token_exp and tenant_id is $tenant_id ******* \n\n");</span></pre>
+<p><strong>Verifying Hypervisor status:</strong></p>
+<p>Before going to next step we need to verify the status of compute nodes(Hypervisors).Before creating the VM,the Hypervisors should be Up and running.The RESTAPI command &#8220;/v1.1/&#8221;.$tenant_id.&#8221;/os-services&#8221; provides the status of the hypervisors.This is equivalent to “nova service-list command(the output given below).</p>
+<pre><span style="font-family: 'courier new', courier;">my $NOVAport         =  "8774";
+       $CMDpath= "/v1.1/".$tenant_id."/os-services";
+        $APIport=$NOVAport;
+        $url= "http://".$cont_ip.":".$APIport.$CMDpath;
+        $request  = HTTP::Request-&gt;new( GET =&gt; $url );
+        $request-&gt;header('content-type' =&gt; 'application/json');
+        $request-&gt;header('x-auth-token' =&gt; $token_id);
+        $http = LWP::UserAgent-&gt;new-&gt;request($request);
+        @y = $http-&gt;{_content};
+        print Dumper($http);    
+        $mes         = JSON::decode_json($y[0]);
+        my $len = @{$mes-&gt;{"services"}};          
+        my %server_to_netaddr_hash;
+        my %test;
+        my $servername;
+        my $state;
+        my $status; 
+        my $hostcount=0;
+        for (my $x = 0; $x&lt; $len ; ++$x) { $servername = $mes-&gt;{"services"}[$x]{"host"};
+                        if( ($servername =~/vmg\d+/) || ($servername =~/vm\d+/) ) {
+	        $state = $mes-&gt;{"services"}[$x]{"state"};
+                         my $status = $mes-&gt;{"services"}[$x]{"status"};
+                         if ($state ne "up" || $status ne "enabled") {
+        print("\n\n *******  status or state of host $servername is not correct.The state is $state and status is $status ******* \n\n");
+         return JT::FALSE;
+                        }
+        print ("\n\n *******  status or state of the compute node $servername is correct The state is $state and status is $status ******* \n\n");
+                    $hostcount++;
+
+                   }
+	}
+
+root@server01:~# nova service-list
++----+------------------+--------------+----------+---------+-------+----------------------------+-----------------+
+| Id | Binary           | Host         | Zone     | Status  | State | Updated_at                 | Disabled Reason |
++----+------------------+--------------+----------+---------+-------+----------------------------+-----------------+
+| 1  | nova-scheduler   | server1 | internal | enabled | up    | 2016-12-09T21:32:39.000000 | -               |
+| 2  | nova-console     |  server1 | internal | enabled | up    | 2016-12-09T21:32:42.000000 | -               |
+| 3  | nova-consoleauth | server1 | internal | enabled | up    | 2016-12-09T21:32:42.000000 | -               |
+| 4  | nova-conductor   | server1 | internal | enabled | up    | 2016-12-09T21:32:38.000000 | -               |
+| 6  | nova-compute     | vm6          | nova     | enabled | up    | 2016-12-09T21:32:38.000000 | -               |
+| 7  | nova-compute     | vm7          | nova     | enabled | up    | 2016-12-09T21:32:35.000000 | -               |
+| 8  | nova-compute     | vm8          | nova     | enabled | up    | 2016-12-09T21:32:38.000000 | -               |
+| 9  | nova-compute     | vm9          | nova     | enabled | up    | 2016-12-09T21:32:33.000000 | -               |
+| 10 | nova-compute     | vm10         | nova     | enabled | up    | 2016-12-09T21:32:41.000000 | -               |
+| 11 | nova-compute     | vm11         | nova     | enabled | up    | 2016-12-09T21:32:41.000000 | -               |
+| 12 | nova-compute     | vm12         | nova     | enabled | up    | 2016-12-09T21:32:33.000000 | -               |
+| 13 | nova-compute     | vm13         | nova     | enabled | up    | 2016-12-09T21:32:37.000000 | -               |
+| 14 | nova-compute     | vm14         | nova     | enabled | up    | 2016-12-09T21:32:41.000000 | -               |
+| 15 | nova-compute     | vm15         | nova     | enabled | up    | 2016-12-09T21:32:39.000000 | -               |
+| 16 | nova-compute     | vm16         | nova     | enabled | up    | 2016-12-09T21:32:42.000000 | -               |
+| 17 | nova-compute     | vm17         | nova     | enabled | up    | 2016-12-09T21:32:33.000000 | -               |
+| 18 | nova-compute     | vm18         | nova     | enabled | up    | 2016-12-09T21:32:40.000000 | -               |
++----+------------------+--------------+----------+---------+-------+----------------------------+-----------------+
+root@ server01:~# </span></pre>
+<p><strong>Creating Virtual Network:</strong></p>
+<p>The next step is to create virtual Network. Virtual network has to be created before creating VM.</p>
+<p>To create virtual Network the following information is required.</p>
+<ul>
+<li>Network segment address and netmask</li>
+<li>Gateway address</li>
+<li>Network name</li>
+<li>Route-target attached to this network</li>
+<li>Project name (collected from openstack horizon GUI)</li>
+<li>Token-id (as explained in previous step)</li>
+</ul>
+<p>To create virtual network ,the RESAPI command &#8220;/virtual-networks&#8221; is executed on the contrail controller.Port number 8082 is used for this.The correct project name should be added here where it says &#8220;PROJECTNAME&#8221;.”nova net-list” shows the network created as shown below.</p>
+<pre><span style="font-family: 'courier new', courier;">$netname="net$i";
+		$cont_ip=”1.1.1.1”;
+		$target="target:64512:$value";
+		$gateway="100.$n.$m.1";
+		$pool = "100.$n.$m.0";
+       		 $CMDpath = "/virtual-networks";
+        		$APIport="8082";
+       		 $url= "http://".$cont_ip.":".$APIport.$CMDpath;
+          		$body =
+              		{
+               			"virtual-network"=&gt;
+                 			  {
+                  				 "parent_type"=&gt; "project",
+                 				  "fq_name"=&gt; [
+                             			 "default-domain",
+                              			 "PROJECTNAME",
+                              			  	$netname ],
+
+                    			"route_target_list"=&gt;
+                               		 {
+                                			 "route_target"=&gt; [
+								$target
+							      ]
+				  },
+
+				"network_ipam_refs"=&gt; [{
+                                         					  "attr"=&gt; {
+                                                 				   	  "ipam_subnets"=&gt; [{
+                                                                 				     "subnet"=&gt; {
+                                                                                	  	 "gateway_ip" =&gt; $gateway,
+                                                                                 		 "ip_prefix"=&gt; $pool,
+                                                                                 		"ip_prefix_len"=&gt; 24}}]},
+                                          					  "to"=&gt; [
+                                                				     	"default-domain",
+                                                    				     	"default-project",
+                                                      				 "default-network-ipam"]}]}
+            			   };
+
+		$request  = HTTP::Request-&gt;new( POST =&gt; $url );
+        		$bjson = encode_json $body;
+       	 	$request-&gt;content_type("application/json");
+       	 	$request-&gt;header('x-auth-token' =&gt; $token_id);
+       	 	$request-&gt;content($bjson);
+        		$http = LWP::UserAgent-&gt;new-&gt;request($request);
+
+root@server1:~# nova net-list
++--------------------------------------+-------------------------+------+
+| ID                                   | Label                   | CIDR |
++--------------------------------------+-------------------------+------+
+| 363b4323-69d3-404a-b7b2-6587b4507479 | net6                    | None |
+| 274b0b81-52be-48f9-8888-0c6be1d910c2 | net9                    | None |
+| 72f26b86-f0bf-44c0-aadb-5f94c34b5eeb | net4                    | None |
+| 72be70e4-c0d8-46ce-be8c-33d80f095c5a | default-virtual-network | None |
+| aa0f528e-f276-4d5a-a02f-bb02f7289c9c | net10                   | None |
+| ce1e9035-9c4d-49de-a867-2f4a27bd5691 | net13                   | None |
+| b8599366-f1c0-4c2f-bab2-34533902466d | net12                   | None |
+| b8543c48-872d-4e25-9de7-658f304c032a | net7                    | None |
+| 34168c65-a4c8-439a-beda-3c7a1f380176 | net3                    | None |
+| 7a244326-fc1e-416c-98fb-cc073f8762a0 | test                    | None |
+| e7b4e0b9-6fc9-497f-9899-4e2aa344a97b | net11                   | None |
+| d669a490-53f4-4fac-bed2-b79fe8538eae | __link_local__          | None |
+| f5307953-9490-4da6-b365-7173035d69d3 | net5                    | None |
+| a9eac604-a634-43df-8b9f-ea7258941313 | net8                    | None |
+| a8363373-548d-4f78-8366-bd0277be8b80 | net1                    | None |
+| c4d757cb-d2ab-4334-8e80-029cb0c31610 | ip-fabric               | None |
+| fac53b08-59e7-45c6-9ef6-6007160979bb | net2                    | None |
++--------------------------------------+-------------------------+------+
+root@ server1:~# </span></pre>
+<p><strong>VM Flavor id/VM Image id/virtual Network id Details:</strong></p>
+<p>Before creating the VM we need the following information.There are separate RESTAPI commands available to collect each of this information.</p>
+<ul>
+<li>VM name</li>
+<li>VM flavor id</li>
+<li>VM image id</li>
+<li>Virtual network id</li>
+<li>VM security group</li>
+<li>Tenant name( or project name)</li>
+</ul>
+<p><strong>VM Flavor id:</strong></p>
+<p>To get the VM flavor id the following code is used.The RESTAPI command &#8220;/v1.1/&#8221;.$tenant_id.&#8221;/flavors&#8221; returns the VM flavor id.This RESTAPI command is handled by NOVA component of OpenStack controller.</p>
+<pre><span style="font-family: 'courier new', courier;">My $NOVAport         =  "8774";
+           My $openstack_ip        =”1.1.1.1”;
+	my $headers = "{ 'Content-Type' : 'application/json', 'Accept'  :  'application/json' , 'ser-Agent'  : 'python-novaclient', 'X-Auth-Token'   :    $token_id}";
+        $CMDpath= "/v1.1/".$tenant_id."/flavors";
+        $APIport=$NOVAport;
+        $url= "http://". $openstack_ip.":".$APIport.$CMDpath;
+        $request  = HTTP::Request-&gt;new( GET =&gt; $url );
+        $request-&gt;header('content-type' =&gt; 'application/json');
+        $request-&gt;header('x-auth-token' =&gt; $token_id);
+        $http = LWP::UserAgent-&gt;new-&gt;request($request);
+        @y = $http-&gt;{_content};
+        $mes         = JSON::decode_json($y[0]);
+        my $len = @{$mes-&gt;{'flavors'}};
+        my $flavor_id;
+        for (my $x = 0; $x&lt; $len ; ++$x) { if ($mes-&gt;{'flavors'}[$x]{'name'} eq $add_vm_flavor) {
+                        $flavor_id = $mes-&gt;{'flavors'}[$x]{'id'};
+                        last;
+                }
+        }
+        print ( "\n\n *******  image id for $add_vm_flavor is $flavor_id ******* \n\n");</span></pre>
+<p><strong>VM image id:</strong></p>
+<p>To get the image id this code is used.The RESTAPI command &#8220;/v1.1/&#8221;.$tenant_id.&#8221;/images&#8221;returns the image id.This RESTAPI command is handled by NOVA component of openstack controller.</p>
+<pre><span style="font-family: 'courier new', courier;">my $headers = "{ 'Content-Type' : 'application/json', 'Accept'  :  'application/json' , 'ser-Agent'  : 'python-novaclient', 'X-Auth-Token'   :    $token_id}";
+        $CMDpath= "/v1.1/".$tenant_id."/images";
+        $APIport=$NOVAport;
+        $url= "http://".$cont_ip.":".$APIport.$CMDpath;
+        $request  = HTTP::Request-&gt;new( GET =&gt; $url );
+        $request-&gt;header('content-type' =&gt; 'application/json');
+        $request-&gt;header('x-auth-token' =&gt; $token_id);
+        $http = LWP::UserAgent-&gt;new-&gt;request($request);
+        @y = $http-&gt;{_content};
+        $mes         = JSON::decode_json($y[0]);
+        my $len = @{$mes-&gt;{'images'}};
+        my $image_id;
+        for (my $x = 0; $x&lt; $len ; ++$x) { if ($mes-&gt;{'images'}[$x]{'name'} eq $add_vm_image ) {
+                        $image_id = $mes-&gt;{'images'}[$x]{'id'};
+                        last;
+                }
+        }
+        print ("\n\n *******  image id for $add_vm_image is $image_id ******* \n\n");</span></pre>
+<p><strong>Virtual Network ID:</strong></p>
+<p>The RESTAPI command &#8220;/v1.1/&#8221;.$tenant_id.&#8221;/os-tenant-networks&#8221; returns the virtual network id.This RESTAPI command is handled by NOVA component of openstack controller.The network id of the networkname “$add_vm_net” can be identified by this code.</p>
+<pre><span style="font-family: 'courier new', courier;">my $headers = "{ 'Content-Type' : 'application/json', 'Accept'  :  'application/json' , 'ser-Agent'  : 'python-novaclient', 'X-Auth-Token'   :    $token_id}";
+        $CMDpath= "/v1.1/".$tenant_id."/os-tenant-networks";
+        $APIport=$NOVAport;
+        $url= "http://".$cont_ip.":".$APIport.$CMDpath;
+        $request  = HTTP::Request-&gt;new( GET =&gt; $url );
+        $request-&gt;header('content-type' =&gt; 'application/json');
+        $request-&gt;header('x-auth-token' =&gt; $token_id);
+        $http = LWP::UserAgent-&gt;new-&gt;request($request);
+        @y = $http-&gt;{_content};
+        $mes         = JSON::decode_json($y[0]);
+        my $len = @{$mes-&gt;{'networks'}};
+        my $network_id;
+        for (my $x = 0; $x&lt; $len ; ++$x) { if ($mes-&gt;{'networks'}[$x]{'label'} eq $add_vm_net ) {
+                        $network_id = $mes-&gt;{'networks'}[$x]{'id'};
+                        last;
+                }
+        }
+        print ("\n\n *******  networks id for $add_vm_net is $network_id ******* \n\n");</span></pre>
+<p><strong>VM creation:</strong></p>
+<p>Now we reached the final step to create VM.The RESTAPI &#8220;/v1.1/&#8221;.$tenant_id.&#8221;/servers&#8221; creates the VM.</p>
+<p>The VM name,image id ,flavor id and security group name are required to run this RESTAPI command.</p>
+<pre><span style="font-family: 'courier new', courier;">$headers = "{ 'Content-Type' : 'application/json', 'Accept' : 'application/json', 'ser-Agent' : 'python-novaclient', 'X-OpenStack-Nova-API-Version': '2.11', 'X-Auth-Token' : $token_id}";
+        $CMDpath = "/v1.1/".$tenant_id."/servers";
+        $APIport=$NOVAport;
+        $url= "http://".$cont_ip.":".$APIport.$CMDpath;
+        $body =
+        {       "server" =&gt;
+                         {
+                                "name" =&gt; "$add_vm_name",
+                                "imageRef" =&gt; "$image_id",
+                                "flavorRef" =&gt; "$flavor_id",
+                                "max_count" =&gt; 1,
+                                "min_count" =&gt; 1,
+                                "networks" =&gt; [{
+                                                "uuid" =&gt; "$network_id"
+                                }],
+                                "security_groups" =&gt; [{
+                                                "name" =&gt; "$add_vm_secgroup"
+                                }]
+                        }
+        };
+        $request  = HTTP::Request-&gt;new( POST =&gt; $url );
+        $bjson = encode_json $body;
+        $request-&gt;content_type("application/json");
+        $request-&gt;header('x-auth-token' =&gt; $token_id);
+        $request-&gt;content($bjson);
+        $http = LWP::UserAgent-&gt;new-&gt;request($request);</span></pre>
+<p><strong>VM status verification:</strong></p>
+<p>After creating VM the status of the VM can be verified by the RESTAPI command &#8220;/v1.1/&#8221;.$tenant_id.&#8221;/servers/detail&#8221;.This sample code gives details on how to verify status of a VM.It checks for vm_state to be active and power_state to be 1.This RESTAPI command is equivalent to nova list command shown below.</p>
+<pre><span style="font-family: 'courier new', courier;">$CMDpath= "/v1.1/".$tenant_id."/servers/detail";
+        $APIport=$NOVAport;
+        $url= "http://".$cont_ip.":".$APIport.$CMDpath;
+        $request  = HTTP::Request-&gt;new( GET =&gt; $url );
+        $request-&gt;header('content-type' =&gt; 'application/json');
+        $request-&gt;header('x-auth-token' =&gt; $token_id);
+        $http = LWP::UserAgent-&gt;new-&gt;request($request);
+        @y = $http-&gt;{_content};
+        print Dumper($http);
+        $mes         = JSON::decode_json($y[0]);
+        my $len = @{$mes-&gt;{"servers"}};
+        my %server_to_netaddr_hash;
+        my %test;
+        my $servername;
+        my $state;
+        my $status;
+        my $test;
+        my $vmcount=0;
+
+	$status = $mes-&gt;{"servers"}[$x]{"OS-EXT-STS:vm_state"};
+          $state = $mes-&gt;{"servers"}[$x]{"OS-EXT-STS:power_state"};
+          if ( $status ne "active" || $state != 1) {
+        print ("\n\n *******  status/state  of the vm $test is not correct.The current  status is $status and state is $state ******* \n\n");
+         return JT::FALSE;
+                        }
+        print ("\n\n *******  status and state  of the vm $test is correct The current status is $status and state is $state******* \n\n");
+
+                     }
+
+root@ server1:~# nova list
++--------------------------------------+--------+--------+------------+-------------+--------------------+
+| ID                                   | Name   | Status | Task State | Power State | Networks           |
++--------------------------------------+--------+--------+------------+-------------+--------------------+
+| 935bb371-9fb6-4d1e-92b6-239db2d28a2a | nvmg1  | ACTIVE | -          | Running     | net1=100.0.4.252   |
+| 69b9dca5-a4e0-4168-8363-b87caa65e741 | nvmg10 | ACTIVE | -          | Running     | net10=100.0.13.252 |
+| 176f9b62-1561-41e9-9c2f-de86f76afffd | nvmg11 | ACTIVE | -          | Running     | net11=100.0.14.252 |
+| 15eff465-7251-4de8-b371-cc85790ca9a6 | nvmg12 | ACTIVE | -          | Running     | net12=100.0.15.252 |
+| c1be1e20-4969-4911-8fdf-81e09c0023e9 | nvmg13 | ACTIVE | -          | Running     | net13=100.0.16.252 |
+| 449becae-69b7-4f57-947a-74d78875ef39 | nvmg2  | ACTIVE | -          | Running     | net2=100.0.5.252   |
+| db8c1d5b-5990-458f-bfcb-13a7d2bdbbda | nvmg3  | ACTIVE | -          | Running     | net3=100.0.6.252   |
+| a7ceee7e-539a-4398-a768-209db065a71c | nvmg4  | ACTIVE | -          | Running     | net4=100.0.7.252   |
+| 43713c5b-c262-4e56-9a77-ffde968f448e | nvmg5  | ACTIVE | -          | Running     | net5=100.0.8.252   |
+| 8010f8a0-56d8-4904-a747-8e5dfa1f8ac8 | nvmg6  | ACTIVE | -          | Running     | net6=100.0.9.252   |
+| 0c57cb78-922b-4f76-98d5-f962f08a85a6 | nvmg7  | ACTIVE | -          | Running     | net7=100.0.10.252  |
+| 47ca6427-c898-4d71-9c2d-61ffa533e31e | nvmg8  | ACTIVE | -          | Running     | net8=100.0.11.252  |
+| a08bbaac-3ed9-4cf6-ad6c-def7484a35e4 | nvmg9  | ACTIVE | -          | Running     | net9=100.0.12.252  |
++--------------------------------------+--------+--------+------------+-------------+--------------------+
+</span></pre>
+<p>The status of the VMs can also be checked in OPENSTACK horizon GUI as shown below.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2017/01/Automating_Contrail_Cloud_Platform_Image3.jpg"><img loading="lazy" decoding="async" class="alignnone wp-image-7282" src="http://www.opencontrail.org/wp-content/uploads/2017/01/Automating_Contrail_Cloud_Platform_Image3.jpg" width="1059" height="600" data-id="7282" /></a></p>
+<p><strong>VM Deletion:</strong></p>
+<p>Before start deleting the VMs we need to get the token-id from the Openstack server using the procedure given earlier.In addition to this we need to know the VM id.To get the VM id we can use the RESTAPI &#8220;/v2/&#8221;.$tenant_id.&#8221;/servers?name=&#8221;.$del_vm_name as shown below.</p>
+<pre><span style="font-family: 'courier new', courier;">my $headers = "{ 'Content-Type' : 'application/json', 'Accept'  :  'application/json' , 'ser-Agent'  : 'python-novaclient', 'X-Auth-Token'   :    $token_id}";
+        $CMDpath= "/v2/".$tenant_id."/servers?name=".$del_vm_name;
+        $APIport=$NOVAport;
+        $url= "http://".$cont_ip.":".$APIport.$CMDpath;
+        $request  = HTTP::Request-&gt;new( GET =&gt; $url );
+        $request-&gt;header('content-type' =&gt; 'application/json');
+        $request-&gt;header('x-auth-token' =&gt; $token_id);
+        $http = LWP::UserAgent-&gt;new-&gt;request($request);
+        @y = $http-&gt;{_content};
+        $mes         = JSON::decode_json($y[0]);
+        #print "\n\n\n\n\n\---------------\n\n\n\n";
+        #print Dumper($mes);
+        my $del_vm_id = $mes-&gt;{'servers'}[0]{'id'};
+        print ( "\n\n *******  delte vm instance id is $del_vm_id ******* \n\n");</span></pre>
+<p>After getting the VM ID we can use the RESTAPI &#8220;/v1.1/&#8221;.$tenant_id.&#8221;/servers/&#8221;.$del_vm_id.&#8221;/action&#8221; to delete the VM.This is equivlant to “nova delete &lt;vm name/vm id&gt;” command.</p>
+<pre><span style="font-family: 'courier new', courier;">$headers = "{ 'Content-Type' : 'application/json', 'Accept'  :  'application/json' , 'ser-Agent'  : 'python-novaclient', 'X-Auth-Token'   :    $token_id}";
+        $CMDpath = "/v1.1/".$tenant_id."/servers/".$del_vm_id."/action";
+        $APIport=$NOVAport;
+        $url= "http://".$cont_ip.":".$APIport.$CMDpath;
+        $body =
+        {
+               "forceDelete"   =&gt;  "null"
+        };
+        $request  = HTTP::Request-&gt;new( POST =&gt; $url );
+        $bjson = encode_json $body;
+        $request-&gt;content_type("application/json");
+        $request-&gt;header('x-auth-token' =&gt; $token_id);
+        $request-&gt;content($bjson);
+        $http = LWP::UserAgent-&gt;new-&gt;request($request);</span></pre>
+<h3>Conclusion</h3>
+<p>This document gives details on CONTRAIL cloud solution implementation. It also explains the RESTAPI details for  VM creation,VM deletion etc..</p>
+<h3>APPENDIX</h3>
+<p>The section give details on other RESTAPI commands.</p>
+<h4>Deleting virtual network:</h4>
+<p>This command is executed on the contrail controller. To run this command we need virtual network id.</p>
+<pre><span style="font-family: 'courier new', courier;">$CMDpath = "/virtual-network/";
+        $APIport="8082";
+        $url= "http://".$cont_ip.":".$APIport.$CMDpath.$netid;
+        $request  = HTTP::Request-&gt;new( DELETE =&gt; $url );
+       $request-&gt;header('content-type' =&gt; 'application/json');
+        $request-&gt;header('x-auth-token' =&gt; $token_id);
+        $http = LWP::UserAgent-&gt;new-&gt;request($request);</span></pre>
+<p>To get the virtual network id this RESTAPI is used.The “uuid” returns the network id.</p>
+<pre><span style="font-family: 'courier new', courier;">$CMDpath = "/virtual-networks";
+        $APIport="8082";
+        $url= "http://".$cont_ip.":".$APIport.$CMDpath;
+        $request  = HTTP::Request-&gt;new( GET =&gt; $url );
+        $request-&gt;content_type("application/json");
+        $request-&gt;header('x-auth-token' =&gt; $token_id);
+        $http = LWP::UserAgent-&gt;new-&gt;request($request);
+         print Dumper $http;
+          @y = $http-&gt;{_content};
+        $mes         = JSON::decode_json($y[0]);
+          $len = @{$mes-&gt;{"virtual-networks"}};
+        my @network_list;
+        my $i=1;
+        for (my $x = 0; $x&lt; $len ; ++$x) { if ($mes-&gt;{"virtual-networks"}[$x]{"fq_name"}[2]  =~ /net\d+/) {
+                push (@network_list, $mes-&gt;{"virtual-networks"}[$x]{"uuid"});
+                $i++;
+            }
+          }</span></pre>
+<p>To delete the ports which map virtual network with the VM we need to use the RESTAPI given below.</p>
+<p>We need portid to run this command.</p>
+<pre><span style="font-family: 'courier new', courier;">My $NEUTRONport      =  "9696";
+         $CMDpath = "/v2.0/ports/";
+        $APIport=$NEUTRONport;
+        $url= "http://".$cont_ip.":".$APIport.$CMDpath.$portid.".json";
+        $request  = HTTP::Request-&gt;new( DELETE =&gt; $url );
+       $request-&gt;header('content-type' =&gt; 'application/json');
+        $request-&gt;header('x-auth-token' =&gt; $token_id);
+        $http = LWP::UserAgent-&gt;new-&gt;request($request);</span></pre>
+<p>The port id can be found from,</p>
+<pre><span style="font-family: 'courier new', courier;">$CMDpath= "/v2.0/ports.json";
+        $APIport=$NEUTRONport;
+        $url= "http://".$cont_ip.":".$APIport.$CMDpath;
+        $request  = HTTP::Request-&gt;new( GET =&gt; $url );
+        $request-&gt;header('content-type' =&gt; 'application/json');
+        $request-&gt;header('x-auth-token' =&gt; $token_id);
+        $http = LWP::UserAgent-&gt;new-&gt;request($request);
+        @y = $http-&gt;{_content};
+        $mes         = JSON::decode_json($y[0]);
+        my $len = @{$mes-&gt;{"ports"}};
+        my @port_list;
+        for (my $x = 0; $x&lt; $len ; ++$x) { push (@port_list, $mes-&gt;{"ports"}[$x]{"id"});
+        }</span></pre>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Openness: The key to innovation and interoperability at OpenStack Summit Barcelona</title>
+		<link>https://tungsten.io/openness-the-key-to-innovation-and-interoperability-at-openstack-summit-barcelona/</link>
+		
+		<dc:creator><![CDATA[Amy Wong]]></dc:creator>
+		<pubDate>Tue, 01 Nov 2016 22:00:12 +0000</pubDate>
+				<category><![CDATA[OpenStack]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7247</guid>
+
+					<description><![CDATA[Last week, we had a blast attending OpenStack Summit, and we hope you did too! One theme that we saw, and resonated with, from day one of the summit was...]]></description>
+										<content:encoded><![CDATA[<p>Last week, we had a blast attending OpenStack Summit, and we hope you did too! One theme that we saw, and resonated with, from day one of the summit was Interoperability. <strong>The basis of OpenStack, and its interoperability, is openness: open source, open community, open development, and open design. OpenContrail, a plug-in for OpenStack Neutron, shares this foundational element.</strong></p>
+<p><span class="lia-inline-image-display-wrapper lia-image-align-left"><span class="lia-message-image-wrapper"><img decoding="async" class="lia-media-image ng-scope ng-isolate-scope alignright" title="file9-1.jpeg" src="https://jnet.i.lithium.com/t5/image/serverpage/image-id/15271i6BA47403648240DE/image-size/small?v=v2&amp;px=200" alt="OCUG Barcelona 2016" /></span></span></p>
+<p><span class="lia-inline-image-display-wrapper lia-image-align-left"><span class="lia-inline-image-caption">OCUG Barcelona 2016</span></span>During OpenStack Summit, we hosted OpenContrail user group. Edgar Magana, member of OpenStack board of directors and OpenContrail Advisory Board member, kicked off the session for an open discussion with six OpenContrail users: Deutsche Telekom, Verizon Enterprise Solutions, Orange Business Services, Avi Networks, Netronome and AppOrbit. Each company talked about how OpenContrail enables their different use cases – from agile telco cloud for SaaS, to application transformation with containers. <strong>With over 200 attendees, the resonating lesson was that OpenContrail is incredibly flexible and mature enough to enable transformation, whether users are dealing with bare-metal servers, virtual machines, or containers, in public, private, or hybrid cloud environments.</strong></p>
+<p>In other words, OpenContrail is one networking controller that can work seamlessly across heterogeneous networking environments. In <a href="https://www.youtube.com/watch?v=sFkoK5CmjUY" target="_blank" rel="nofollow noopener noreferrer">Rudra Rugge’s talk at the OpenStack Demo Theater</a>, he gives a captivating explanation of the OpenContrail solution (which provides security in addition to seamless interoperability with any compute vehicle and underlay, analytics and troubleshooting capabilities, single-pane-of-glass management, etc. ).</p>
+<div class="video-embed-center video-embed"><iframe loading="lazy" class="embedly-embed" src="https://cdn.embedly.com/widgets/media.html?src=https%3A%2F%2Fwww.youtube.com%2Fembed%2FsFkoK5CmjUY%3Ffeature%3Doembed&amp;url=http%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DsFkoK5CmjUY&amp;image=https%3A%2F%2Fi.ytimg.com%2Fvi%2FsFkoK5CmjUY%2Fhqdefault.jpg&amp;key=fad07bfa4bd747d3bdea27e17b533c0e&amp;type=text%2Fhtml&amp;schema=youtube" width="600" height="380" frameborder="0" scrolling="no" allowfullscreen="allowfullscreen" data-mce-fragment="1"></iframe></div>
+<p>We had several other demos at our booth, which we’ll be releasing shortly, in addition to the OpenContrail user group footage. We’ll post them to <a href="http://www.opencontrail.org/videos/" target="_blank" rel="nofollow noopener noreferrer">OpenContrail.com/videos</a>. Don’t forget to follow us <a href="https://twitter.com/OpenContrail" target="_blank" rel="nofollow noopener noreferrer">@OpenContrail</a> for updates!</p>
+<p>If you’re hoping to try OpenContrail for yourself after hearing from other users, play with it <a href="http://www.opencontrail.org/" target="_blank" rel="nofollow noopener noreferrer">here</a> risk-free!</p>
+<p>The OpenStack Foundation has recorded and shared all breakout sessions and posted them on their <a href="https://www.youtube.com/user/OpenStackFoundation/videos?view=0&amp;sort=dd&amp;shelf_id=1" target="_blank" rel="nofollow noopener noreferrer">YouTube channel</a>. The list of our sessions can be found <a href="https://forums.juniper.net/t5/SDN-and-NFV-Era/Juniper-OpenStack-Summit-Barcelona-2016/ba-p/297369" target="_blank">here</a>.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>OpenContrail Connecting the Hybrid Cloud</title>
+		<link>https://tungsten.io/opencontrail-connecting-the-hybrid-cloud/</link>
+		
+		<dc:creator><![CDATA[Amy Wong]]></dc:creator>
+		<pubDate>Thu, 01 Sep 2016 18:34:21 +0000</pubDate>
+				<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Containers]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7193</guid>
+
+					<description><![CDATA[Embracing Virtual Machines, Containers, and Bare-Metal Servers to Implement Hybrid Cloud The cloud is made up of multiple disparate elements such as bare metal servers, VMs, and containers. So, how...]]></description>
+										<content:encoded><![CDATA[<div>
+<h2>Embracing Virtual Machines, Containers, and Bare-Metal Servers to Implement Hybrid Cloud</h2>
+<div id="schema-videoobject" class="video-container"><iframe loading="lazy" src="https://www.youtube.com/embed/3SgDcIFiZQI?rel=0&amp;showinfo=0" width="550" height="340" frameborder="0" allowfullscreen="allowfullscreen"></iframe></div>
+<p>The cloud is made up of multiple disparate elements such as bare metal servers, VMs, and containers. So, how should our customers manage all these different technologies?</p>
+</div>
+<p>As companies move towards the cloud, the migration won’t be completely seamless, or happen overnight. For the foreseeable future, the cloud is made up of both physical and virtual elements, like bare-metal servers, virtual machines, containers residing in both public and private clouds. With so many elements, Edgar and Jakub need something that enables applications to communicate, no matter what computing environment they’re in. Jakub stresses that the most critical point when trying to connect these disparate elements, is usually networking.</p>
+<p>Edgar, Jakub, and Lachlan turned to OpenContrail to connect the cloud’s different elements through a single pane of glass for provisioning across different compute vehicles. Then, they wanted to keep pushing the flexibility of OpenContrail. At OpenStack Summit Vancouver in May 2015, our OCAB members wanted to see if they could integrate OpenContrail with Kubernetes, a Container management tool. Weeks later, <a href="http://www.opencontrail.org/opencontrail-kubernetes-integration/" target="_blank" rel="nofollow noopener noreferrer">a demo was ready</a>. This is what happens when you have a technology that’s flexible enough to adopt other technologies. Learn more about how this community drives innovation at lightning speed by watching the video.</p>
+<p>The rest of this video series will be published weekly. Subscribe to Juniper’s YouTube channel using the below button to get notified about the new episodes every week. Stay tuned for Episode 4!</p>
+<p><iframe loading="lazy" id="fr" src="https://www.youtube.com/subscribe_widget?p=JuniperNetworks" width="300" height="75" frameborder="0" scrolling="no" data-mce-fragment="1"></iframe></p>
+<p>In case you missed it, here’s <a href="https://www.youtube.com/watch?v=YKWqgDcu2iY" target="_blank" rel="nofollow noopener noreferrer">Episode 1</a>, on the importance of the open source community for OpenContrail, and <a href="https://www.youtube.com/watch?v=SbZhexWj35g" target="_blank" rel="nofollow noopener noreferrer">Episode 2</a>, on how OpenContrail implements secure and automated virtual overlay networks.</p>
+<p>To learn more,<br />
+Try out <a href="http://www.opencontrail.org/" target="_blank" rel="nofollow noopener noreferrer">OpenContrail</a> for yourself risk-free today!<br />
+Download Contrail source code: <a href="https://github.com/Juniper/contrail-controller" target="_blank" rel="nofollow noopener noreferrer">https://github.com/Juniper/contrail-controller</a><br />
+Download Contrail package: <a href="http://www.juniper.net/support/downloads/?p=contrail#sw" target="_blank" rel="nofollow noopener noreferrer">http://www.juniper.net/support/downloads/?p=contra<wbr />il#sw</a></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>How the OpenContrail Community is Accelerating our SDN Future</title>
+		<link>https://tungsten.io/how-the-opencontrail-community-is-accelerating-our-sdn-future/</link>
+		
+		<dc:creator><![CDATA[Amy Wong]]></dc:creator>
+		<pubDate>Fri, 19 Aug 2016 18:02:20 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Use Case]]></category>
+		<category><![CDATA[OpenSource]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7169</guid>
+
+					<description><![CDATA[Recently, OpenContrail Advisory Board (OCAB) members Edgar Magana, Cloud Operations Architect at Workday, Jakub Pavlik, CTO of tcpCloud, and Lachlan Evenson got together to discuss the state of the OpenContrail...]]></description>
+										<content:encoded><![CDATA[<p><iframe loading="lazy" src="https://www.youtube.com/embed/YKWqgDcu2iY?rel=0&amp;showinfo=0" width="560" height="315" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p>Recently, <a href="http://www.opencontrail.org/opencontrail-advisory-board-ocab/" target="_blank" rel="nofollow noopener noreferrer">OpenContrail Advisory Board</a> (OCAB) members Edgar Magana, Cloud Operations Architect at Workday, Jakub Pavlik, CTO of tcpCloud, and Lachlan Evenson got together to discuss the state of the OpenContrail project as well as the fast-moving cloud industry. OCAB members guide the product now and into the future, and use it in their respective networks. In this 5-episode video series called <strong>Past, Present &amp; Future: Bridging the Boundaries of Digital World &amp; Beyond</strong>, Edgar, Jakub, and Lachlan share how important the OpenContrail community is, why they choose OpenContrail, how they solve ever-evolving networking problems, and what the future looks like in the SDN space.</p>
+<p>When &#8220;SDN&#8221; became as hot as Pokemon Go five years ago, everyone knew it had great promise, but no one knew what to do with it. With the urge to create an open architecture that worked for all of their customers, Edgar, Jakub and Lachlan met in 2012 with the same desire to shift towards a software-centric network, but relied on each other and the community to test, implement, and troubleshoot their respective issues. With so many different technologies to test, and so many nuances in each unique implementation, OCAB members leveraged the community learn from each other and replicate success.</p>
+<p>Find out in this first episode, how the community has flourished over the last few years, and what considerations OCAB members and their respective organizations took before adopting OpenContrail.</p>
+<p>This video series will be published one episode at a time every Thursday. Subscribe to Juniper’s YouTube channel using the below button to get notified about the new episodes every week. Stay tuned for Episode 2!</p>
+<p><iframe loading="lazy" id="fr" src="https://www.youtube.com/subscribe_widget?p=JuniperNetworks" width="300" height="75" frameborder="0" scrolling="no" data-mce-fragment="1"></iframe></p>
+<p>To learn more:</p>
+<p>Try out <a href="http://www.opencontrail.org/" target="_blank" rel="nofollow noopener noreferrer">OpenContrail</a> for yourself risk-free today!</p>
+<p>Download Contrail source code: <a href="https://github.com/Juniper/contrail-controller" target="_blank" rel="nofollow noopener noreferrer">https://github.com/Juniper/contrail-controller</a><br />
+Download Juniper&#8217;s Contrail package: <a href="http://www.juniper.net/support/downloads/?p=contrail#sw" target="_blank" rel="nofollow noopener noreferrer">http://www.juniper.net/support/downloads/?p=contra<wbr />il#sw</a><br />
+Don’t forget to follow us on our <a href="https://twitter.com/OpenContrail" target="_blank" rel="nofollow noopener noreferrer">Twitter</a>, <a href="https://www.facebook.com/opencontrail/?fref=ts" target="_blank" rel="nofollow noopener noreferrer">Facebook</a> and <a href="https://www.linkedin.com/groups/6517760" target="_blank" rel="nofollow noopener noreferrer">LinkedIn</a> social media sites.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>BGPaaS in OpenStack &#8211; Kubernetes with Calico in OpenStack with OpenContrail</title>
+		<link>https://tungsten.io/bgpaas-in-openstack-kubernetes-with-calico-in-openstack-with-opencontrail/</link>
+		
+		<dc:creator><![CDATA[Jakub Pavlik]]></dc:creator>
+		<pubDate>Fri, 12 Aug 2016 17:43:37 +0000</pubDate>
+				<category><![CDATA[BGPaaS]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[Orchestration]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7160</guid>
+
+					<description><![CDATA[Note: This is a guest blog from tcpCloud, authored by Marek Celoud &#38; Jakub Pavlik (tcp cloud engineers). To see the original post,click here. It’s been a while since new version...]]></description>
+										<content:encoded><![CDATA[<p><em>Note: This is a guest blog from tcpCloud, authored by Marek </em>Celoud<em> &amp; Jakub Pavlik (</em>tcp<em> cloud engineers). To see the original post,<a href="http://www.tcpcloud.eu/en/blog/2016/08/12/bgpaasinopenstack/">click here</a>.</em></p>
+<p>It’s been a while since new version 3.X of OpenContrail was released and we have not got so much time to take a good look at new features of this most deployed SDN/NFV with OpenStack. This blog post therefore brings our perspective on specific use cases and how to use BGP as a Service in OpenStack private cloud.</p>
+<p>BGPaaS together with configurable ECMP, Intel DPDK and SRIOV support are key features of the new release. All of these features show that OpenContrail became the number one SDN/NFV solution for telco and service providers. Simply because telcos as Deutsche Telekom, France Telekom and AT&amp;T pick this as a solution for the SDN. The last named has significantly influenced features in the last OpenContrail release. To explain the reasons for these requirements and decisions you can watch Austin OC meetup videos, where AT&amp;T has explained their <a class="reference external" href="https://www.youtube.com/watch?v=WOWvsQwZdrQ">use cases</a> and why they like MPLS L3VPN approach.</p>
+<p>tcp cloud tries to bring the real use cases not only for telco VNF for running virtual router appliances. Therefore we try to show you another interesting use case for the global community, where BGPaaS is very important part not only for VNF. We deployed Kubernetes with Calico on top of OpenStack with OpenContrail and redistributed routes through the BGPaaS.</p>
+<div id="bgp-as-a-service" class="section">
+<h2>BGP as a Service</h2>
+<p>The BGP as a service (BGPaaS) allows a guest virtual machine (VM) to place routes in its own virtual routing and forwarding (VRF) instance using BGP. It has been implemented according to the following <a class="reference external" href="https://blueprints.launchpad.net/juniperopenstack/+spec/bgp-as-a-service">blueprint</a>.</p>
+<p>However, why do we need BGP route redistribution within Contrail? By default, virtual machines have only directly connected routes and default route pointing to Contrail IRB interface where all unknown traffic is being sent to. Then the route lookup occurs in that particular VRF. Normally, in VRF are only /32 routes of virtual machines and sometimes routes which are propagated via BGP from Cloud GW. When no match in route fits the lookup, the traffic is discarded.</p>
+<p>You can run into several issues with this default behavior. For example Calico does not use overlay tunnels between its containers/VMs so the traffic goes transparently through your infrastructure. That means all networking devices between Calico nodes must be aware of Calico routes, so the traffic can be routed properly.</p>
+<p>I’ll explain this issue on one of our use cases &#8211; Kubernetes with Calico. When we operate Kubernetes on top of OpenStack with OpenContrail, the problem occurs after the first container is started. Calico allocates /26 route for Kubernetes node, where the container started. This route is distributed via BGP to all the other Kubernetes nodes. But when you try to access this container, traffic goes to particular Kubernetes node. The problem is with traffic that is going back. By default there is Reverse Path Forwarding enabled, so when the traffic goes back, Contrail VRF discards traffic. The only solution prior OpenContrail 3.x release was to use static routes. This is not very agile since subnets for Calico nodes are generated dynamically and in larger scale it would be really painful to maintain all of these. In 3.x release we can use BGPaaS or disable Reverse Path Forwarding. In this blog we want to show how BGPaaS is implemented, therefore we leave Reverse Path Forwarding enabled. More detail explanation is in next section.</p>
+<p>Standard BGPaaS use cases are following:</p>
+<ul class="simple">
+<li>Dynamic Tunnel Insertion Within a Tenant Overlay</li>
+<li>Dynamic Network Reachability of Applications</li>
+<li>Liveness Detection for High Availability</li>
+</ul>
+<p>More information about this feature in general is available at <a class="reference external" href="http://www.juniper.net/techpubs/en_US/contrail3.0/topics/concept/bgp-as-a-service-overview.html">link</a>.</p>
+</div>
+<div id="kubernetes-with-calico-in-openstack-with-opencontrail" class="section">
+<h2>Kubernetes with Calico in OpenStack with OpenContrail</h2>
+<p>The motivation for this use case is not just to use BGPaaS feature for NFV/VNF service providers, but also for standard private clouds as well, where Kubernetes on OpenStack is deployed. Kubernetes can be used with OpenContrail plugin especially in mixing VMs with containers (multi-cloud networking <a class="reference external" href="http://www.tcpcloud.eu/en/blog/2016/02/12/kubernetes-and-openstack-multi-cloud-networking/">blog</a>). However, Overlay on top of Overlay is not really good idea from a performance point of view. OpenContrail <a href="http://www.opencontrail.org/newsletter-and-mailing-lists/">community </a>has already discussed working on reusing underlay vRouter instead of vRouter in vRouter, which is a little bit similar to BGPaaS feature of propagation routing information from VMs to underlay.</p>
+<p>Based on this we decided to use Calico as network plugin for Kubernetes, which uses <a class="reference external" href="http://bird.network.cz/">BIRD</a> routing engine without any overlay technology.</p>
+<p>Let’s explain the BGPaaS solution. Since Calico is using Bird, you can create BGP peering directly from each Calico node to OpenContrail. However, this full-mesh approach does not scale very well. So we decided to create two VMs with Bird service and use them as a route reflectors for Calico. Then we use these VMs as BGP peers with OpenContrail. The route exchange will be further described in following architecture section.</p>
+<div id="lab-architecture" class="section">
+<h3>Lab Architecture</h3>
+</div>
+</div>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/08/bgpasaservice-calico-opencontrail.png"><img loading="lazy" decoding="async" class="alignnone wp-image-7161" src="http://www.opencontrail.org/wp-content/uploads/2016/08/bgpasaservice-calico-opencontrail.png" alt="bgpasaservice-calico-opencontrail" width="867" height="600" data-id="7161" /></a></p>
+<div id="lab-architecture" class="section">
+<p>Let’s have a closer look on this figure. The red and black lines stand for BGP peering between our Bird route reflectors (RTR01 and RTR02) VMs and OpenContrail controllers. When you want to use BGPaaS you first create a peering with .1 which stands for default gateway (peering with ntw01) and .2 (peering with ntw02) which stands for DNS (both are OpenContrail interfaces), but the actual peering is done with Controllers and .1 .2 are just BGP proxies. There is also BGP peering between all Calico nodes and RTR01,02 router reflectors. Last peering is default XMPP connections between Contrail controllers and vRouters which is used to learn and distribute route information between vRouters.</p>
+<p>Now we have all information about connections in our use-case and we can now explain Control plane workflow on yellow balls. We start with creating a pod on Kubernetes master (1). Kubernetes scheduler scheduled the pod on Kubernetes Node02 and Calico allocated /26 network for that node as well as /32 route for pod (2). This /26 is distributed via BGP to route reflectors (3). Route reflectors then send the update to other Kubernetes nodes as well as to Contrail Controllers (4). Right now, all Kubernetes nodes are aware of this subnet and would be able to route traffic between them, but there is a need for route information in VRF as well. That is achieved in step (5), where route is distributed via XMPP to vRouters. Now we have dynamic Kubernetes with Calico environment on top of OpenStack with OpenContrail.</p>
+</div>
+<div id="configuration-and-outputs" class="section">
+<h3>Configuration and Outputs</h3>
+<p>First we had to setup and configure BIRD service on OpenStack VMs RTR01 and RTR02. It peers with default gateway and DNS server, which is propagated through vRouter to OpenContrail controls. Then it peers with each Calico node and second route reflector RTR01.</p>
+<div class="highlight-bash">
+<div class="highlight">
+<pre><span class="c1">#Peering with default GW/vRouter</span>
+    protocol bgp contrail1 <span class="o">{</span>
+            debug all<span class="p">;</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.1 as 64512<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+            source address 172.16.10.115<span class="p">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">#Peering with default DNS server/vRouter</span>
+    protocol bgp contrail2 <span class="o">{</span>
+            debug all<span class="p">;</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.2 as 64512<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">#Peering with calico nodes</span>
+    protocol bgp calico_master <span class="o">{</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.111 as 64512<span class="p">;</span>
+            rr client<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+    <span class="o">}</span>
+
+    protocol bgp calico_node1 <span class="o">{</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.112 as 64512<span class="p">;</span>
+            rr client<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+    <span class="o">}</span>
+
+    protocol bgp calico_node2 <span class="o">{</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.113 as 64512<span class="p">;</span>
+            rr client<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">#Peering with second route reflector BIRD</span>
+    protocol bgp rtr1 <span class="o">{</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.114 as 64512<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+    <span class="o">}</span></pre>
+</div>
+</div>
+<p>After that we configured a new BGPaaS in OpenContrail UI under <strong>Configure -&gt; Services -&gt; BGPaaS</strong>.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/08/create_bgp_opencontrail.png"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-7162" src="http://www.opencontrail.org/wp-content/uploads/2016/08/create_bgp_opencontrail.png" alt="create_bgp_opencontrail" width="700" height="386" data-id="7162" /></a></p>
+</div>
+<p>Then we can see <em>Established</em> BGP peerings (172.16.10.114 and .115) under peers in Control Nodes.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/08/peering_opencontrail.png"><img loading="lazy" decoding="async" class="alignnone wp-image-7163" src="http://www.opencontrail.org/wp-content/uploads/2016/08/peering_opencontrail.png" alt="peering_opencontrail" width="952" height="400" data-id="7163" /></a></p>
+<p>Calico uses by default bgp full mesh topology. We had to disable full mesh and configure only peerings with route reflectors (RTR01 and RTR02).</p>
+<div class="highlight-bash">
+<div class="highlight">
+<pre>root@kubernetes-node01:~# calicoctl bgp node-mesh off
+root@kubernetes-node01:~# calicoctl bgp peer add 172.16.10.114 as 64512
+root@kubernetes-node01:~# calicoctl bgp peer add 172.16.10.115 as 64512
+</pre>
+</div>
+</div>
+<p>Calico status shows <em>Established</em> peerings with our RTR01 and RTR02.</p>
+<div class="highlight-bash">
+<div class="highlight">
+<pre>root@kubernetes-node01:~# calicoctl status
+calico-node container is running. Status: Up <span class="m">44</span> hours
+Running felix version 1.4.0rc2
+
+IPv4 BGP status
+IP: 172.16.10.111    AS Number: <span class="m">64512</span> <span class="o">(</span>inherited<span class="o">)</span>
++---------------+-----------+-------+----------+-------------+
+<span class="p">|</span>  Peer address <span class="p">|</span> Peer <span class="nb">type</span> <span class="p">|</span> State <span class="p">|</span>  Since   <span class="p">|</span>     Info    <span class="p">|</span>
++---------------+-----------+-------+----------+-------------+
+<span class="p">|</span> 172.16.10.114 <span class="p">|</span>   global  <span class="p">|</span>   up  <span class="p">|</span> 13:14:54 <span class="p">|</span> Established <span class="p">|</span>
+<span class="p">|</span> 172.16.10.115 <span class="p">|</span>   global  <span class="p">|</span>   up  <span class="p">|</span> 07:26:10 <span class="p">|</span> Established <span class="p">|</span>
++---------------+-----------+-------+----------+-------------+
+</pre>
+</div>
+</div>
+<p>Finally we can see part of VRF routing table for our virtual network on compute 01. It shows direct interface for RTR01 VM (172.16.10.114/32) and tunnel to RTR02 (172.16.10.115/32). Subnet 192.168.156.192/26 is for Kubernetes pods and it is dynamically propagated by Calico through BIRD route reflectors.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/08/vrouter_routing_table_opencontrail.png"><img loading="lazy" decoding="async" class="alignnone wp-image-7164" src="http://www.opencontrail.org/wp-content/uploads/2016/08/vrouter_routing_table_opencontrail.png" alt="vrouter_routing_table_opencontrail" width="1007" height="600" data-id="7164" /></a></p>
+<h2>Conclusion</h2>
+<p>In this blog post we showed how easy it is to use BGPaaS in OpenContrail and how you can look at general use case of running Kubernetes on top of OpenStack. All OpenContrail installations can be automated via Heat templates, but contrail-heat resources for BGPaaS require some modifications to work properly.</p>
+<p>&nbsp;</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

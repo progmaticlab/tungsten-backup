@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Legacy Migration Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/legacy-migration/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/legacy-migration/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Mon, 11 Jul 2016 22:17:57 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>Legacy Migration Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/legacy-migration/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Migrating a legacy cloud infrastructure to Contrail SDN based infrastructure</title>
+		<link>https://tungsten.io/migrating-a-legacy-cloud-infrastructure-to-contrail-sdn-based-infrastructure/</link>
+		
+		<dc:creator><![CDATA[Vivekananda Shenoy]]></dc:creator>
+		<pubDate>Mon, 11 Jul 2016 22:17:57 +0000</pubDate>
+				<category><![CDATA[Gateway]]></category>
+		<category><![CDATA[Legacy Migration]]></category>
+		<category><![CDATA[Network Services]]></category>
+		<category><![CDATA[Routing/Switching]]></category>
+		<category><![CDATA[SDN]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7114</guid>
+
+					<description><![CDATA[This app-note describes a mechanism to migrate a legacy cloud-based infrastructure which could use a L2 based network segmentation using technologies such as Linux Bridge or OVS to a Contrail...]]></description>
+										<content:encoded><![CDATA[<p>This app-note describes a mechanism to migrate a legacy cloud-based infrastructure which could use a L2 based network segmentation using technologies such as Linux Bridge or OVS to a Contrail SDN based cloud infrastructure. Both Legacy and Contrail clusters can co-exist side by side such that a single L3 subnet can span across both legacy and contrail clusters. This facilitates the cloud administrators to perform a phase wise migration of virtual workloads from legacy to contrail cluster. In addition to this both Legacy and Contrail workloads also have a public internet access.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/07/migration-to-EVPN_blogpost_image1.png"><img fetchpriority="high" decoding="async" class="wp-image-7115 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2016/07/migration-to-EVPN_blogpost_image1.png" alt="migration to EVPN_blogpost_image1" width="650" height="349" data-id="7115" /></a></p>
+<h3>Proposed solutions:</h3>
+<p>Idea is to use separate logical L2 &amp; L3 SDN gateways to interconnect the Legacy cloud and the Contrail cloud and provide public internet access from both the clouds. L2 gateway PE will be peered to Contrail Controller for EVPN address family and will hence exchange the MAC address routes of the VMs. Also the the PE-CE link of the EVPN routing-instance is connected to the legacy cloud L2 fabric. This will make the Contrail Virtual Network to be stretched to the legacy cloud. 2 EVPN PE’s are installed for redundancy and the PE Ethernet interface on both the PE’s are configured as single homed Ethernet segment (ESI 0).  Spanning tree will be used to break the Layer 2 loop formed by the L2 Network and the redundant EVPN PE’s. In this case, only one L3-SDN GW is shown. Adding the second L3-GW for the redundancy doesn’t add much complexity and is just a matter of configuring BGP between Contrail and the second L3-GW.</p>
+<p><strong>Note: The L2 &amp; L3 gateway functionalities can be easily collapsed 2 physical MX routers. This can be done either by using 2 separate routing instances for EVPN and L3VPN and separate PE-CE link towards Legacy cloud (EVPN L2 ifl) and the public network (L3VPN L3 ifl). In this example, separate routers are used for ease of illustration.</strong></p>
+<p>The public access from the legacy cloud VM is through the L3-GW configured on the IRB (VLAN) interface aggregation switch (192.168.1.250 in this example) whereas for the VMs running on the Contrail cloud the traffic from the VM towards the public internet is through the default route originated from MX L3GW VRF. This default route actually will redirect the traffic to inet.0 on the MX L3-GW for internet access.</p>
+<p>&nbsp;</p>
+<p>Return traffic from the internet always will be routed to the legacy and the contrail cloud via the legacy L3 GW configured on the aggregation switch. The interface between qfx5100-sw1 and mx-l3gw is configured as a L3 interface and provides the return path from the public network to the legacy cloud and the contrail cloud.</p>
+<h3><strong>Example setup: Verification:</strong></h3>
+<p><strong>Contrail Virtual Network configuration and vrouter routing table entries</strong></p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/07/migration-to-EVPN_blogpost_image2.png"><img decoding="async" class="aligncenter wp-image-7116" src="http://www.opencontrail.org/wp-content/uploads/2016/07/migration-to-EVPN_blogpost_image2.png" alt="migration to EVPN_blogpost_image2" width="800" height="437" data-id="7116" /></a></p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/07/migration-to-EVPN_blogpost_image3.png"><img decoding="async" class="aligncenter wp-image-7117" src="http://www.opencontrail.org/wp-content/uploads/2016/07/migration-to-EVPN_blogpost_image3.png" alt="migration to EVPN_blogpost_image3" width="800" height="358" data-id="7117" /></a></p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/07/migration-to-EVPN_blogpost_image4.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-7118" src="http://www.opencontrail.org/wp-content/uploads/2016/07/migration-to-EVPN_blogpost_image4.png" alt="migration to EVPN_blogpost_image4" width="801" height="309" data-id="7118" /></a></p>
+<p>&nbsp;</p>
+<p><strong>Verify traffic flow from Legacy VM to Contrail VM and Internet:</strong></p>
+<pre><span style="font-family: 'courier new', courier;">
+root@legacy-vm:~# ip route
+<mark>default via 192.168.1.250 dev p514p1 </mark>
+10.84.0.0/16 via 10.87.65.126 dev p514p2
+10.87.0.0/16 via 10.87.65.126 dev p514p2
+10.87.65.0/25 dev p514p2  proto kernel  scope link  src 10.87.65.2
+<mark>192.168.1.0/24 dev p514p1  proto kernel  scope link  src 192.168.1.111</mark>
+root@legacy-vm:~#
+root@legacy-vm:~# ping 8.8.8.8 -c 2
+PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
+64 bytes from 8.8.8.8: icmp_seq=1 ttl=63 time=0.398 ms
+64 bytes from 8.8.8.8: icmp_seq=2 ttl=63 time=0.412 ms
+ 
+
+--- 8.8.8.8 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 999ms
+rtt min/avg/max/mdev = 0.398/0.405/0.412/0.007 ms
+root@legacy-vm:~# ping 192.168.1.4 -c 2
+PING 192.168.1.4 (192.168.1.4) 56(84) bytes of data.
+64 bytes from 192.168.1.4: icmp_seq=1 ttl=62 time=1.34 ms
+64 bytes from 192.168.1.4: icmp_seq=2 ttl=62 time=0.384 ms
+ 
+
+--- 192.168.1.4 ping statistics ---
+2 packets transmitted, 2 received, 0% packet loss, time 1001ms
+rtt min/avg/max/mdev = 0.384/0.863/1.342/0.479 ms
+root@legacy-vm:~# arp
+Address                  HWtype  HWaddress           Flags Mask            Iface
+<mark>192.168.1.4              ether   02:9a:66:37:06:5c   C                     p514p1</mark>
+<mark>192.168.1.250            ether   54:4b:8c:a8:8c:00   C                     p514p1</mark>
+10.87.65.126             ether   30:7c:5e:0f:8f:c0   C                     p514p2
+root@legacy-vm:~#</span></pre>
+<p><strong>On the MX L2 &amp; L3 gateways:</strong></p>
+<p><strong>mx-l2-gw1 (connected to qfx5100-sw1 whose interface is in spanning blocked state)</strong></p>
+<pre><span style="font-family: 'courier new', courier;">
+root@mx-l2-gw1# run show bridge mac-table
+
+ 
+
+MAC flags       (S -static MAC, D -dynamic MAC, L -locally learned, C -Control MAC
+O -OVSDB MAC, SE -Statistics enabled, NM -Non configured MAC, R -Remote PE MAC)
+
+ 
+
+Routing instance : contrail_l2_4_VN-1
+Bridging domain : bd-4, VLAN : none
+MAC                 MAC      Logical                Active
+address             flags    interface              source
+02:9a:66:37:06:5c   D        vtep.32769             10.87.65.1
+54:4b:8c:a0:cc:82   D        vtep.32770             172.16.101.3
+90:e2:ba:aa:81:20   D        vtep.32770             172.16.101.3
+ 
+
+[edit]
+
+root@mx-l2-gw1#</span></pre>
+<p><strong>mx-l2-gw1 (connected to qfx5100-sw2 whose interface is in spanning forwarding state)</strong></p>
+<pre><span style="font-family: 'courier new', courier;">
+root@mx-l2-gw2# run show bridge mac-table
+
+ 
+
+MAC flags       (S -static MAC, D -dynamic MAC, L -locally learned, C -Control MAC
+O -OVSDB MAC, SE -Statistics enabled, NM -Non configured MAC, R -Remote PE MAC)
+
+ 
+
+Routing instance : contrail_l2_4_VN-1
+Bridging domain : bd-4, VLAN : none
+MAC                 MAC      Logical                Active
+address             flags    interface              source
+02:9a:66:37:06:5c   D        vtep.32769             10.87.65.1
+54:4b:8c:a0:cc:82   D        xe-0/0/1.0
+90:e2:ba:aa:81:20   D        xe-0/0/1.0
+
+[edit]
+
+root@mx-l2-gw2#</span></pre>
+<p><strong>mx-l3-gw</strong></p>
+<pre><span style="font-family: 'courier new', courier;">
+root@mx-l3-gw# run show route table contrail-l3_4_VN-1.inet.0
+
+ 
+
+contrail-l3_4_VN-1.inet.0: 3 destinations, 3 routes (3 active, 0 holddown, 0 hidden)
++ = Active Route, - = Last Active, * = Both
+
+ 
+0.0.0.0/0          *[Static/5] 02:48:06
+to table inet.0
+192.168.1.0/24     *[Static/5] 1d 08:30:30
+Discard
+192.168.1.4/32     *[BGP/170] 03:03:33, MED 100, localpref 200, from 10.87.65.1
+AS path: ?, validation-state: unverified
+&gt; via gr-0/0/0.32769, Push 16
+
+[edit]
+
+root@mx-l3-gw# run show route table inet.0 192.168.1.0/24
+inet.0: 10 destinations, 11 routes (10 active, 0 holddown, 0 hidden)
++ = Active Route, - = Last Active, * = Both
+
+ 
+192.168.1.0/24     *[Static/5] 07:59:03
+&gt; to 192.168.50.1 via xe-0/0/1.0
+ 
+
+[edit]
+
+root@mx-l3-gw#</span></pre>
+<p><strong>qfx5100-sw1</strong></p>
+<pre><span style="font-family: 'courier new', courier;">
+root@qfx5100-sw1# run show spanning-tree interface
+
+ 
+
+Spanning tree interface parameters for instance 0
+ 
+Interface                  Port ID    Designated         Designated         Port    State  Role
+port ID           bridge ID          Cost
+xe-0/0/42                 128:1095     128:1097  16384.544b8ca0cc82         2000    BLK    ALT
+xe-0/0/45                 128:1101     128:1101   8192.544b8ca88c02         2000    FWD    ROOT
+ 
+
+{master:0}[edit]
+
+root@qfx5100-sw1#</span></pre>
+<p><strong>qfx5100-sw2</strong></p>
+<pre><span style="font-family: 'courier new', courier;">
+root@qfx5100-sw2# run show spanning-tree interface
+
+ 
+Spanning tree interface parameters for instance 0
+ 
+Interface                  Port ID    Designated         Designated         Port    State  Role
+port ID           bridge ID          Cost
+xe-0/0/43                 128:1097     128:1097  16384.544b8ca0cc82         2000    FWD    DESG
+xe-0/0/44                 128:1099     128:1099   8192.544b8ca88c02         2000    FWD    ROOT
+ 
+
+{master:0}[edit]
+
+root@qfx5100-sw2#</span></pre>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

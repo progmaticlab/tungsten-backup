@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Mesos Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/mesos/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/mesos/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Thu, 18 May 2017 18:09:26 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>Mesos Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/mesos/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>OpenContrail integration with Mesos</title>
+		<link>https://tungsten.io/opencontrail-integration-with-mesos/</link>
+		
+		<dc:creator><![CDATA[Fawad Shaikh]]></dc:creator>
+		<pubDate>Thu, 18 May 2017 18:09:26 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Mesos]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7506</guid>
+
+					<description><![CDATA[Note: This blog is co&#8211;authored by Aniket Gawade, Praneet Bachheti and Fawad Shaikh from Juniper Networks. In this blog we’ll cover OpenContrail integration with Mesos. Mesos is a cluster management and orchestration...]]></description>
+										<content:encoded><![CDATA[<p>Note: This blog is <em>co</em>&#8211;<em>authored</em> by Aniket Gawade, Praneet Bachheti and Fawad Shaikh from Juniper Networks.</p>
+<p>In this blog we’ll cover OpenContrail integration with Mesos. Mesos is a cluster management and orchestration framework. It gives us the flexibility to write our own schedulers (frameworks) and then plug them into the cluster management aspect of Mesos by registering these frameworks with Mesos Master. Mesos master via offer mechanism gets the resource information from all the slaves.</p>
+<p>The following diagram lists the different components in a typical Mesos Architecture:</p>
+<p><img fetchpriority="high" decoding="async" class="aligncenter size-full wp-image-7508" src="http://www.opencontrail.org/wp-content/uploads/2017/05/mesos_architecture.png" alt="" width="632" height="465" data-id="7508" /></p>
+<p>In order understand the integration between contrail and Mesos, it’s important to understand how a common application comes up in Mesos today.</p>
+<ol>
+<li>Based on the type of framework, user will create an application template (json, yaml etc), which in most cases will have the following parameters
+<ol>
+<li>Name of the application (ID)</li>
+<li>Image name</li>
+<li>Network name</li>
+<li>Domain name</li>
+<li>Project name</li>
+</ol>
+</li>
+<li>The request is sent to a framework.</li>
+<li>Framework which is registered to Mesos master will validate the request</li>
+<li>Framework scheduler picks a compute node and forwards the request to Mesos Master</li>
+<li>Mesos Master sends the request to the scheduled slave agent which is running on the compute node</li>
+<li>Slave invokes Mesos executor which creates the environment and launches the application</li>
+</ol>
+<p>Having a general idea of the work flow, lets see what are the different components in the complete contrail-mesos architecture:</p>
+<ol>
+<li>Dockerized Contrail Components (Multiprocess containers):
+<ul>
+<li>Controller, Analytics, AnalyticsDB, vRouter-agent, Contrail-repo</li>
+</ul>
+</li>
+<li>Mesos-Components:
+<ul>
+<li>Master, Mesos Agent, Framework(Marathon, Hadoop, redis etc), Mesos executor</li>
+</ul>
+</li>
+<li>Contrail Mesos Components:
+<ul>
+<li>Contrail-CNI, Mesos Manager (containerized)</li>
+</ul>
+</li>
+</ol>
+<p><img decoding="async" class="aligncenter size-full wp-image-7507" src="http://www.opencontrail.org/wp-content/uploads/2017/05/OpenContrail_Mesos_Integration.png" alt="" width="855" height="469" data-id="7507" /></p>
+<p>Contrail Mesos workflow:</p>
+<ol>
+<li>Request to framework to create application A</li>
+<li>Request send from the framework scheduler to Mesos Master</li>
+<li>Master forwards the task request to a particular Mesos Slave. This slave was chosen by the framework scheduler</li>
+<li>Mesos Slave invokes Mesos executor which launches application A</li>
+<li>CNI plugin is invoked when Mesos Slave issues a task</li>
+<li>CNI plugin connects to the REST API of contrail Mesos Manager which sends the request to the API server for IP address, creating contrail objects</li>
+<li>CNI plugin connects to the REST API vRouter to plug container  in to vRouter</li>
+</ol>
+<p>The following video demonstrates the following:</p>
+<ol>
+<li>Create an application container via Mesos Marathon framework</li>
+<li>Contrail networking provides IP address to containers/applications</li>
+<li>Intra VN connectivity between Mesos applications</li>
+<li>Destroying of Mesos applications results in removal of open contrail objects</li>
+</ol>
+<p>&nbsp;</p>
+<p><iframe src="https://www.youtube.com/embed/AYmfy3dNjTg" width="560" height="315" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

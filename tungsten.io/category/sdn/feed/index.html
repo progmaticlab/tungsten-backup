@@ -1,0 +1,1218 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>SDN Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/sdn/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/sdn/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Tue, 25 Jul 2023 20:59:21 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>SDN Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/sdn/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Deploying a Kubernetes operator in OpenShift 4.x platform</title>
+		<link>https://tungsten.io/deploying-a-kubernetes-operator-in-openshift-4-x-platform/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Mon, 16 Aug 2021 14:54:00 +0000</pubDate>
+				<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenShift]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Use Case]]></category>
+		<category><![CDATA[CoreOS]]></category>
+		<category><![CDATA[Open Source]]></category>
+		<category><![CDATA[Tungsten Fabric]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8367</guid>
+
+					<description><![CDATA[This is a contributed blog from LF Networking Member CodiLime.&#160;Originally published here. Contrail-operator&#160;is a recently released open-source Kubernetes operator that implements Tungsten Fabric&#160; as a custom resource. Tungsten Fabric is...]]></description>
+										<content:encoded><![CDATA[<link rel="canonical" href="https://codilime.com/blog/deploying-a-kubernetes-operator-in-openshift-4-x-platform">
+
+
+<p><em><strong>This is a contributed blog from LF Networking Member CodiLime.&nbsp;<a href="https://codilime.com/blog/deploying-a-kubernetes-operator-in-openshift-4-x-platform" target="_blank" rel="noreferrer noopener">Originally published here</a></strong>.</em></p>
+
+
+
+<p><strong><a href="https://github.com/Juniper/contrail-operator">Contrail-operator</a>&nbsp;is a recently released open-source Kubernetes operator that implements Tungsten Fabric&nbsp; as a custom resource. Tungsten Fabric is an open-source Kubernetes-compatible, network virtualization solution for providing connectivity and security for virtual, containerized or bare-metal workloads. An operator needed to be adjusted to the OpenShift 4.x platform, which introduced numerous changes to its architecture compared with previous versions. In this blog post, you’ll read about three interesting use cases and their solutions. All of these solutions are a part of&nbsp;<a href="https://github.com/Juniper/contrail-operator/tree/master/deploy/openshift">contrail-operator public repository</a>.</strong></p>
+
+
+
+<h2 class="wp-block-heading">Use case 1: inject kernel in CoreOS with OverlayFS</h2>
+
+
+
+<p><a href="https://en.wikipedia.org/wiki/OpenShift">OpenShift</a>&nbsp;is a container platform designed by Red Hat. Its version 4.x is based on nodes that use&nbsp;<a href="https://en.wikipedia.org/wiki/Container_Linux">CoreOS</a>, an open-source operating system based on the Linux kernel. CoreOS has been designed specifically to allow changes in the system only when booting it for the first time. These changes are introduced using ignition configs—JSON files containing, for example, names of services, files or users to be created. When the OS is up and running, most of its settings can be seen in read-only mode and users are not allowed to modify system settings.</p>
+
+
+
+<p>The setup is presented in Figure 1:</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/c03564453aee495e0696081960dd4ff0399cbc73/dff79/img/codilime_desired_deployment_of_tf_with_an_openshift_setup.png" alt="Deployment of Tungsten Fabric with an Openshift setup"/></figure>
+
+
+
+<p><strong>Fig 1. The desired deployment of Tungsten Fabric with an OpenShift setup</strong></p>
+
+
+
+<p>In Tungsten Fabric, vRouter is injected into the system as a kernel module. In the contrail-operator (and also in the&nbsp;<a href="https://github.com/tungstenfabric/tf-ansible-deployer">tf-ansible-deployer</a>, effectively the operator’s predecessor) this is done by launching a container that injects this module into the system. With OpenShift, this task is handled by daemonSet, which launches a pod on every node. In such a pod, one of the initContainers (i.e. containers launched to perform a given operation only once and then shut down, thus allowing the proper containers to be launched) injects the kernel module into the system. Yet given the characteristics of the CoreOS, this operation cannot be performed because a container will inject a read-only kernel module to /lib/modules.</p>
+
+
+
+<p>Enter the solution to this challenge: overlayFS, which virtually merges the two directories:/lib/modules (read only) and /opt/modules (writable). Ignition config is now created, which will set OverlayFS /lib/modules with /opt/modules directories. The latter was accessible and it was possible to inject a kernel module there (see Figure 2). Such a solution did not make any difference from the perspective of the Tungsten Fabric Controller. Hence, it was not necessary to change anything in TF itself.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/69eb2300a7ad4c2deafbe9ef00fd48a64557b067/b684f/img/codilime_overlayfs_of_two_directories.png" alt="The OverlayFS of two directories"/></figure>
+
+
+
+<p><strong>Fig. 2 The OverlayFS of two directories</strong></p>
+
+
+
+<p>Ignition config looks like this:</p>
+
+
+
+<pre class="wp-block-code"><code>apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+ labels:
+   machineconfiguration.openshift.io/role: master
+ name: 02-master-modules
+spec:
+ config:
+   ignition:
+     version: 2.2.0
+   storage:
+     directories:
+       - filesystem: "root"
+         path: "/opt/modules"
+         mode: 0755
+       - filesystem: "root"
+         path: "/opt/modules.wd"
+         mode: 0755
+     files:
+       - filesystem: "root"
+         path: "/etc/fstab"
+         mode: 0644
+         contents:
+           source: "data:,overlay%20/lib/modules%20overlay%20lowerdir=/lib/modules,upperdir=/opt/modules,workdir=/opt/modules.wd%200%200"</code></pre>
+
+
+
+<p>Source:&nbsp;<a href="https://github.com/Juniper/contrail-operator/blob/master/deploy/openshift/openshift/99_master-kernel-modules-overlay.yaml">GitHub</a></p>
+
+
+
+<p>Ignition config creates two directories: /opt/modules, to inject modules, and /opt/modules.wd, a working directory. Next, in the /etc/fstab, the mount is defined:</p>
+
+
+
+<p><code>overlay /lib/modules overlay lowerdir=/lib/modules,upperdir=/opt/modules,workdir=/opt/modules.wd</code></p>
+
+
+
+<p>Interestingly, it is not a typical ignition config for CoreOS, but a custom resource from an OpenShift cluster—MachineConfig. It performs the same functions as ignition config but is also visible as a cluster resource and allows you to edit the config when the cluster is running. In this way, you can apply changes to the CoreOS node even after first boot, which is not usually supported by standard CoreOS-based deployments. This is a feature specific to OpenShift.</p>
+
+
+
+<h2 class="wp-block-heading">Use case 2: set nftables rules of CoreOS with ignition config</h2>
+
+
+
+<p>CoreOS uses nftables, a newer framework for packet management than iptables. With a normal system like RHEL8, this is still an iptables command-line tool but in its backend it uses nftables. The iptables syntax is converted into respective nftables commands in the backend, so you can still use classic iptables commands and nftables will be still properly configured. Of course, in the CoreOS there is no such tool as iptables, as nobody assumes that the rules for packet handling will be changed when the system is up and running.&nbsp;</p>
+
+
+
+<p>It is true that in one of the initContainers located in a vRouter configuration pod, an iptables tool is used to carry out several operations. But the container is based on RHEL7 which in turn uses iptables backend. It is worth noting that a CLI iptables tool can support backend with iptables or nftables, though this depends on the system’s backend in which it was compiled.</p>
+
+
+
+<p>To check what backend is used by iptables (CLI), just write the following command:&nbsp;<code>iptables --version</code>. If&nbsp;<code>(nftables)</code>&nbsp;is the reply, the tool supports nftables backend. If there is no such reply, it means that the tool supports iptables backend.&nbsp;</p>
+
+
+
+<p>Meanwhile, a container had a version without nftables, so it was impossible to establish rules using a container. Ignition configs helped solve this challenge. During the system boot, rules can be established using a native iptables tool:</p>
+
+
+
+<pre class="wp-block-code"><code>apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+ labels:
+   machineconfiguration.openshift.io/role: master
+ name: 10-master-iptables
+spec:
+ config:
+   ignition:
+     version: 2.2.0
+   systemd:
+     units:
+     - name: iptables-contrail.service
+       enabled: <strong>true</strong>
+       contents: |
+         &#91;Unit]
+         Description=Inserts iptables rules required by Contrail
+         After=syslog.target
+         AssertPathExists=/etc/contrail/iptables_script.sh
+ 
+         &#91;Service]
+         Type=oneshot
+         RemainAfterExit=yes
+         ExecStart=/etc/contrail/iptables_script.sh
+         StandardOutput=syslog
+         StandardError=syslog
+ 
+         &#91;Install]
+         WantedBy=basic.target
+   storage:
+     files:
+     - filesystem: root
+       path: /blog/etc/contrail/iptables_script.sh
+       mode: 0744
+       user:
+         name: root
+       contents:
+         # 'data:,' and URL encoded openshift-install/sources/iptables_script.sh
+         source: data:...,</code></pre>
+
+
+
+<p>The full version of the code can be found on&nbsp;<a href="https://github.com/Juniper/contrail-operator/blob/master/deploy/openshift/openshift/99_worker-iptables-machine-config.yaml">GitHub</a>.</p>
+
+
+
+<p>In this config a service is created and run as a oneshot script during the system boot. The script is then created on the path:&nbsp;<code>/etc/contrail/iptables_script.sh</code>. The full version of the script is available in the&nbsp;<a href="https://github.com/Juniper/contrail-operator/blob/master/deploy/openshift/sources/iptables_script.sh">GitHub repository</a>. Generally speaking, these are simple iptables commands setting up the resources needed to run Tungsten Fabric.</p>
+
+
+
+<h2 class="wp-block-heading">Use case 3: why namespaced owner orphans cluster resource</h2>
+
+
+
+<p>The last use case concerns the implementation of Kubernetes. During the tests one of the child resources was constantly being deleted, for no apparent reason. An investigation revealed the source of the problem: Owner reference is set for resources like Persistent Volume and Storage Class. According to the&nbsp;<a href="https://kubernetes.io/docs/concepts/workloads/controllers/garbage-collection/">Kubernetes documentation</a>:&nbsp;</p>
+
+
+
+<blockquote class="wp-block-quote"><p><em>Cross-namespace owner references are disallowed by design. This means that namespace-scoped dependents can only specify owners in the same namespace, and owners that are cluster-scoped. Cluster-scoped dependents can only specify cluster-scoped owners, but not namespace-scoped owners.</em></p></blockquote>
+
+
+
+<p>So owner reference for Persistent Volume and Storage Class (both cluster-wide resources) was set for a namespaced resource. That was why the garbage collector in Kubernetes kept deleting the entire component. Garbage collector saw that the cluster-scoped resource had set the owner and tried to find it only in cluster-scoped resources. However, the owner was hidden in the namespace. As a result, the garbage collector recognized the resource as orphaned and deleted it in order to keep the cluster clean.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/62e099a3e5dd426221a23e4078597d92919738fb/37e61/img/codilime_namespace_owner.png" alt="MY RESOURCE can be the owner only of another resource in its namespace but not in a different namespace (cluster-scoped resource)"/></figure>
+
+
+
+<p><strong>Fig 3. MY RESOURCE can be the owner only of another resource in its namespace but not in a different namespace (cluster-scoped resource)</strong></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Tungsten Fabric as a Kubernetes CNI plugin</title>
+		<link>https://tungsten.io/tungsten-fabric-as-a-kubernetes-cni-plugin/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Mon, 09 Aug 2021 17:42:32 +0000</pubDate>
+				<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[LF Networking]]></category>
+		<category><![CDATA[LFN]]></category>
+		<category><![CDATA[Open Source]]></category>
+		<category><![CDATA[Tungsten Fabric]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8358</guid>
+
+					<description><![CDATA[This is a contributed blog from LF Networking Member CodiLime. Originally published here. CNI (Container Networking Interface) is an interface between container runtime and network implementation. It allows different projects,...]]></description>
+										<content:encoded><![CDATA[
+<p><em><strong>This is a contributed blog from LF Networking Member CodiLime. <a href="https://codilime.com/tungsten-fabric-as-a-kubernetes-cni-plugin/" target="_blank" rel="noreferrer noopener">Originally published here</a></strong>.</em></p>
+
+
+
+<p><strong>CNI (Container Networking Interface) is an interface between container runtime and network implementation. It allows different projects, like&nbsp;<a href="https://codilime.com/tungsten-fabric-architecture-an-overview/">Tungsten Fabric</a>, to provide their implementation of the CNI plugins and use them to manage networking in a&nbsp;<a href="https://codilime.com/glossary/kubernetes/">Kubernetes</a>&nbsp;cluster. In this blog post, you will learn how to use Tungsten Fabric as a Kubernetes CNI plugin to ensure network connectivity between containers and bare metals. You will also see an example of a nested deployment of a Kubernetes cluster into OpenStack VM with a TF CNI plugin.</strong></p>
+
+
+
+<p>The CNI interface itself is very simple. The most important operations it has to implement are ADD and DEL. As the names suggest, ADD’s role is to add a container to the network and DEL’s is to delete it from the network. That’s all. But are these functions performed?&nbsp;</p>
+
+
+
+<p>First things first: a kubelet is a Kubernetes daemon running on each node in a cluster. When the user creates a new pod, the Kubernetes API server orders a kubelet running on the node where the pod has been scheduled to create the pod. The kubelet will then create a network namespace for the pod, and allocate it by running the so-called “pause” container. One of the roles of this container is to maintain the network namespace which will be shared across all the containers in the pod. That’s why the containers inside the pod can “talk” to each other using the loopback interface. Then, for each container defined in the pod, the kubelet will call the CNI plugin.&nbsp;</p>
+
+
+
+<p>But how does it know how to use each plugin? First, it looks for the CNI configuration file in a predefined directory ( /etc/cni/net.d&nbsp;<a href="https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni" target="_blank" rel="noreferrer noopener">by default</a>). When using Tungsten Fabric, the kubelet is going to find a file like this:</p>
+
+
+
+<pre class="wp-block-code"><code>{
+    "cniVersion": "0.3.1",
+    "contrail" : {
+        "cluster-name"  : "&lt;CLUSTER-NAME&gt;",
+        "meta-plugin"   : "&lt;CNI-META-PLUGIN&gt;",
+        "vrouter-ip"    : "&lt;VROUTER-IP&gt;",
+        "vrouter-port"  : &lt;VROUTER-PORT&gt;,
+        "config-dir"    : "/var/lib/contrail/ports/vm",
+        "poll-timeout"  : &lt;POLL-TIMEOUT&gt;,
+        "poll-retries"  : &lt;POLL-RETRIES&gt;,
+        "log-file"      : "/var/log/contrail/cni/opencontrail.log",
+        "log-level"     : "&lt;LOG-LEVEL&gt;"
+    },
+    "name": "contrail-k8s-cni",
+    "type": "contrail-k8s-cni"
+  }</code></pre>
+
+
+
+<p>This file, among other parameters, specifies the name of the CNI plugin and IP (vrouter-ip) and port (vrouter-port) of the vRouter agent. By looking at this file, the kubelet knows it should use the CNI plugin binary called “contrail-k8s-cni”. It looks for it in a predefined directory ( /opt/cni/bin&nbsp;<a href="https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni" target="_blank" rel="noreferrer noopener">by default</a>) and, when it wants to create a new container, executes it with the command ADD passed through environment variables together with other parameters like: path to the pod’s network namespace, container id and container network interface name. The contrail-k8s-cni binary (you can find its source code&nbsp;<a href="https://github.com/tungstenfabric/tf-controller/tree/master/src/container/cni" target="_blank" rel="noreferrer noopener">here</a>) will read those parameters and send appropriate requests to the vRouter Agent.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/bb1cb15886dadd0311a7daf94482d72eab948af1/7fa29/img/codilime_tungsten-fabric-compute-with-kubernetes.png" alt="Tungsten Fabric compute with Kubernetes"/></figure>
+
+
+
+<p><strong>Fig 1. Tungsten Fabric compute with Kubernetes&nbsp;<a href="https://d33wubrfki0l68.cloudfront.net/bb1cb15886dadd0311a7daf94482d72eab948af1/7fa29/img/codilime_tungsten-fabric-compute-with-kubernetes.png" target="_blank" rel="noreferrer noopener">(Enlarge)</a></strong></p>
+
+
+
+<p>The vRouter Agent’s job is to create actual interfaces for the containers. But how does it know how to configure an interface? As you can see in the diagram above, it gets all this information from the Tungsten Fabric Control. So then how does the Tungsten Fabric Control know about all the pods, their namespaces, etc.? That’s where the Tungsten Fabric Kube Manager (you can find its source code&nbsp;<a href="https://github.com/tungstenfabric/tf-controller/tree/master/src/container/kube-manager" target="_blank" rel="noreferrer noopener">here</a>) comes in. It’s a separate service, launched together with other Tungsten Fabric SDN Controller components. It can be seen in the bottom left part of the diagram below.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/ae5f2aa3d9d32d1df4f649baa05ea40cd4f30dff/52ab7/img/codilime_tungsten-fabric-config-with-kubernetes.png" alt="Tungsten Fabric Config with Kubernetes"/></figure>
+
+
+
+<p><strong>Fig 2. Tungsten Fabric Config with Kubernetes&nbsp;<a href="https://d33wubrfki0l68.cloudfront.net/ae5f2aa3d9d32d1df4f649baa05ea40cd4f30dff/52ab7/img/codilime_tungsten-fabric-config-with-kubernetes.png" target="_blank" rel="noreferrer noopener">(Enlarge)</a></strong></p>
+
+
+
+<p>Kubemanager’s role is to listen for Kubernetes API server events like: pod creation, namespace creation, service creation, deletion. It listens for those events, processes them, and then creates, modifies or deletes appropriate objects in the Tungsten Fabric Config API. Tungsten Fabric Control will then find those objects and provide information about them to the vRouter agent. The vRouter Agent can then finally create the properly configured interface for the container. And that is how Tungsten Fabric can work as a Kubernetes CNI Plugin.</p>
+
+
+
+<p>Because Tungsten Fabric and Kubernetes are integrated, container-based workloads can be combined with virtual machines or bare metal server workloads. Moreover, rules for connectivity between those environments can all be managed in one place.</p>
+
+
+
+<h2 class="wp-block-heading">Tungsten Fabric nested deployment</h2>
+
+
+
+<p>From the networking point of view, virtual machines and containers are almost the same thing for Tungsten Fabric, so deployments that combine them are possible. Moreover, in addition to Kubernetes, Tungsten Fabric can also be integrated with OpenStack. Thanks to that, the two platforms can be combined. Let’s say that we have an already deployed OpenStack with Tungsten Fabric, but we want to deploy some of our workloads using containers. With Tungsten Fabric we can create what is called a nested deployment—OpenStack compute virtual machines with a Kubernetes cluster deployed on them with Tungsten Fabric acting as the CNI plugin.&nbsp;</p>
+
+
+
+<p>All of the Tungsten components need not be deployed as most of them are already running and controlling the OpenStack networking. However, on one of the nodes in the nested Kubernetes cluster, preferably the Kubernetes master node, we have to launch the Tungsten Fabric Kube Manager (described above). It will connect to the Kubernetes API Server in the nested cluster and to the Tungsten Fabric Config Api server deployed with OpenStack.&nbsp;</p>
+
+
+
+<p>Finally, the Tungsten Fabric CNI plugin and its configuration file must be present on each of the nested Kubernetes compute nodes. Please note that neither the Tungsten Fabric vRouter nor vRouter Agent need to be deployed on the nested Kubernetes nodes, as those components are already running on the OpenStack compute nodes and the Tungsten Fabric CNI plugin can send requests directly to them.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/b306396c1d01a92fc84cd1c46ebfd75aa05bf728/6a0c8/img/codilime_fig3.png" alt="Kubernetes on OpenStack with Tungsten Fabric Networking"/></figure>
+
+
+
+<p><strong>Fig 3. Kubernetes on OpenStack with Tungsten Fabric Networking&nbsp;<a href="https://d33wubrfki0l68.cloudfront.net/b306396c1d01a92fc84cd1c46ebfd75aa05bf728/6a0c8/img/codilime_fig3.png" target="_blank" rel="noreferrer noopener">(Enlarge)</a></strong></p>
+
+
+
+<p>A nested deployment of a Kubernetes cluster integrated with Tungsten Fabric is an easy way to start deploying container-based workloads, especially for enterprises that have been using OpenStack to manage their virtual machines. Network admins can use their Tungsten Fabric expertise and need not necessarily master new tools and concepts.</p>
+
+
+
+<h2 class="wp-block-heading">Summary</h2>
+
+
+
+<p>As you can see, a Kubernetes CNI plugin allows you to benefit from one of Tungsten Fabric’s key features—its ability to connect different workloads regardless of their function— containers, VMs or bare metals. Should you need to use containers and ensure their connectivity with your legacy infrastructure based on OpenStack, you can create a nested deployment of the Kubernetes cluster integrated with TF</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Tungsten Fabric architecture—an overview</title>
+		<link>https://tungsten.io/tungsten-fabric-architecture-an-overview/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Tue, 03 Aug 2021 00:14:33 +0000</pubDate>
+				<category><![CDATA[Analytics]]></category>
+		<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Linux Foundation]]></category>
+		<category><![CDATA[Open Source]]></category>
+		<category><![CDATA[Tungsten Fabric]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8350</guid>
+
+					<description><![CDATA[This is a contributed blog from LF Networking Member CodiLime. Originally published here. SDN or Software-Defined Networking is an approach to networking that enables the programmatic and dynamic control of...]]></description>
+										<content:encoded><![CDATA[
+<p><strong><em>This is a contributed blog from LF Networking Member CodiLime. </em></strong><a href="https://codilime.com/blog/tungsten-fabric-architecture-an-overview/"><strong><em>Originally published here</em></strong>.</a></p>
+
+
+
+<p><strong>SDN or Software-Defined Networking is an approach to networking that enables the programmatic and dynamic control of a network. It is considered the next step in the evolution of network architecture. To implement this approach effectively, you will need a mature SDN Controller such as Tungsten Fabric. Read our blog post to get a comprehensive overview of Tungsten Fabric architecture.</strong></p>
+
+
+
+<h2 class="wp-block-heading">What is Tungsten Fabric</h2>
+
+
+
+<p><a href="https://codilime.com/tungsten-fabric/">Tungsten Fabric</a>&nbsp;(previously OpenContrail) is an open-source&nbsp;<a href="https://codilime.com/glossary/sdn-controller/">SDN controller</a>&nbsp;that provides connectivity and security for virtual, containerized or bare-metal workloads. It is developed under the umbrella of&nbsp;<a href="https://tungsten.io/">the Linux Foundation</a>. Since most of its features are platform- or device agnostic, TF can connect mixed VM-container-legacy stacks. What Tungsten Fabric sees is only a source and target API. The technology stack that TF can connect includes:</p>
+
+
+
+<ul>
+<li>Orchestrators or virtualization platforms (e.g. OpenShift, Kubernetes, Mesos or VMware vSphere/Orchestrator)</li>
+
+
+
+<li>OpenStack (via a monolithic plug-in or an ML2/3 network driver mechanism)</li>
+
+
+
+<li>SmartNIC devices</li>
+
+
+
+<li>SR-IOV clusters</li>
+
+
+
+<li>Public clouds (multi-cloud or hybrid solutions)</li>
+
+
+
+<li>Third-party proprietary solutions</li>
+</ul>
+
+
+
+<p>One of TF’s main strengths is its ability to connect both the physical and virtual worlds. In other words, to connect in one network different workloads regardless of their nature. They can be Virtual Machines, physical servers or containers.</p>
+
+
+
+<p>To deploy Tungsten Fabric, you may need&nbsp;<a href="https://codilime.com/network-professional-services/">Professional Services (PS)</a>&nbsp;to integrate it with your existing infrastructure and ensure ease of use and security.</p>
+
+
+
+<h2 class="wp-block-heading">Tungsten Fabric components</h2>
+
+
+
+<p>The entire TF architecture can be divided into the&nbsp;<a href="https://codilime.com/glossary/control-plane/">control plane</a>&nbsp;and&nbsp;<a href="https://codilime.com/glossary/data-plane/">data plane</a>&nbsp;components. Control plane components include:</p>
+
+
+
+<ul>
+<li>Config—managing the entire platform</li>
+
+
+
+<li>Control—sending rules for network traffic management to vRouter agents</li>
+
+
+
+<li>Analytics—collecting data from other TF components (config, control, compute)</li>
+</ul>
+
+
+
+<p>Additionally, there are two optional components of the Config:</p>
+
+
+
+<ul>
+<li>Device Manager—managing underlay physical devices like switches or routers</li>
+
+
+
+<li>Kube Manager—observing and reporting the status of Kubernetes cluster</li>
+</ul>
+
+
+
+<p>Data plane or compute components include:</p>
+
+
+
+<ul>
+<li>vRouter and its agents—managing packet flow at the virtual interface vhost0 according to the rule defined in the control component and received using vRouter agents</li>
+</ul>
+
+
+
+<h2 class="wp-block-heading">TF Config—the brain of the platform</h2>
+
+
+
+<p>TF Config is the main part of the platform where network topologies are configured. It is the biggest TF component developed by the largest number of developers. In a nutshell, it is a database where all configurations are stored. All other TF components depend on the Config. The term itself has two meanings:</p>
+
+
+
+<ul>
+<li>VM where all containers are stored</li>
+
+
+
+<li>A container named “config” where the entire business logic is stored</li>
+</ul>
+
+
+
+<p>TF Config has two APIs: North API (provided by Config itself) and South API (provided by other control plane components). The first one is more important here because it is the API used for communication. The South API is used by Device Manager (also a part of TF and discussed later) and other tools.</p>
+
+
+
+<p>TF Config uses an intent-based approach. The network administrator does not need to define all conditions but only how the network is expected to work. Other elements are configured automatically. For example, you want to enable network traffic from one network to another. It is enough to define this intention, and all the magic is done under the hood.</p>
+
+
+
+<p>The schema transformer listens to the database to check if there is a new entry. When such an entry is added, it checks for lacking data and completes it using the Northbound API. In this way, network routings are created, a firewall is unblocked to enable the traffic to flow between these two networks, and the devices obtain all the data necessary to get the network up and running.&nbsp;</p>
+
+
+
+<p>An intent-based approach automates network creation. There are many settings that need to be defined when creating a new network, and it takes time to set up all of them. As a process, it is also error-prone. Using TF simplifies everything, as most settings are default ones and are completed automatically.</p>
+
+
+
+<p>When it comes to communication with Config, its API is shared via http. Alternatively, you can use a TF UI or cURL, a command line tool for file transfer with a URL syntax supporting a number of protocols including HTTP, HTTPS, FTP, etc. There is also a TF CLI tool.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/2e290badcc110dcce6a0552dbc336d7aff19ec7a/0799e/img/codilime_tungsten-fabric-config-with-openstack.png" alt="Tungsten Fabric Config with OpenStack" title="Fig 1. Tungsten Fabric Config with OpenStack"/></figure>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/ae5f2aa3d9d32d1df4f649baa05ea40cd4f30dff/7e06b/img/codilime_tungsten_fabric_config_with_kubernetes.png" alt="Tungsten Fabric Config with Kubernetes" title="Fig 2. Tungsten Fabric Config with Kubernetes"/></figure>
+
+
+
+<p></p>
+
+
+
+<h2 class="wp-block-heading">Managing physical devices with Device Manager</h2>
+
+
+
+<p>Device Manager is an optional component with two major functions. Both are related to fabric management, which is the management of underlay physical devices like switches or routers.</p>
+
+
+
+<p>First, it is responsible for listening to configuration events from the Config API Server and then for pushing required configuration changes to physical devices. Virtual Networks, Logical Routers and other overlay objects can be extended to physical routers and switches. Device Manager enables homogeneous configuration management of overlay networking across compute hosts and hardware devices. In other words, bare-metal servers connected to physical switches or routers may be a part of the same Virtual Network as virtual machines or containers running on compute hosts.</p>
+
+
+
+<p>Secondly, this component manages the life cycle of physical devices. It supports the following features:</p>
+
+
+
+<ul>
+<li>onboarding fabric—detect and import brownfield devices</li>
+
+
+
+<li>zero-touch provisioning—detect, import and configure greenfield devices</li>
+
+
+
+<li>software image upgrade—individual or bulk upgrade of device software</li>
+</ul>
+
+
+
+<p>Today only Juniper’s MX routers and QFX switches have&nbsp;<a href="https://github.com/tungstenfabric/tf-controller/tree/master/src/config/device-manager/device_manager/plugins/juniper/">an open-source plug-in</a>.</p>
+
+
+
+<h2 class="wp-block-heading">Device Manager: under the hood</h2>
+
+
+
+<p>Device Manager reports job progress by sending UVEs (User Visible Entities) to the Collector. Users can retrieve job status and logs using the Analytics API and it’s Query Engine. Device Manager works in full or partial mode. There can be only one active instance in the full mode. In this mode, it is responsible for processing events sent via RABBITMQ. It evaluates high-level intents like Virtual Networks or Logical Routers and translates them into a low-level configuration that can be pushed into physical devices. It also schedules jobs on the message queue that can be consumed by other instances running in partial mode. Those followers listen for new job requests and execute ansible scripts, which&nbsp; push the desired configuration to devices.</p>
+
+
+
+<p>Device Manager has the following components:</p>
+
+
+
+<ul>
+<li>device-manager—translates high-level intents into a low-level configuration</li>
+
+
+
+<li>device-job-manager—executes ansible playbooks, which configure routers and switches</li>
+
+
+
+<li>DHCP server—in a zero-touch provisioning use case, physical device gets management IP address from a local DHCP server running alongside device-manager</li>
+
+
+
+<li>TFTP server—in the zero-touch provision use case, this server is used to provide a script with the initial configuration</li>
+</ul>
+
+
+
+<h2 class="wp-block-heading">Kube Manager</h2>
+
+
+
+<p>Kube Manager is an additional component launched together with other Tungsten Fabric SDN Controller components. It is used to establish communication between Tungsten Fabric and Kubernetes, and is essential to their integration. In a nutshell, it listens to the Kubernetes API server events such as creation, modification or deletion of k8s objects (pods, namespaces or services). When such an event occurs, Kube Manager processes it and creates, modifies or deletes an appropriate object in the Tungsten Fabric Config API. Tungsten Fabric Control will then find those objects and send information about them along to the vRouter agent. After that, the vRouter agent can finally create the correctly configured interface for the container.&nbsp;</p>
+
+
+
+<p>The following example should clarify this process. Let’s say that an annotation is added to the namespace in Kubernetes, saying that the network in this namespace should be isolated from the rest of the network. Kube Manager gets the information about it and changes the setup of the TF object accordingly.</p>
+
+
+
+<h2 class="wp-block-heading">Control</h2>
+
+
+
+<p>The Control component is responsible for sending network traffic configurations to vRouter agents. Such configurations are received from the Config’s Cassandra database, which offers consistency, high availability and easy scalability. To represent the configuration and operational state of the environment, the IF-MAP (The Interface to Metadata Access Point) protocol is used. The control nodes exchange routes with one another using IBGP protocol to ensure that all control nodes have the same network state. Communication between Control and vRouter agents is done via Extensible Messaging and the Presence Protocol (XMPP)—a communications protocol for message-oriented middleware based on XML. Finally, the Control communicates with gateway nodes (routers and switches) using the BGP protocol.</p>
+
+
+
+<p>TF Control works similarly to a hardware router. Control is a control plane component responsible for steering the data plane and sending the traffic flow configuration to vRouter agents. For their part, hardware routers are responsible for handling traffic according to the instructions they receive from the control plane. In TF architecture, physical routers and their agent services work alongside vRouters and vRouter agents, as Tungsten Fabric can handle both physical and virtual worlds.</p>
+
+
+
+<p>TF Control communicates with a vRouter using XMPP, which is equivalent to a standard BGP session, though XMPP carries more information (e.g. configurations). Still, thanks to its reliance on XMPP, TF Control can send network traffic configurations to both vRouters and physical ones—the code used for communication is exactly the same.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/78293605fc2e819777b61ebc74e950624e0ebc2b/46b16/img/codilime_tungsten_fabric_control.png" alt="Tungsten Fabric Control" title="Fig. 3 Tungsten Fabric Control"/></figure>
+
+
+
+<p></p>
+
+
+
+<h2 class="wp-block-heading">Analytics</h2>
+
+
+
+<p>Analytics is a separate TF component that collects data from other components (config, control, compute). The following data are collected:</p>
+
+
+
+<ul>
+<li>Object logs (concrete objects in the TF structure)</li>
+
+
+
+<li>System logs</li>
+
+
+
+<li>Trace buffers</li>
+
+
+
+<li>Flow statistics in TF modules</li>
+
+
+
+<li>Status of TF modules (i.e. if they are working and what their state is)</li>
+
+
+
+<li>Debugging data (if a required data collection level is enabled in the debugging mode)</li>
+</ul>
+
+
+
+<p>Analytics is an additional component of Tungsten Fabric. TF works fine without it using just its main components. It can even be enabled as an additional plugin long after the TF solution was originally deployed.</p>
+
+
+
+<p>To collect the data coming from other TF components, an original Juniper protocol called Sandesh is used. The name comes from&nbsp;<a href="http://sandesh.com/">an Indian newspaper in Gujarati language</a>. “Sandesh” means “message” or “news”. Analogically, the protocol is the messenger that brings news about the SDN.</p>
+
+
+
+<p>In the Analytics component, there are two databases. One is based on the Cassandra database and contains historical data: statistics, logs, TF data flow information. It is commonly used for Analytics and Config components. Cassandra is the database that allows you to write data quickly, but it reads data more slowly. It is therefore used to write and store historical data. If there is a need to analyze how TF deployment worked over a longer period of time, this data can be read. In practice, such a need does not occur very often. This feature is most often used by developers to debug a problem.</p>
+
+
+
+<p>The second database is based on the Redis database and collects UVE (User Visible Entities) such as information about existing virtual networks, vRouters, virtual machines and about their actual state (whether it’s working or not). These are the components of the system infrastructure defined by users (in contrast to the elements created automatically under the hood by TF). Since the data about their state are dynamic, they are stored in the Redis database, which allows users to read them much more quickly than in the Cassandra database.&nbsp;</p>
+
+
+
+<p>All these TF components send data to the Collector, which writes them in either the Cassandra or Redis database. On the other side, there is an API Server which is sometimes called the Analytics API to distinguish it from the API Server, e.g. in the Config. This Analytics API provides a REST API for extracting data from the database.</p>
+
+
+
+<p>Apart from these, Analytics has one additional component, called QueryEngine. This is an indirect process taking a user query for historical data. The user sends an SQL-like query to the Analytics API (API Server) REST port. Then the query is sent to QueryEngine, which performs a database query in Cassandra and, via the Analytics API, sends the result back to the user.</p>
+
+
+
+<p>&nbsp;Figure 4 shows the Analytics Node Manager and Analytics Database Node Manager. In fact, there are many different node managers in the TF architecture that are used to monitor specific parts of the architecture and send reports about them. In our case, Analytics Node Manager monitors Collector, QueryEngine and API Server, while the Analytics Database Node Manager monitors databases in the Analytics component. In this way, Analytics also collects data on itself.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/ed127b73f4599b0f2fb94db2feca0d26b6878792/b3bb1/img/codilime_tungsten_fabric_analytics.png" alt="Tungsten Fabric Analytics" title="Fig. 4 Tungsten Fabric Analytics"/></figure>
+
+
+
+<p></p>
+
+
+
+<h2 class="wp-block-heading">The VRouter forwarder and agent</h2>
+
+
+
+<p>This component is installed on all compute hosts that run the workload. It provides Integrated routing and bridging functions for network traffic from and between Virtual Machines, Containers and external networks. It applies network and security rules defined by the Tungsten Fabric controller. This component is not mandatory, but it is required for any use case with virtualized workloads.&nbsp;</p>
+
+
+
+<ul>
+<li>Agent</li>
+</ul>
+
+
+
+<p>The agent is a user-space application that maintains XMPP sessions with the Tungsten Fabric controllers. It is used to get VRF (Virtual Routing and Forwarding) and ACLs (Access Control Lists) that are derived from high-level intents like Virtual Networks. The agent maintains a local database of VRFs and ACLs. This component reports its state to the Analytics API by sending Sandesh messages with UVEs (User Visible Entities) with logs and statistics. It is responsible for maintaining the correct forwarding state in Forwarder. The agent also handles some protocols like DHCP, DNS or ARP.</p>
+
+
+
+<p>Communication with the forwarder is achieved with the help of a KSync module, which uses Netlink sockets and shared memory between the agent and the forwarder. In some cases, application and kernel modules also use the pkt0 tap interface to exchange packets. Those mechanisms are used to update the flow table with flow entries based on the agent’s local data.</p>
+
+
+
+<ul>
+<li>Forwarder</li>
+</ul>
+
+
+
+<p>The forwarder performs packet processing based on flows pushed by the agent. It may drop the packet, forward it to the local virtual machine, or encapsulate it and send it to another destination.</p>
+
+
+
+<p>The forwarder is usually deployed as a kernel module. In that case, it is a software solution independent of NIC or server type. Packet processing in kernel space is more efficient than in user-space and provides some room for optimization. The drawback is that it can only be installed with a specific supported kernel version. For advanced users, modules for a different kernel version can be built. Default kernel versions are specified&nbsp;<a href="https://github.com/tungstenfabric/tf-packages">here</a>.</p>
+
+
+
+<p>This kernel module is released as a docker image that contains a pre-built module and user-space tools. When this image is run, it copies binaries to the host system and installs the kernel module on the host (it needs to be run in privileged mode). After successful installation, a vrouter module should be loaded into the kernel (“lsmod | grep vrouter”) and new tap interfaces pkt0 and vhost0 created. If problems occur, checking the kernel logs (“dmesg”) can help you arrive at a solution.</p>
+
+
+
+<p>The forwarder can also be installed as a userspace application that uses The Data Plane Development Kit (DPDK), which enables higher performance than the kernel module.</p>
+
+
+
+<ul>
+<li>Packet flow</li>
+</ul>
+
+
+
+<p>For every incoming packet from a VM, vRouter forwarder needs to decide how to process it. The options are DROP, FORWARD, MIRROR, NAT or HOLD. Information about what to do is stored in flow table entries. The forwarder is using packet headers to find a corresponding entry in the above-mentioned tables. With the first packet from a new flow, the entry might be empty. In that case, the vRouter forwarder sends this packet to the pkt0 interface, where the agent is listening. Using its local information about VRFs and ACLs, the agent pushes (using KSync and shared memory) a new flow to the forwarder and resends a packet. In other words, the vRouter forwarder doesn’t have full knowledge of how to process every packet in the system so it cooperates with the agent to get that knowledge. It is because this process may take some time that the first packet sent through the vRouter may come with a visible delay.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/ce7df33860634d6884826a143b59fff25354c849/9bb3f/img/codilime_tungsten-fabric-compute-with-openstack.png" alt="Tungsten Fabric Compute with OpenStack" title="Fig. 5 Tungsten Fabric Compute with OpenStack"/></figure>
+
+
+
+<p></p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/bb1cb15886dadd0311a7daf94482d72eab948af1/f69c8/img/codilime_tungsten_fabric_compute_with_kubernetes.png" alt="Tungsten Fabric Compute with Kubernetes" title="Fig. 6 Tungsten Fabric Compute with Kubernetes"/></figure>
+
+
+
+<p></p>
+
+
+
+<h2 class="wp-block-heading">Tungsten Fabric with OpenStack and Kubernetes—an overview</h2>
+
+
+
+<p>To sum up, Figures 7 and 8 provide an overview of the TF integration with Openstack and Kubernetes, respectively.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/66268e490e805fb49cfee8bea9e0da362f9bdd17/31273/img/codilime_tungsten-fabric-with-openstack.png" alt="Tungsten Fabric with Openstack" title="Fig. 7 Tungsten Fabric with Openstack"/></figure>
+
+
+
+<p></p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/b2f1d82056fa087b400a34859992f4e7f5fc36ff/1af44/img/codilime_tungsten_fabric_with_kubernetes.png" alt="Tungsten Fabric with Kubernetes" title="Fig. 8 Tungsten Fabric with Kubernetes"/></figure>
+
+
+
+<p></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Tungsten Fabric and Akraino for SDN/NFV for 5G and edge Use Cases</title>
+		<link>https://tungsten.io/tungsten-fabric-and-akraino-for-sdn-nfv-for-5g-and-edge-use-cases/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Tue, 14 May 2019 23:07:03 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[NFV]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Use Case]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8130</guid>
+
+					<description><![CDATA[By Sukhdev Kapur The rollout of 5G is a technological disruption for telecom and technology business players. This requires management of real time data flows, with central control, between various...]]></description>
+										<content:encoded><![CDATA[<h4>By Sukhdev Kapur</h4>
+<p>The rollout of <a href="https://en.wikipedia.org/wiki/5G">5G</a> is a technological disruption for telecom and technology business players. This requires management of real time data flows, with central control, between various <a href="https://en.wikipedia.org/wiki/Edge_device">edge</a> and core deployments. In order to minimize the latency, 5G and IoT deployments require compute power to move toward the edge, closer to the end-users and devices that produce or consume the real time data.</p>
+<p><a href="https://en.wikipedia.org/wiki/Software-defined_networking">SDN</a> controllers are proven to manage such workloads in telco as well as enterprise deployments. In this article, we discuss the SDN stack <a href="https://tungsten.io">Tungsten Fabric</a> and how it can be used for 5G networks and an edge cloud that is based upon <a href="https://www.lfedge.org/projects/akraino/">Akraino Edge Stack</a>.</p>
+<p><a href="https://tungsten.io/">Tungsten Fabric</a> (AKA &#8216;TF&#8217;) is an open source SDN project in the <a href="https://www.lfnetworking.org">LF Networking</a> initiative. TF provides a single point of control, visibility, and management for networking &amp; security for different types of data center deployments or clouds. It has taken SDN technology to next level by:</p>
+<ul>
+<li>Providing consistent network functionality and enforcing security policies for different types of workloads (virtual machines, containers, bare metal) orchestrated with different available orchestrators (OpenStack, Kubernetes, VMware , etc)</li>
+<li>Providing production grade networking &amp; security stack for Data Center and Public Clouds (AWS, Azure, GCP) &amp; Edge cloud deployments</li>
+</ul>
+<p>Tungsten Fabric evolved as a network software stack for providing an SDN solution for Telco Cloud and <a href="https://en.wikipedia.org/wiki/Network_function_virtualization">NFV</a> use cases.</p>
+<h3>Tungsten Fabric Integration with Akraino Edge Cloud</h3>
+<p>TF, by integrating with <a href="https://www.lfedge.org/projects/akraino/">Akraino Edge Stack</a>, can act as unified SDN controller to enhance many features for 5G core and edge nodes, including:</p>
+<ul>
+<li>Enabling distributed edge computing using TF remote compute architecture</li>
+<li>A common SDN controller for different workloads in network cloud i.e. CNF, <a href="https://en.wikipedia.org/wiki/Network_function_virtualization">VNF</a>, PNFs (Containerized, Virtual, and Physical Network Functions)</li>
+<li>Service chaining at different types of edge sites or clouds (public or private)</li>
+<li>Common security policy enforcement for all nodes</li>
+<li>Advanced networking performance features: <a href="https://en.wikipedia.org/wiki/Single-root_input/output_virtualization">SR/IOV</a>, <a href="https://www.dpdk.org">DPDK</a>, BGP-VPN, IPSec/TLS Support, etc.</li>
+</ul>
+<p><img fetchpriority="high" decoding="async" class="alignnone size-full wp-image-8131" src="https://tungsten.io/wp-content/uploads/sites/73/2019/05/Tungsten-Fabric-SDN.png" alt="" width="776" height="465" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/05/Tungsten-Fabric-SDN.png 776w, https://tungsten.io/wp-content/uploads/sites/73/2019/05/Tungsten-Fabric-SDN-300x180.png 300w" sizes="(max-width: 776px) 100vw, 776px" /></p>
+<h3>Tungsten Fabric powered Akraino Blueprints</h3>
+<p>These Akraino blueprints address different edge use cases:</p>
+<ul>
+<li>Network Cloud &#8211; <a href="https://wiki.akraino.org/display/AK/Akraino+Network+Cloud+and+TF+Integration">Telco edge cloud use case</a></li>
+<li>Kubernetes Native Infrastructure for Edge &#8211; <a href="https://wiki.akraino.org/display/AK/Provider+Access+Edge+%28PAE%29+Blueprint">Provider access use case</a></li>
+<li>Integrated Edge Cloud &#8211; <a href="https://wiki.akraino.org/pages/viewpage.action?pageId=11993339">AI/ML and AR/VR applications at Edge</a></li>
+</ul>
+<h3>Learn more at Cloud Native Network Services Day @ KubeCon + CloudNativeCon EU 2019</h3>
+<p>Intrigued? I&#8217;ll be doing a deep dive on this subject at the <a href="https://www.linuxfoundation.org/calendar/kubecon-cloudnativecon-europe/">Cloud Native Network Services Day</a> at KubeCon EU on May 20th. If you&#8217;re going to be in Barcelona for the conference, come by and learn more.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Tungsten Fabric as SDN for Akraino Based Network Edges</title>
+		<link>https://tungsten.io/tungsten-fabric-as-sdn-for-akraino-based-network-edges/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Mon, 04 Mar 2019 03:55:04 +0000</pubDate>
+				<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[NFV]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8100</guid>
+
+					<description><![CDATA[Originally published on CalSoft Posted on&#160;February 28, 2019&#160;by&#160;Sagar Nangare SDN is a crucial technology in a roadmap for a dynamic and intelligent network, be it enterprise level connecting several devices...]]></description>
+										<content:encoded><![CDATA[
+<p><a href="https://blog.calsoftinc.com/2019/02/tungsten-fabric-sdn-akraino-based-network-edges.html" target="_blank" rel="noreferrer noopener" aria-label="Originally published on CalSoft (opens in a new tab)">Originally published on CalSoft</a></p>
+
+
+
+<p>Posted on&nbsp;<a href="https://blog.calsoftinc.com/2019/02/tungsten-fabric-sdn-akraino-based-network-edges.html">February 28, 2019</a>&nbsp;by&nbsp;<a href="https://blog.calsoftinc.com/author/sagar-nangare">Sagar Nangare</a></p>
+
+
+
+<p>SDN is a crucial technology in a roadmap for a dynamic and intelligent network, be it enterprise level connecting several devices on-premises or branches across the wide area (SD-WAN). With the power of SDN technology, telecom operators are taking it to achieve central control over the network and compute nodes.</p>
+
+
+
+<p>As the 5G going mainstream disruption for telecom as well as technology business players, there is a growing need to handle data flows within the network in real time along with smartly minimizing bandwidth usage plus latency. The emergence of SDN and NFV technologies had majorly set up a foundation to build a network having expected requirements for end users along with a dynamic and central control for service providers or enterprises.</p>
+
+
+
+<p>In this article, let us discuss about SDN stack,&nbsp;<a href="https://tungsten.io/start/" target="_blank" rel="noreferrer noopener">Tungsten Fabric</a>&nbsp;and how it can be used for 5G-network edge cloud that is based on&nbsp;<a href="https://www.lfedge.org/projects/akraino/">Akraino Edge Stack</a>.</p>
+
+
+
+<p><a href="https://tungsten.io/">Tungsten Fabric</a>&nbsp;is an open source SDN initiative from Juniper and merged into Linux Foundation as a community project. TF provides a single point of control, visibility, and management for networking &amp; security for different types of data center deployments or clouds. It has taken SDN technology to next level by</p>
+
+
+
+<ul><li>Providing consistent network functionality and enforcing security policies for different types of workloads (virtual machines, containers, bare metal) orchestrated with different available orchestrators (OpenStack, Kubernetes, VMware , etc)</li><li>Providing production grade networking &amp; security stack for Data Center and Public Clouds (AWS, Azure, GCP) &amp; Edge cloud deployments</li></ul>
+
+
+
+<p>Tungsten Fabric evolved as a network software stack for providing an SDN solution for Telco Cloud and NFV use cases<del>.</del></p>
+
+
+
+<p>To understand the application of TF for telco cloud, let us discuss about the PoC&nbsp;<a href="https://wiki.akraino.org/display/AK/Akraino+Network+Cloud+and+TF+Integration">proposed</a>&nbsp;by Juniper’s Sukhdev Kapur to Linux Foundation’s Akraino community (an open source software stack for network edges). This proof of concept is approved by the Akraino.</p>
+
+
+
+<p><strong>Tungsten Fabric Integration with Akraino based Network Edge Cloud</strong></p>
+
+
+
+<p>TF, by integrating with Akraino Edge Stack, can act as unified SDN controller to enhance many features for 5G core and edge nodes, including</p>
+
+
+
+<ul><li>Enabling distributed edge computing using TF remote compute architecture,</li><li>A common SDN controller for different workloads in network cloud i.e. CNF, VNF, PNFs</li><li>Service chaining at different types of edge sites or clouds (public or private)</li><li>Common security policy enforcement for all nodes</li><li>Advanced networking performance features: SR/IOV, DPDK, BGP-VPN, IPSec/TLS Support, etc</li></ul>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://blog.calsoftinc.com/wp-content/uploads/2019/02/Akraino-Network-Cloud-TF-Integration-Blueprint.png" alt="" class="wp-image-4810" /><figcaption>Figure – Akraino Network Cloud &amp; TF Integration (Blueprint)</figcaption></figure>
+
+
+
+<p><em>Image source:&nbsp;<a href="https://wiki.akraino.org/display/AK/Network+Cloud+Family+-+Reference+Architecture">Akraino Reference architecture</a></em></p>
+
+
+
+<p>You can see from above image, like other open source projects, TF place at edge platform software component, enhancing with new feature set to act as unified SDN controller for any type of workload &amp; compute orchestration.</p>
+
+
+
+<p><strong>Deployment</strong></p>
+
+
+
+<p>Tungsten fabric is composed of components like controller and vRouter; plus additional components for analytics and third party integration. In this PoC, TF integrates with Kubernetes (CNI) and OpenStack (Neutron) as SDN plugin to enable rich networking capabilities and lifecycle management of VMs and containers where TF components or control functions deployed.</p>
+
+
+
+<p>The configuration declared at the central data center is enforced on edge nodes to set up consistent network and security policies. The deployment and life cycle management of Tungsten Fabric can be done with tools like Ansible or Helm. These configuration files are termed as playbooks if Ansible is used or charts in case of Helm. These tools provides benefits of automation and management of components, further reducing operational costs for edge deployments.</p>
+
+
+
+<p>Tungsten fabric along with Helm offers a seamless solution where TF services are deployed in containers using a microservices architecture to enable advantages like self-healing, updates, CI/CD, etc. Helm uses Kubernetes to declare charts for subsequent microservices, allowing greater automation in managing TF services. In this case, Kubernetes become a single orchestrator to manage lifecycle of all control operations. Such integrated solution evolved as Tungsten Fabric Helm (TF Helm).</p>
+
+
+
+<p>OpenStacks’s Airship (Armada) is an umbrella project with which TF integrates for installation using helm charts and set up interaction with edge nodes using CNI and Neutron.</p>
+
+
+
+<p>The basic idea behind this PoC is to define an architecture for a distributed Edge Cloud keeping operational and deployment cost low. Another objective is to build a network where failure of any edge node application should not hamper availability and functionality of edge network to avoid traffic loss. To implement such architecture, a solution proposed in this PoC exercise utilizes the same TF based on a single SDN cluster that spans across all the edge nodes. A central SDN cluster located at main data center will have TF installed with Kubernetes and OpenStack orchestrators along with TF control components. Dedicated control functions, which handles compute and networking operations for all edge nodes, are located at the central data center, and connected to vRouter (TF component) set at the edge nodes using set of gateways. The dedicated control function is logically present at the Primary POP to control vRouters of the edge nodes located on the remote POPS. MP-BGP protocol is used between SDN Gateways and control functions, and XMPP is used for communication between vRouters and dedicated control functions.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://blog.calsoftinc.com/wp-content/uploads/2019/02/Interconnection-between-component-of-data-center-with-edge-POPs.png" alt="" class="wp-image-4811" /><figcaption>Figure – Interconnection between component of data center with edge POPs</figcaption></figure>
+
+
+
+<p>To have an end-to-end data transmission, an overlay network is established between edge nodes and central data centers in which MPLS over IP (MPLSoXoIP) is used. Communication between gateways can optionally use IPsec encryption to protect network data.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://blog.calsoftinc.com/wp-content/uploads/2019/02/2.png" alt="" class="wp-image-4812" /><figcaption>Figure – Secure data and network with overlay network</figcaption></figure>
+
+
+
+<p><strong>Summary</strong></p>
+
+
+
+<p>TF has emerged as a leading SDN solution with every release. Deployment of TF using helm charts and orchestration of every type of workloads from a diverse set of clouds has increased the potential of TF for Telco use case. Akraino Edge Stack is pre-integrated with a set of projects, which promotes various orchestrations and performance benefits. Integration of TF with Akraino edge stack enable enhanced features and utilizes remote compute architecture of TF. A solution can orchestrate all types of workloads like PNFs, VNFs and CNF, implement service chaining at edge sites, workload and data transfer security, automating deployment of control functions and workloads, and more.</p>
+
+
+
+<p><strong><em>Republished with Permission from Republished with permission from </em></strong><a rel="noreferrer noopener" href="https://blog.calsoftinc.com/2019/02/tungsten-fabric-sdn-akraino-based-network-edges.html" target="_blank"><strong><em>CalSoft.</em></strong></a></p>
+
+
+
+<p><strong><em>About the author</em></strong></p>
+
+
+
+<p><em>Sagar Nangare is technology blogger, currently serving&nbsp;<a href="https://urldefense.proofpoint.com/v2/url?u=https-3A__calsoftinc.com_&amp;d=DwMFaQ&amp;c=HAkYuh63rsuhr6Scbfh0UjBXeMK-ndb3voDTXcWzoCI&amp;r=Y9QaEJ2cs4La8kQDqQ-N2rBJnxrPyFqAIO8efLhSqZ0&amp;m=8ToqEPYme7wCk2CZy01mmL8Y5T9FiF4E0mhEwhaU27c&amp;s=KqnJF-1Qbjb1_jI40uohUwGCiT8mFL0WZo-StdvVmVA&amp;e=" target="_blank" rel="noreferrer noopener">Calsoft Inc.</a>&nbsp;as a digital strategist.</em></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Calls for Papers: Tell Your Story at Two Upcoming Tungsten Fabric Events</title>
+		<link>https://tungsten.io/calls-for-papers-tell-your-story-at-two-upcoming-tungsten-fabric-events/</link>
+		
+		<dc:creator><![CDATA[Robert Cathey]]></dc:creator>
+		<pubDate>Mon, 01 Oct 2018 20:41:53 +0000</pubDate>
+				<category><![CDATA[Community]]></category>
+		<category><![CDATA[Conference]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Use Case]]></category>
+		<guid isPermaLink="false">http://tf.lfprojects.linuxfoundation.org/?p=8067</guid>
+
+					<description><![CDATA[Users and developers in the Tungsten Fabric community are invited to participate in the calls for papers at two upcoming events: Tungsten Fabric Workshop at KubeCon China (Nov. 13 in...]]></description>
+										<content:encoded><![CDATA[<p>Users and developers in the Tungsten Fabric community are invited to participate in the calls for papers at two upcoming events:</p>
+<ol>
+<li><b>Tungsten Fabric Workshop at KubeCon China (Nov. 13 in Shanghai)</b></li>
+<li><b>Tungsten Fabric Developers Summit at KubeCon North America (Dec. 10 in Seattle)</b></li>
+</ol>
+<p>These full-day sessions are official Co-Located Events of KubeCon.</p>
+<p>Open source software is shaping how organizations compete, and SDN networking technology is evolving to support that revolution. However, building an SDN/NFVi platform that supports different open source infrastructure and app development technologies is not easy. Tungsten Fabric is an <a href="https://www.linuxfoundation.org/projects/networking/">LFN-hosted</a> open source SDN with a proven track record at scale in the demanding world of production carrier deployments.</p>
+<p>Innovation happens when the community combines its talents, so come and interact with the leading minds building this exciting project! Join us to learn about the project, share your experiences, and talk about how the community is preparing for some exciting edge computing use cases.</p>
+<p>We are looking for technology presentations and short (“lightning”) talks on topics related to Tungsten Fabric and open source multi-cloud networking at scale. We expect long talks to last 30 minutes with an additional 5 minutes for questions, and short talks to last 15 minutes. Please specify the talk time when you submitted the proposal. The best presentation will receive a special gift.</p>
+<p>Topics that may be considered, among others, include:</p>
+<ul>
+<li>Use cases for enterprises, carriers, and cloud networking</li>
+<li>Features of Tungsten 5.0 and future release (including proposals)</li>
+<li>Multi-cloud use case, challenges, progress; also the experience of Carbide Quick Start Environment (TF) on AWS</li>
+<li>Deploying Tungsten Fabric; testing and scaling Tungsten Fabric.</li>
+<li>Using Tungsten Fabric: load balancing, HA, service chaining, analytics and orchestration, private clouds using Kubernetes, OpenStack and/or VMware, and hybrid cloud with AWS, Azure or Google</li>
+<li>Integrating Tungsten Fabric with other open source technologies</li>
+<li>Troubleshooting and debugging Tungsten Fabric installations</li>
+<li>Performance measurements or approaches to improving performance</li>
+<li>Increasing the size and diversity of the Tungsten Fabric user and developer base</li>
+<li>Tutorials and demo videos</li>
+<li>Network virtualization innovative Ideas</li>
+<li>Container networking challenges and learnings</li>
+<li>Linux Foundation Networking project status &amp; proposal</li>
+<li>Data plane networking innovation to Tungsten Fabric</li>
+<li>Edge computing challenges and service innovation</li>
+<li>Multi-vendor switch/router support</li>
+<li>BGP-EVPN L2/L3 integration and use cases</li>
+</ul>
+<p>Talks will be recorded and made available online.</p>
+<p><b>How to Propose a Talk</b></p>
+<p>You may propose a talk as a full talk, a lightning talk, or for either one at the committee’s discretion. We will also accept proposals for panel discussions. Please submit panel discussions as full talks, and make it clear in the description that it is a panel. Please submit proposals and questions to <a href="mailto:Conferences@lists.tungsten.io">Conferences@lists.tungsten.io</a>, and include:</p>
+<ul>
+<li>Title and abstract</li>
+<li>Names, email address, and affiliation for each speaker</li>
+<li>Whether you are proposing a full talk or a lightning talk or either one at the committee’s discretion; please specific time required</li>
+<li>Please specify if the session includes a live demo</li>
+</ul>
+<p><b>Special Notes for KubeCon China</b></p>
+<p>Deadline for submissions is 11:59 pm PDT, <b>October 12</b>. We will notify speakers of acceptance by <b>Oct 19. </b>Once accepted, the event committee will collaborate with the speakers on the content review from <b>Oct 22 to Nov 9.  </b>The event committee will request all speakers to use the community slide template.</p>
+<p>Speakers should plan to attend the event in person. Travel to and accommodations in China and registration for KubeCon ($300 fee) are the responsibility of attendees. Registration link is added<a href="https://www.bagevent.com/event/ticket/1419821?bag_track%3Dundefined%26_ga%3D2.263650828.1674888792.1534696869-1258576529.1534174264&amp;sa=D&amp;source=hangouts&amp;ust=1536763796113000&amp;usg=AFQjCNFzW2PlEmPpCoO1vmEm73I9NWGj3Q&amp;bag_track=undefined&amp;bag_track=undefined&amp;_ga=2.210507797.1459331173.1537294480-712675146.1535979664"> here</a>. After registering for the conference, you will have the opportunity to select and RSVP for the Tungsten Fabric Workshop.</p>
+<p>The workshop will feature the announcement of the first Tungsten Fabric lab in China, the first Linux Foundation Certified Lab for Network Technology Innovation. Another highlight of the workshop will be a drawing for a new Apple iWatch, provided through the generosity of SDNLAB (www.sdnlab.com).</p>
+<p><b>Special Notes for KubeCon North America</b></p>
+<p>Deadline for submissions is 11:59 pm PDT, <strong>October 31</strong>. We will notify speakers of acceptance by <b>November 9. </b>Once accepted, the event committee will collaborate with the speakers on the content review from <b>November 9 to December 7.  </b>The event committee will request all speakers to use the community slide template.</p>
+<p>Speakers should plan to attend the event in person. Travel to and accommodations in Seattle, Washington, and registration for KubeCon are the responsibility of attendees.</p>
+<p>The Tungsten Fabric Developers Summit is free of charge. However, everyone attending a co-located event must have a ticket to KubeCon + CloudNativeCon North America 2018 (cost is estimated at $1150). This provides access to the entire KubeCon NA conference, and we encourage you to enjoy all that the conference has to offer. Register <a href="https://www.regonline.com/registration/Checkin.aspx?EventID=2246960&amp;_ga=2.176207264.467216612.1538146480-2070928008.1535589349">here</a>. After registering for the conference, you will have the opportunity to select and RSVP for the Tungsten Fabric Developers Summit.</p>
+<p>Join us in Shanghai and/or Seattle to tell your Tungsten Fabric story and engage with the community to shape the future of open, scalable, multi-cloud networking.</p>
+<div id="jp-relatedposts" class="jp-relatedposts"></div>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Deployments and management made easy with Openstack &#038; Opencontrail Helm</title>
+		<link>https://tungsten.io/deployments-and-management-made-easy-with-openstack-opencontrail-helm/</link>
+		
+		<dc:creator><![CDATA[Ranjini Rajendran]]></dc:creator>
+		<pubDate>Mon, 06 Nov 2017 22:52:17 +0000</pubDate>
+				<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[Orchestration]]></category>
+		<category><![CDATA[SDN]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7625</guid>
+
+					<description><![CDATA[Note: This blog is co&#8211;authored by Ranjini Rajendran and Madhukar Nayakbomman from Juniper Networks. OpenStack provides modular architecture to enable IaaS for primarily managing virtualized workloads. However, this open source platform is a...]]></description>
+										<content:encoded><![CDATA[<p>Note: This blog is <em>co</em>&#8211;<em>authored</em> by Ranjini Rajendran and Madhukar Nayakbomman from Juniper Networks.</p>
+<p>OpenStack provides modular architecture to enable IaaS for primarily managing virtualized workloads. However, this open source platform is a complex piece of architecture, one that provides organizations with a tall order problem for dealing with configuration and management of  applications. One of the biggest challenge or pain point that Cloud administrators experience is around life cycle management of Openstack enabled Cloud environments.</p>
+<p>To simplify the life cycle management of Openstack components, Openstack-helm project was started during the Barcelona Openstack Summit in 2016. In October 2017, Openstack-helm became an official Openstack Project.</p>
+<p>&nbsp;</p>
+<h3>What is Helm</h3>
+<p>Well, think of it as the apt-get / yum of Kubernetes, it is a package manager for Kubernetes. If you deploy applications to Kubernetes, Helm makes it incredibly easy to</p>
+<ul>
+<li>version deployments</li>
+<li>package deployments</li>
+<li>make a release of it</li>
+<li>and deploy, delete, upgrade and</li>
+<li>even rollback those deployments</li>
+</ul>
+<p>as “charts”.</p>
+<p>“Charts” being the terminology that Helm uses for a package of configured Kubernetes resources.</p>
+<h3>What is Openstack-Helm ?</h3>
+<p>Openstack-Helm project enables deployment, maintenance and upgrades of loosely coupled Openstack services and its dependencies as kubernetes pods. The different components of Openstack like glance, keystone, nova, neutron, heat etc are deployed as kubernetes pods. More details about the openstack-helm charts can be found at:</p>
+<p><a href="https://github.com/openstack/openstack-helm">https://github.com/openstack/openstack-helm</a></p>
+<h3>OpenContrail Helm charts</h3>
+<p>Recently, OpenContrail components have been containerized. There are mainly three containers in Opencontrail &#8211;</p>
+<ul>
+<li>OpenContrail Controller (config and control nodes)</li>
+<li>OpenContrail Analytics (Analytics node)</li>
+<li>OpenContrail Analytics DB (Analytics Database node)</li>
+</ul>
+<p>There is now support for  OpenContrail Helm charts for deployment, maintenance, and upgrade of these  Opencontrail Container pods. The details on OpenContrail Helm charts can be found here:</p>
+<p><a href="https://github.com/Juniper/contrail-docker/tree/master/kubernetes/helm/contrail">https://github.com/Juniper/contrail-docker/tree/master/kubernetes/helm/contrail</a></p>
+<p>The video below shows the integration of OpenContrail helm charts with Openstack-helm and how easy it is to upgrade OpenContrail using helm charts with minimal downtime for existing tenant workloads.</p>
+<p><iframe src="https://www.youtube.com/embed/nDZvJEkkt2U" width="560" height="315" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+<p>&nbsp;</p>
+<p>You can also see this at Openstack Sydney summit session on Tuesday 7<sup>th</sup> November at 5:50 pm. <a href="https://www.openstack.org/summit/sydney-2017/summit-schedule/events/19938">https://www.openstack.org/summit/sydney-2017/summit-schedule/events/19938</a></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Juniper &#038; Red Hat Serve Up an Open Double-Stack Cloud with an SDN Twist</title>
+		<link>https://tungsten.io/juniper-red-hat-serve-up-an-open-double-stack-cloud-with-an-sdn-twist/</link>
+		
+		<dc:creator><![CDATA[James Kelly]]></dc:creator>
+		<pubDate>Tue, 02 May 2017 01:05:17 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Integration]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenShift]]></category>
+		<category><![CDATA[SDN]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7490</guid>
+
+					<description><![CDATA[Juniper Networks Contrail Networking, developed in the OpenContrail open source project, has long been a part of Red Hat’s millinery. The partnership between Juniper and Red Hat goes back some...]]></description>
+										<content:encoded><![CDATA[<p><img decoding="async" class="alignright size-full wp-image-7492" src="http://www.opencontrail.org/wp-content/uploads/2017/05/medium.jpg" alt="" width="288" height="400" data-id="7492" />Juniper Networks Contrail Networking, developed in the OpenContrail open source project, has long been a part of Red Hat’s millinery. The <a href="https://www.juniper.net/assets/us/en/local/pdf/solutionbriefs/3510554-en.pdf" target="_blank" rel="nofollow noopener noreferrer">partnership between Juniper and Red Hat</a> goes back some years now. Collaborating on OpenStack cloud and NFV infrastructure has won these partners success in supporting large enterprises and communications service providers like Orange Business Services.</p>
+<p>At the long list of open source festivities in Boston over the next 2 weeks, you will hear these partners in cloud building on their past successful OpenStack + Contrail integration and now putting the spotlight on new integrations to support cloud native. You’ve heard me blog about the OpenContrail integration with OpenShift back a year already (in its first alpha form that I <a href="http://jameskelly.net/blog/2016/4/7/getting-to-gifee-with-sdn-demo" target="_blank" rel="nofollow noopener noreferrer">demoed</a>), and more recently for CloudNativeCon and DockerCon <a href="http://jameskelly.net/blog/2017/3/27/the-best-sdn-for-openstack-now-for-kubernetes" target="_blank" rel="nofollow noopener noreferrer">talking</a> about how we evolved that work to make this integration enterprise-ready and up-to-date with all the innovation that’s happened in the fast-paced OpenShift releases.</p>
+<p><strong>But how do you get the best of OpenStack and OpenShift?</strong></p>
+<p>Red Hat has been helping customers to move faster with devops, continuous delivery, and containers using OpenShift for a long time. Naturally Red Hat often does this atop of Red Hat OpenStack Platform, where OpenStack creates clusters of virtual machine hosts for the Red Hat OpenShift Container Platform cluster.</p>
+<p>One latent hitch in this double stack is the software-defined networking (SDN). Like OpenStack, OpenShift and Kubernetes (on which OpenShift is based) have their opportunities for improvement. One area that is frequently fortified and improved is the software-defined networking (SDN), and the importance of doing this doubles when you’re running the double stack of OpenShift on top of OpenStack.</p>
+<p>Why can SDN be such a snag? Well, the network is a critical part of any cloud, and especially cloud-native, infrastructure because of the enormous volume of microservice-generated east-west traffic, along with load balancing, multi-tenancy, and security requirements; that’s just for starters. The good-enough SDN that is included but swappable in such open source cloud stacks is very often indeed good enough for small cloud setups, but it is common to see the SDN replaced with something more robust for clouds with more than 100 nodes or other advanced use cases like NFV.</p>
+<p><strong>Fast and Furious Clouds</strong></p>
+<p>I think of this 100-node edge like the 100mph edge of a car… As I make my way to Boston, I just took an Uber to SFO, and of course, it was a Prius. Like most cars nowadays they’re very efficient and great for A-to-B commuting. But also like most cars, when you approach or (hopefully don’t) pass 100mph mark, the thing feels like it is going to disintegrate! I was a little uneasy today flying down the 101 at just 80-something mph. Eeek!</p>
+<p>Now I love to drive, and drive fast, but I don’t do it in a bloody Prius! My speed-seeking readers will probably know, as I do, that if you go fast in a sports car, it is a way better experience. It’s smooth at high speeds, and the power feels awesome. Now let’s say you also aren’t just driving in a straight line, but you’re on the Laguna Seca Raceway. To handle cornering agility, gas and maintenance pit stops, and defense/offense versus the other drivers, you need more than just smooth handling. The requirements add up. I think you get my drift…</p>
+<p>My point is that, similarly, if you’re going to build a cloud, you need to consider that you’re going to need a lot more than good enough. Good enough might do you fine for some dev/test or basic scenarios, but if you need performance, elastic scale, resilience, F1-pit-crew speed and ease of maintenance, and a security defense/offense, then you need to invest in building the best. Juniper has been helping its customers build the best networks for over 20 years. It’s what Juniper is known for: high-performance and innovation. When you (or say NSS) compare security solutions, again, Juniper is on top for performance, effectivity (stopping the bad stuff) and value I might add.</p>
+<p><strong>When Compounding Good-enough Isn’t Great</strong></p>
+<p>Imagine the challenges you can run into with good-enough networking… now imagine you stack two such solutions on top of each other. That’s what happens with OpenShift or Kubernetes on top of OpenStack.</p>
+<p>In this kind of scenario, compounding the two stacks’ SDN, as you demand more from your cloud, you will double complexity and twice as quickly hit network disintegration!</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-7491" src="http://www.opencontrail.org/wp-content/uploads/2017/05/large.jpg" alt="" width="565" height="267" data-id="7491" /></p>
+<p><strong>Ludacris Mode for Your Cloud</strong></p>
+<p>If you want to drive your cloud fast and furious, <em>and not crash</em>, you need some racing readiness. OpenContrail is designed for this, and proven in some of the largest most-demanding clouds. No need to recount the awesomeness here. It’s already well documented. Before you green-light it though, there is one thing we’ve needed to iron out: How does an OpenContrail <em>double stack</em> drive?</p>
+<p><strong>SDN Inception</strong></p>
+<p>When OpenContrail developers were in their first throws of SDN integration for Kubernetes and OpenShift, we often ran it inside of an OpenStack cloud. And what was the OpenStack SDN? OpenContrail of course. Yep, that’s right we have OpenContrail providing an IP overlay on top of the physical network for the OpenStack VM connectivity, and then inside of that overlay and those VMs we installed OpenShift (or Kubernetes) with another OpenContrail overlay. It turns out this SDN inception works just fine. There’s nothing special to it. OpenContrail just requires an IP network, and the OpenStack-level OpenContrail fits the bill perfectly.</p>
+<p>In fact, SDN inception is pretty common, but not usually with the same SDN at both levels. The main place this happens in practice is because we run cloud-native CaaS/PaaS stacks like Kubernetes, Mesos, OpenShift paired with OpenContrail on top of public clouds, and that public IaaS line AWS has its own underlying SDN. It provides the IP underlay that we need in those cases.</p>
+<p>What about when we control the SDN at the IaaS AND the CaaS/PaaS layers? Even if 2 SDNs (the same or different solution) work well stacked atop each other, it’s not ideal because there is still double the complexity of managing them. If only there was a better way…</p>
+<p><strong>A New Hat Stack Trick</strong></p>
+<p>This is where the OpenContrail community was inspired to raise the bar, and the Red Hat stack of OpenShift on OpenStack is the perfect motivation. What’s now possible today is to unwind the SDN inception and use one single control and data plane for OpenShift or Kubernetes on top of OpenStack when you run OpenContrail. The way this is realized is by having the OpenStack layer work as usual, and using OpenContrail in a different way with OpenShift or Kubernetes. In that instance, the OpenContrail plugin for OpenShift/Kubernetes master will speak directly to the OpenContrail controller used at the OpenStack layer. To collapse the data plane, we have a CNI plugin passthru that will not require the OpenContrail vRouter to sit inside the host VM for each OpenShift/Kubernetes minion (compute) node. Instead the traffic will be channeled from the container to the underlying vRouter that is sitting on the OpenStack nova compute node. We’ll save further technicalities and performance boost analysis for an OpenContrail engineering blog another day.</p>
+<p>Juniper and Red Hat work on this latest innovation of flattening the SDN stack is coming to fruition. It is available today in the <a href="http://www.opencontrail.org/" target="_blank" rel="nofollow noopener noreferrer">OpenContrail community</a> or Juniper <a href="https://www.juniper.net/us/en/products-services/sdn/contrail/contrail-networking/" target="_blank" rel="nofollow noopener noreferrer">Contrail Networking</a> beta, and slated for Juniper’s next Contrail release. As to that, stay tuned. As to catching this in action, visit Juniper and Red Hat at the Red Hat Summit this week and the OpenStack Summit next week. We’ll see you there, and I hope you hear about this and more OpenContrail community innovations ahead and in deployment at the <a href="http://www.opencontrail.org/event/ocug-boston-2017/">OpenContrail User Group</a> meeting next week.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>A Contrarian Viewpoint On Container Networking</title>
+		<link>https://tungsten.io/a-contrarian-viewpoint-on-container-networking/</link>
+		
+		<dc:creator><![CDATA[James Kelly]]></dc:creator>
+		<pubDate>Mon, 17 Apr 2017 16:33:18 +0000</pubDate>
+				<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Containers]]></category>
+		<category><![CDATA[Docker]]></category>
+		<category><![CDATA[SDN]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7468</guid>
+
+					<description><![CDATA[With DockerCon in Austin happening this week, I’m reminded of last year’s DockerCon Seattle, and watching some announcements with utter fascination or utter disappointment. Let’s see if we can’t turn...]]></description>
+										<content:encoded><![CDATA[<p><img loading="lazy" decoding="async" class="aligncenter wp-image-7470" src="http://www.opencontrail.org/wp-content/uploads/2017/04/dockercon_2017_blogpost.png" alt="" width="582" height="250" data-id="7470" /></p>
+<p>With DockerCon in Austin happening this week, I’m reminded of last year’s DockerCon Seattle, and watching some announcements with utter fascination or utter disappointment. Let’s see if we can’t turn the disappointments into positives.</p>
+<p>The first disappointment has a recent happy ending. It was a broadly shared observation in Seattle, the media, and discussion forums: Docker was overstepping when they bundled in Swarm with the core of Docker Engine in 1.12. This led to the trial balloon that forking Docker was a potential solution towards a lighter-weight Docker that could serve in Mesos and Kubernetes too. Last September I covered this <a href="https://www.linkedin.com/pulse/meet-fockers-what-fork-james-kelly" target="_blank">in my blog</a> sparing little disdain over the idea of forking Docker Engine simply because it had become too monolithic. There are other good options, and I’m happy to say Docker heeded the community’s outcry and cleanly broke out a component of Docker Engine called containerd which is the crux of the container runtime. This gets back to the elegant Unix-tool inspired modularization and composition, and I’m glad to see containerd and rkt have recently been accepted into the CNCF. Crisis #1 averted.</p>
+<p>My next disappointment was not so widely shared, and in fact it is still a problem at large today: the viewpoint on container networking. Let’s have a look.</p>
+<h3><strong>IS CONTAINER NETWORKING SPECIAL?</strong></h3>
+<p>When it comes to containers, there’s a massive outpour of innovation from both mature vendors and startups alike. When it comes to SDN there’s no exception.</p>
+<p>Many of these solutions you can discount because, as I said <a href="https://www.linkedin.com/pulse/best-sdn-openstack-now-kubernetes-james-kelly" target="_blank">in my last blog</a>, as shiny and interesting as they may be on the surface or in the community, their simplicity is quickly discovered as a double-edged sword. In other words, they may be easy to get going and wrap your head around, but they have serious performance issues, security issues, scale issues, and “experiential cliffs” to borrow a turn of phrase from the Kubernetes founders when they commented on the sometimes over-simplicity of many PaaS systems (iow. they hit a use case where the system just can’t do that experience/feature that is needed).</p>
+<h3><strong>BACK TO DOCKERCON SEATTLE…</strong></h3>
+<p>Let’s put aside the SDN startups that to various extents suffer from the over-simplicity or lack of soak and development time, leading to the issues above. The thing that really grinds my gears about last year’s DockerCon can be boiled down to Docker, a powerful voice in the community, really advocating that container networking was making serious strides, when at the same time they were using the most primitive of statements (and solution) possible, introducing “Multi-host networking”</p>
+<p id="yui_3_17_2_1_1492446495186_899">You may recall my social post/poke at the photo of this slide with my sarcastic caption.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-7469" src="http://www.opencontrail.org/wp-content/uploads/2017/04/dockercon_2017_blogpost_image2.png" alt="" width="750" height="421" data-id="7469" /></p>
+<p>Of course, Docker was talking about their overlay-based approach to networking that was launched as the (then) new default mode to enable networking in Swarm clusters. The problem is that most of the community are not SDN experts, and so they really don’t know any better than to believe this is an aww!-worthy contribution. A few of us that have long-worked in networking were less impressed.</p>
+<p>Because of the attention that container projects get, Docker being the biggest, these kind of SDN solutions are still seen today by the wider community of users as good networking solutions to go with because they easily work in the very basic CaaS use cases that most users start playing with. Just because they work for your cluster today, however, doesn’t make them a solid choice. In the future your netops team will ask about X, Y and Z (and yet more stuff down the road they won’t have the foresight to see today). Also in the future you’ll expand and mature your use cases and start to care about non-functional traits of the network which often happens too late in production or when problems arise. I totally get it. Networking isn’t the first thing you want to think about in the cool new world of container stacks. It’s down in the weeds. It’s more exciting to contemplate the orchestration layer, and things we understand like our applications.</p>
+<p>On top of the fact that many of these new SDN players offer primitive solutions with hidden pitfalls down the road that you won’t see until it’s too late, another less pardonable nuisance is the fact that most of them are perpetrating the myth that container networking is somehow special. I’ve heard this a lot in various verbiage over the ~7 years that SDN has arisen for cloud use cases. Just this week, I read a meetup description that started, “Containers require a new approach to networking.” Because of all the commotion in the container community with plenty of new SDN projects and companies having popped up, you may be duped into believing that, but it’s completely false. These players have a vested interest, though, in making you see it that way.</p>
+<h3><strong>THE TRUTH ABOUT NETWORKING CONTAINERS</strong></h3>
+<p>The truth is that while workload connectivity to the network may change with containers (see CNM or CNI) or with the next new thing, the network itself doesn’t need to change to address the new endpoint type. Where networks did need some work, however, is on the side of plugging into the orchestration systems. This meant that networks needed better programmability and then integration to connect-up workloads in lock-step with how the orchestration system created, deleted and moved workloads. This meant plugging into systems like vSphere, OpenStack, Kubernetes, etc. In dealing with that challenge, there were again two mindsets to making the network more programmable, automated, and agile: one camp created totally net-new solutions with entirely new protocols (OpenFlow, STT, VxLAN, VPP, etc.), and the other camp used existing protocols to build new more dynamic solutions that met the new needs.</p>
+<p>Today the first camp solutions are falling by the wayside, and the camp that built based on existing open standards and with interoperability in mind is clearly winning. <a href="http://www.opencontrail.org/" target="_blank">OpenContrail</a> is the most successful of these solutions.</p>
+<p>The truth about networks is that they are pervasive and they connect everything. Interoperability is key. 1) Interoperability across networks: If you build a network that is an island of connectivity, it can’t be successful. If you build a network that requires special/new gateways, then it doesn’t connect quickly and easily to other networks using existing standards, and it won’t be successful. 2) Interoperability across endpoints connections: If you build a network that is brilliant at connecting only containers, even if it’s interoperable with other networks, then you’ve still created an island. It’s an island of operational context because the ops team needs a different solution for connecting bare-metal nodes and virtual machines. 3) Interoperability across infrastructure: If you have an SDN solution that requires a lot from the underlay/underlying infrastructure, it’s a failure. We’ve seen this with SDNs like NSX that required multicast in the underlay. We’ve seen this with ACI that requires Cisco switches to work. We’ve even seen great SDN solutions in the public cloud, but they’re specific to AWS or GCP. If your SDN solution isn’t portable anywhere, certainly to most places, then it’s still doomed.</p>
+<h3><strong>IF YOU WANT ONE UNIFIED NETWORK, YOU NEED ONE SDN SOLUTION</strong></h3>
+<p>This aspect of interoperability and portability actually applies to many IT tools if you’re really going to realize a hybrid cloud and streamline ops, but perhaps nowhere is it more important than in the network because of its inherently pervasive nature.</p>
+<p>If you’re at DockerCon this week, you’ll be happy to know that the best solution for container networking, OpenContrail, is also the best SDN for Kubernetes, Mesos, OpenStack, NFV, bare-metal node network automation, and VMware. While this is one SDN to rule and connect them all, and very feature rich in its 4th year of development, it’s also never been more approachable, both commercially turn-key and in open source. You can deploy it on top of any public cloud or atop of private clouds with OpenStack or VMware, or equally easily on bare-metal CaaS, especially with Kubernetes, thanks to Helm.</p>
+<p>Please drop by and ask for an OpenContrail demo and <a href="https://www.facebook.com/plugins/post.php?href=https%3A%2F%2Fwww.facebook.com%2Fphoto.php%3Ffbid%3D677962765593635%26set%3Da.156115871111663.33285.100001397528602%26type%3D3&amp;width=500" target="_blank">sticker</a>! for your laptop or phone at the Juniper Networks booth, and booths of partners of Juniper’s that have Juniper Contrail Networking integrations: Red Hat, Mirantis, Canonical, and we’re now happy to welcome Platform9 to the party too. We at Juniper will be showcasing a joint demo with Platform9 that you can read more about on the <a href="https://platform9.com/blog/sdn-kubernetes-opencontrail-platform9-bring-simple-secure-container-networking-solution-enterprises/" target="_blank">Platform9 blog</a>.</p>
+<p>PS. If you’re running your CaaS atop of OpenStack, then even more reason that you’ll want to stop by and get a sneak peak of what you’ll also hear more about at the upcoming Red Hat and OpenStack Summits in Boston.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>OpenContrail &#8211; Enabling Advancements in Cloud Infrastructure Adoption</title>
+		<link>https://tungsten.io/opencontrail-enabling-advancements-in-cloud-infrastructure-adoption/</link>
+		
+		<dc:creator><![CDATA[Geoff Sullivan]]></dc:creator>
+		<pubDate>Fri, 14 Apr 2017 18:19:18 +0000</pubDate>
+				<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[Orchestration]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Service Provider]]></category>
+		<category><![CDATA[Use Case]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7458</guid>
+
+					<description><![CDATA[OpenContrail has solidified its position as the top SDN and network automation solution for OpenStack, and recently announced it&#8217;s integration into Kubernetes (K8s) and thus OpenShift (recent versions are powered by Kubernetes.) What does this mean for...]]></description>
+										<content:encoded><![CDATA[<p><a href="http://www.opencontrail.org/wp-content/uploads/2017/04/AAEAAQAAAAAAAAm9AAAAJDIwMDFhYWI3LWI2YWYtNDVhNC1iOTMwLTFiNGNjODZkYTdhZg.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-7460" src="http://www.opencontrail.org/wp-content/uploads/2017/04/AAEAAQAAAAAAAAm9AAAAJDIwMDFhYWI3LWI2YWYtNDVhNC1iOTMwLTFiNGNjODZkYTdhZg.png" alt="" width="651" height="350" data-id="7460" /></a></p>
+<p>OpenContrail has solidified its position as the top SDN and network automation solution for <a href="https://www.openstack.org/" target="_blank" rel="nofollow noopener">OpenStack</a>, and <a href="http://www.opencontrail.org/the-best-sdn-for-openstack-now-for-kubernetes/" target="_blank" rel="nofollow noopener">recently announced</a> it&#8217;s integration into <a href="https://kubernetes.io/" target="_blank" rel="nofollow noopener">Kubernetes (K8s)</a> and thus <a href="https://www.openshift.com/" target="_blank" rel="nofollow noopener">OpenShift</a> (recent versions are powered by Kubernetes.) What does this mean for the organization mapping out their cloud infrastructure architecture?</p>
+<h3>VMware -&gt; OpenStack -&gt; Kubernetes</h3>
+<p>At this juncture in cloud adoption, service providers and enterprises alike are defining their ever evolving stacks. The emergence of containers has changed the game &#8211; changing the conversation from &#8220;OpenStack or Kubernetes?&#8221; to &#8220;OpenStack and Kubernetes.&#8221; In many cases VMware is still in the mix somewhere. The combination of these platforms allows an organization to select the best hosting platform for each workload, based on it&#8217;s own unique characteristics:</p>
+<ul>
+<li>Aging monolithic application that will be deprecated in the next few years? Keep it where it is (VMware.)</li>
+<li>Distributed multi-tier web app? Perhaps OpenStack is a good candidate.</li>
+<li>Highly variable, net new microservices based application(s) &#8211; Kubernetes will allow the individual microservices to scale up and down independently of one another.</li>
+</ul>
+<p>While all of this choice provides flexibility, it introduces complexity &#8211; especially on the network with each of the three platforms with three different networking stacks.</p>
+<h3>How Contrail enables Successful Cloud Adoption</h3>
+<p>Introducing Contrail into a heterogeneous cloud/virtualization environment will help an organization move towards SDN adoption based on open standards. One SDN solution to manage them all! Furthermore, it isn&#8217;t realistic or likely for an organization to go from VMware to OpenStack to Kubernetes all at once &#8211; that is too much change to manage and it introduces risk. Because of it&#8217;s interoperability with all of these platforms, introducing Contrail will allow an organization to stitch together their virtualization/container platforms on their terms as their infrastructure evolves with the applications that sit atop it.</p>
+<p>Check out how Contrail integrates with VMware, OpenStack, Kubernetes and OpenShift:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2017/04/AAEAAQAAAAAAAA2YAAAAJDA1ZDg2MGU3LWU4OTAtNDA2NS1hMjJhLTgwMzVhZjM4ZmRiMQ.png"><img loading="lazy" decoding="async" class="size-full wp-image-7459 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2017/04/AAEAAQAAAAAAAA2YAAAAJDA1ZDg2MGU3LWU4OTAtNDA2NS1hMjJhLTgwMzVhZjM4ZmRiMQ.png" alt="" width="960" height="458" data-id="7459" /></a></p>
+<ul>
+<li><a href="http://www.opencontrail.org/integrating-vmware-esxi-with-openstack-opencontrail/" target="_blank" rel="nofollow noopener">Integrating VMware ESXi with OpenStack, OpenContrail</a></li>
+<li><a href="http://www.juniper.net/techpubs/en_US/contrail2.2/topics/task/configuration/vcenter-integration-vnc.html" target="_blank" rel="nofollow noopener">Installing Contrail with VMware vCenter</a></li>
+<li><a href="http://www.opencontrail.org/opencontrail-kubernetes-integration/" target="_blank" rel="nofollow noopener">OpenContrail Kubernetes Integration</a></li>
+<li><a href="https://www.youtube.com/user/OpenContrail" target="_blank">Video Demo: OpenContrail integration with OpenShift, Kubernetes</a></li>
+</ul>
+<h3>3 ways to get Getting Started with OpenContrail</h3>
+<ul>
+<li>Try it yourself! &#8211; <a href="http://www.opencontrail.org/opencontrail-quick-start-guide/" target="_blank" rel="nofollow noopener">OpenContrail Quick Start Guide</a> (Software <em>Installation guide</em> for <em>OpenContrail)</em></li>
+<li>Try OpenContrail Sandbox &#8211; <a href="http://www.opencontrail.org/sandbox/" target="_blank" rel="nofollow noopener">The Contrail Sandbox</a> is a cloud based testing environment that can help you evaluate Contrail Networking product on our infrastructure free of cost</li>
+<li><a href="http://mailto:gsullivan@juniper.net/" target="_blank" rel="nofollow noopener">Let&#8217;s Chat &#8211; Shoot me an email!</a></li>
+</ul>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

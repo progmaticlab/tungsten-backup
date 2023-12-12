@@ -1,0 +1,1146 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Tue, 25 Jul 2023 20:59:21 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>Tungsten Fabric</title>
+	<link>https://tungsten.io/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Deploying a Kubernetes operator in OpenShift 4.x platform</title>
+		<link>https://tungsten.io/deploying-a-kubernetes-operator-in-openshift-4-x-platform/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Mon, 16 Aug 2021 14:54:00 +0000</pubDate>
+				<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenShift]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Use Case]]></category>
+		<category><![CDATA[CoreOS]]></category>
+		<category><![CDATA[Open Source]]></category>
+		<category><![CDATA[Tungsten Fabric]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8367</guid>
+
+					<description><![CDATA[This is a contributed blog from LF Networking Member CodiLime.&#160;Originally published here. Contrail-operator&#160;is a recently released open-source Kubernetes operator that implements Tungsten Fabric&#160; as a custom resource. Tungsten Fabric is...]]></description>
+										<content:encoded><![CDATA[<link rel="canonical" href="https://codilime.com/blog/deploying-a-kubernetes-operator-in-openshift-4-x-platform">
+
+
+<p><em><strong>This is a contributed blog from LF Networking Member CodiLime.&nbsp;<a href="https://codilime.com/blog/deploying-a-kubernetes-operator-in-openshift-4-x-platform" target="_blank" rel="noreferrer noopener">Originally published here</a></strong>.</em></p>
+
+
+
+<p><strong><a href="https://github.com/Juniper/contrail-operator">Contrail-operator</a>&nbsp;is a recently released open-source Kubernetes operator that implements Tungsten Fabric&nbsp; as a custom resource. Tungsten Fabric is an open-source Kubernetes-compatible, network virtualization solution for providing connectivity and security for virtual, containerized or bare-metal workloads. An operator needed to be adjusted to the OpenShift 4.x platform, which introduced numerous changes to its architecture compared with previous versions. In this blog post, you’ll read about three interesting use cases and their solutions. All of these solutions are a part of&nbsp;<a href="https://github.com/Juniper/contrail-operator/tree/master/deploy/openshift">contrail-operator public repository</a>.</strong></p>
+
+
+
+<h2 class="wp-block-heading">Use case 1: inject kernel in CoreOS with OverlayFS</h2>
+
+
+
+<p><a href="https://en.wikipedia.org/wiki/OpenShift">OpenShift</a>&nbsp;is a container platform designed by Red Hat. Its version 4.x is based on nodes that use&nbsp;<a href="https://en.wikipedia.org/wiki/Container_Linux">CoreOS</a>, an open-source operating system based on the Linux kernel. CoreOS has been designed specifically to allow changes in the system only when booting it for the first time. These changes are introduced using ignition configs—JSON files containing, for example, names of services, files or users to be created. When the OS is up and running, most of its settings can be seen in read-only mode and users are not allowed to modify system settings.</p>
+
+
+
+<p>The setup is presented in Figure 1:</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/c03564453aee495e0696081960dd4ff0399cbc73/dff79/img/codilime_desired_deployment_of_tf_with_an_openshift_setup.png" alt="Deployment of Tungsten Fabric with an Openshift setup"/></figure>
+
+
+
+<p><strong>Fig 1. The desired deployment of Tungsten Fabric with an OpenShift setup</strong></p>
+
+
+
+<p>In Tungsten Fabric, vRouter is injected into the system as a kernel module. In the contrail-operator (and also in the&nbsp;<a href="https://github.com/tungstenfabric/tf-ansible-deployer">tf-ansible-deployer</a>, effectively the operator’s predecessor) this is done by launching a container that injects this module into the system. With OpenShift, this task is handled by daemonSet, which launches a pod on every node. In such a pod, one of the initContainers (i.e. containers launched to perform a given operation only once and then shut down, thus allowing the proper containers to be launched) injects the kernel module into the system. Yet given the characteristics of the CoreOS, this operation cannot be performed because a container will inject a read-only kernel module to /lib/modules.</p>
+
+
+
+<p>Enter the solution to this challenge: overlayFS, which virtually merges the two directories:/lib/modules (read only) and /opt/modules (writable). Ignition config is now created, which will set OverlayFS /lib/modules with /opt/modules directories. The latter was accessible and it was possible to inject a kernel module there (see Figure 2). Such a solution did not make any difference from the perspective of the Tungsten Fabric Controller. Hence, it was not necessary to change anything in TF itself.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/69eb2300a7ad4c2deafbe9ef00fd48a64557b067/b684f/img/codilime_overlayfs_of_two_directories.png" alt="The OverlayFS of two directories"/></figure>
+
+
+
+<p><strong>Fig. 2 The OverlayFS of two directories</strong></p>
+
+
+
+<p>Ignition config looks like this:</p>
+
+
+
+<pre class="wp-block-code"><code>apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+ labels:
+   machineconfiguration.openshift.io/role: master
+ name: 02-master-modules
+spec:
+ config:
+   ignition:
+     version: 2.2.0
+   storage:
+     directories:
+       - filesystem: "root"
+         path: "/opt/modules"
+         mode: 0755
+       - filesystem: "root"
+         path: "/opt/modules.wd"
+         mode: 0755
+     files:
+       - filesystem: "root"
+         path: "/etc/fstab"
+         mode: 0644
+         contents:
+           source: "data:,overlay%20/lib/modules%20overlay%20lowerdir=/lib/modules,upperdir=/opt/modules,workdir=/opt/modules.wd%200%200"</code></pre>
+
+
+
+<p>Source:&nbsp;<a href="https://github.com/Juniper/contrail-operator/blob/master/deploy/openshift/openshift/99_master-kernel-modules-overlay.yaml">GitHub</a></p>
+
+
+
+<p>Ignition config creates two directories: /opt/modules, to inject modules, and /opt/modules.wd, a working directory. Next, in the /etc/fstab, the mount is defined:</p>
+
+
+
+<p><code>overlay /lib/modules overlay lowerdir=/lib/modules,upperdir=/opt/modules,workdir=/opt/modules.wd</code></p>
+
+
+
+<p>Interestingly, it is not a typical ignition config for CoreOS, but a custom resource from an OpenShift cluster—MachineConfig. It performs the same functions as ignition config but is also visible as a cluster resource and allows you to edit the config when the cluster is running. In this way, you can apply changes to the CoreOS node even after first boot, which is not usually supported by standard CoreOS-based deployments. This is a feature specific to OpenShift.</p>
+
+
+
+<h2 class="wp-block-heading">Use case 2: set nftables rules of CoreOS with ignition config</h2>
+
+
+
+<p>CoreOS uses nftables, a newer framework for packet management than iptables. With a normal system like RHEL8, this is still an iptables command-line tool but in its backend it uses nftables. The iptables syntax is converted into respective nftables commands in the backend, so you can still use classic iptables commands and nftables will be still properly configured. Of course, in the CoreOS there is no such tool as iptables, as nobody assumes that the rules for packet handling will be changed when the system is up and running.&nbsp;</p>
+
+
+
+<p>It is true that in one of the initContainers located in a vRouter configuration pod, an iptables tool is used to carry out several operations. But the container is based on RHEL7 which in turn uses iptables backend. It is worth noting that a CLI iptables tool can support backend with iptables or nftables, though this depends on the system’s backend in which it was compiled.</p>
+
+
+
+<p>To check what backend is used by iptables (CLI), just write the following command:&nbsp;<code>iptables --version</code>. If&nbsp;<code>(nftables)</code>&nbsp;is the reply, the tool supports nftables backend. If there is no such reply, it means that the tool supports iptables backend.&nbsp;</p>
+
+
+
+<p>Meanwhile, a container had a version without nftables, so it was impossible to establish rules using a container. Ignition configs helped solve this challenge. During the system boot, rules can be established using a native iptables tool:</p>
+
+
+
+<pre class="wp-block-code"><code>apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+ labels:
+   machineconfiguration.openshift.io/role: master
+ name: 10-master-iptables
+spec:
+ config:
+   ignition:
+     version: 2.2.0
+   systemd:
+     units:
+     - name: iptables-contrail.service
+       enabled: <strong>true</strong>
+       contents: |
+         &#91;Unit]
+         Description=Inserts iptables rules required by Contrail
+         After=syslog.target
+         AssertPathExists=/etc/contrail/iptables_script.sh
+ 
+         &#91;Service]
+         Type=oneshot
+         RemainAfterExit=yes
+         ExecStart=/etc/contrail/iptables_script.sh
+         StandardOutput=syslog
+         StandardError=syslog
+ 
+         &#91;Install]
+         WantedBy=basic.target
+   storage:
+     files:
+     - filesystem: root
+       path: /blog/etc/contrail/iptables_script.sh
+       mode: 0744
+       user:
+         name: root
+       contents:
+         # 'data:,' and URL encoded openshift-install/sources/iptables_script.sh
+         source: data:...,</code></pre>
+
+
+
+<p>The full version of the code can be found on&nbsp;<a href="https://github.com/Juniper/contrail-operator/blob/master/deploy/openshift/openshift/99_worker-iptables-machine-config.yaml">GitHub</a>.</p>
+
+
+
+<p>In this config a service is created and run as a oneshot script during the system boot. The script is then created on the path:&nbsp;<code>/etc/contrail/iptables_script.sh</code>. The full version of the script is available in the&nbsp;<a href="https://github.com/Juniper/contrail-operator/blob/master/deploy/openshift/sources/iptables_script.sh">GitHub repository</a>. Generally speaking, these are simple iptables commands setting up the resources needed to run Tungsten Fabric.</p>
+
+
+
+<h2 class="wp-block-heading">Use case 3: why namespaced owner orphans cluster resource</h2>
+
+
+
+<p>The last use case concerns the implementation of Kubernetes. During the tests one of the child resources was constantly being deleted, for no apparent reason. An investigation revealed the source of the problem: Owner reference is set for resources like Persistent Volume and Storage Class. According to the&nbsp;<a href="https://kubernetes.io/docs/concepts/workloads/controllers/garbage-collection/">Kubernetes documentation</a>:&nbsp;</p>
+
+
+
+<blockquote class="wp-block-quote"><p><em>Cross-namespace owner references are disallowed by design. This means that namespace-scoped dependents can only specify owners in the same namespace, and owners that are cluster-scoped. Cluster-scoped dependents can only specify cluster-scoped owners, but not namespace-scoped owners.</em></p></blockquote>
+
+
+
+<p>So owner reference for Persistent Volume and Storage Class (both cluster-wide resources) was set for a namespaced resource. That was why the garbage collector in Kubernetes kept deleting the entire component. Garbage collector saw that the cluster-scoped resource had set the owner and tried to find it only in cluster-scoped resources. However, the owner was hidden in the namespace. As a result, the garbage collector recognized the resource as orphaned and deleted it in order to keep the cluster clean.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/62e099a3e5dd426221a23e4078597d92919738fb/37e61/img/codilime_namespace_owner.png" alt="MY RESOURCE can be the owner only of another resource in its namespace but not in a different namespace (cluster-scoped resource)"/></figure>
+
+
+
+<p><strong>Fig 3. MY RESOURCE can be the owner only of another resource in its namespace but not in a different namespace (cluster-scoped resource)</strong></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Tungsten Fabric as a Kubernetes CNI plugin</title>
+		<link>https://tungsten.io/tungsten-fabric-as-a-kubernetes-cni-plugin/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Mon, 09 Aug 2021 17:42:32 +0000</pubDate>
+				<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[LF Networking]]></category>
+		<category><![CDATA[LFN]]></category>
+		<category><![CDATA[Open Source]]></category>
+		<category><![CDATA[Tungsten Fabric]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8358</guid>
+
+					<description><![CDATA[This is a contributed blog from LF Networking Member CodiLime. Originally published here. CNI (Container Networking Interface) is an interface between container runtime and network implementation. It allows different projects,...]]></description>
+										<content:encoded><![CDATA[
+<p><em><strong>This is a contributed blog from LF Networking Member CodiLime. <a href="https://codilime.com/tungsten-fabric-as-a-kubernetes-cni-plugin/" target="_blank" rel="noreferrer noopener">Originally published here</a></strong>.</em></p>
+
+
+
+<p><strong>CNI (Container Networking Interface) is an interface between container runtime and network implementation. It allows different projects, like&nbsp;<a href="https://codilime.com/tungsten-fabric-architecture-an-overview/">Tungsten Fabric</a>, to provide their implementation of the CNI plugins and use them to manage networking in a&nbsp;<a href="https://codilime.com/glossary/kubernetes/">Kubernetes</a>&nbsp;cluster. In this blog post, you will learn how to use Tungsten Fabric as a Kubernetes CNI plugin to ensure network connectivity between containers and bare metals. You will also see an example of a nested deployment of a Kubernetes cluster into OpenStack VM with a TF CNI plugin.</strong></p>
+
+
+
+<p>The CNI interface itself is very simple. The most important operations it has to implement are ADD and DEL. As the names suggest, ADD’s role is to add a container to the network and DEL’s is to delete it from the network. That’s all. But are these functions performed?&nbsp;</p>
+
+
+
+<p>First things first: a kubelet is a Kubernetes daemon running on each node in a cluster. When the user creates a new pod, the Kubernetes API server orders a kubelet running on the node where the pod has been scheduled to create the pod. The kubelet will then create a network namespace for the pod, and allocate it by running the so-called “pause” container. One of the roles of this container is to maintain the network namespace which will be shared across all the containers in the pod. That’s why the containers inside the pod can “talk” to each other using the loopback interface. Then, for each container defined in the pod, the kubelet will call the CNI plugin.&nbsp;</p>
+
+
+
+<p>But how does it know how to use each plugin? First, it looks for the CNI configuration file in a predefined directory ( /etc/cni/net.d&nbsp;<a href="https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni" target="_blank" rel="noreferrer noopener">by default</a>). When using Tungsten Fabric, the kubelet is going to find a file like this:</p>
+
+
+
+<pre class="wp-block-code"><code>{
+    "cniVersion": "0.3.1",
+    "contrail" : {
+        "cluster-name"  : "&lt;CLUSTER-NAME&gt;",
+        "meta-plugin"   : "&lt;CNI-META-PLUGIN&gt;",
+        "vrouter-ip"    : "&lt;VROUTER-IP&gt;",
+        "vrouter-port"  : &lt;VROUTER-PORT&gt;,
+        "config-dir"    : "/var/lib/contrail/ports/vm",
+        "poll-timeout"  : &lt;POLL-TIMEOUT&gt;,
+        "poll-retries"  : &lt;POLL-RETRIES&gt;,
+        "log-file"      : "/var/log/contrail/cni/opencontrail.log",
+        "log-level"     : "&lt;LOG-LEVEL&gt;"
+    },
+    "name": "contrail-k8s-cni",
+    "type": "contrail-k8s-cni"
+  }</code></pre>
+
+
+
+<p>This file, among other parameters, specifies the name of the CNI plugin and IP (vrouter-ip) and port (vrouter-port) of the vRouter agent. By looking at this file, the kubelet knows it should use the CNI plugin binary called “contrail-k8s-cni”. It looks for it in a predefined directory ( /opt/cni/bin&nbsp;<a href="https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni" target="_blank" rel="noreferrer noopener">by default</a>) and, when it wants to create a new container, executes it with the command ADD passed through environment variables together with other parameters like: path to the pod’s network namespace, container id and container network interface name. The contrail-k8s-cni binary (you can find its source code&nbsp;<a href="https://github.com/tungstenfabric/tf-controller/tree/master/src/container/cni" target="_blank" rel="noreferrer noopener">here</a>) will read those parameters and send appropriate requests to the vRouter Agent.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/bb1cb15886dadd0311a7daf94482d72eab948af1/7fa29/img/codilime_tungsten-fabric-compute-with-kubernetes.png" alt="Tungsten Fabric compute with Kubernetes"/></figure>
+
+
+
+<p><strong>Fig 1. Tungsten Fabric compute with Kubernetes&nbsp;<a href="https://d33wubrfki0l68.cloudfront.net/bb1cb15886dadd0311a7daf94482d72eab948af1/7fa29/img/codilime_tungsten-fabric-compute-with-kubernetes.png" target="_blank" rel="noreferrer noopener">(Enlarge)</a></strong></p>
+
+
+
+<p>The vRouter Agent’s job is to create actual interfaces for the containers. But how does it know how to configure an interface? As you can see in the diagram above, it gets all this information from the Tungsten Fabric Control. So then how does the Tungsten Fabric Control know about all the pods, their namespaces, etc.? That’s where the Tungsten Fabric Kube Manager (you can find its source code&nbsp;<a href="https://github.com/tungstenfabric/tf-controller/tree/master/src/container/kube-manager" target="_blank" rel="noreferrer noopener">here</a>) comes in. It’s a separate service, launched together with other Tungsten Fabric SDN Controller components. It can be seen in the bottom left part of the diagram below.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/ae5f2aa3d9d32d1df4f649baa05ea40cd4f30dff/52ab7/img/codilime_tungsten-fabric-config-with-kubernetes.png" alt="Tungsten Fabric Config with Kubernetes"/></figure>
+
+
+
+<p><strong>Fig 2. Tungsten Fabric Config with Kubernetes&nbsp;<a href="https://d33wubrfki0l68.cloudfront.net/ae5f2aa3d9d32d1df4f649baa05ea40cd4f30dff/52ab7/img/codilime_tungsten-fabric-config-with-kubernetes.png" target="_blank" rel="noreferrer noopener">(Enlarge)</a></strong></p>
+
+
+
+<p>Kubemanager’s role is to listen for Kubernetes API server events like: pod creation, namespace creation, service creation, deletion. It listens for those events, processes them, and then creates, modifies or deletes appropriate objects in the Tungsten Fabric Config API. Tungsten Fabric Control will then find those objects and provide information about them to the vRouter agent. The vRouter Agent can then finally create the properly configured interface for the container. And that is how Tungsten Fabric can work as a Kubernetes CNI Plugin.</p>
+
+
+
+<p>Because Tungsten Fabric and Kubernetes are integrated, container-based workloads can be combined with virtual machines or bare metal server workloads. Moreover, rules for connectivity between those environments can all be managed in one place.</p>
+
+
+
+<h2 class="wp-block-heading">Tungsten Fabric nested deployment</h2>
+
+
+
+<p>From the networking point of view, virtual machines and containers are almost the same thing for Tungsten Fabric, so deployments that combine them are possible. Moreover, in addition to Kubernetes, Tungsten Fabric can also be integrated with OpenStack. Thanks to that, the two platforms can be combined. Let’s say that we have an already deployed OpenStack with Tungsten Fabric, but we want to deploy some of our workloads using containers. With Tungsten Fabric we can create what is called a nested deployment—OpenStack compute virtual machines with a Kubernetes cluster deployed on them with Tungsten Fabric acting as the CNI plugin.&nbsp;</p>
+
+
+
+<p>All of the Tungsten components need not be deployed as most of them are already running and controlling the OpenStack networking. However, on one of the nodes in the nested Kubernetes cluster, preferably the Kubernetes master node, we have to launch the Tungsten Fabric Kube Manager (described above). It will connect to the Kubernetes API Server in the nested cluster and to the Tungsten Fabric Config Api server deployed with OpenStack.&nbsp;</p>
+
+
+
+<p>Finally, the Tungsten Fabric CNI plugin and its configuration file must be present on each of the nested Kubernetes compute nodes. Please note that neither the Tungsten Fabric vRouter nor vRouter Agent need to be deployed on the nested Kubernetes nodes, as those components are already running on the OpenStack compute nodes and the Tungsten Fabric CNI plugin can send requests directly to them.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/b306396c1d01a92fc84cd1c46ebfd75aa05bf728/6a0c8/img/codilime_fig3.png" alt="Kubernetes on OpenStack with Tungsten Fabric Networking"/></figure>
+
+
+
+<p><strong>Fig 3. Kubernetes on OpenStack with Tungsten Fabric Networking&nbsp;<a href="https://d33wubrfki0l68.cloudfront.net/b306396c1d01a92fc84cd1c46ebfd75aa05bf728/6a0c8/img/codilime_fig3.png" target="_blank" rel="noreferrer noopener">(Enlarge)</a></strong></p>
+
+
+
+<p>A nested deployment of a Kubernetes cluster integrated with Tungsten Fabric is an easy way to start deploying container-based workloads, especially for enterprises that have been using OpenStack to manage their virtual machines. Network admins can use their Tungsten Fabric expertise and need not necessarily master new tools and concepts.</p>
+
+
+
+<h2 class="wp-block-heading">Summary</h2>
+
+
+
+<p>As you can see, a Kubernetes CNI plugin allows you to benefit from one of Tungsten Fabric’s key features—its ability to connect different workloads regardless of their function— containers, VMs or bare metals. Should you need to use containers and ensure their connectivity with your legacy infrastructure based on OpenStack, you can create a nested deployment of the Kubernetes cluster integrated with TF</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Tungsten Fabric architecture—an overview</title>
+		<link>https://tungsten.io/tungsten-fabric-architecture-an-overview/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Tue, 03 Aug 2021 00:14:33 +0000</pubDate>
+				<category><![CDATA[Analytics]]></category>
+		<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Linux Foundation]]></category>
+		<category><![CDATA[Open Source]]></category>
+		<category><![CDATA[Tungsten Fabric]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8350</guid>
+
+					<description><![CDATA[This is a contributed blog from LF Networking Member CodiLime. Originally published here. SDN or Software-Defined Networking is an approach to networking that enables the programmatic and dynamic control of...]]></description>
+										<content:encoded><![CDATA[
+<p><strong><em>This is a contributed blog from LF Networking Member CodiLime. </em></strong><a href="https://codilime.com/blog/tungsten-fabric-architecture-an-overview/"><strong><em>Originally published here</em></strong>.</a></p>
+
+
+
+<p><strong>SDN or Software-Defined Networking is an approach to networking that enables the programmatic and dynamic control of a network. It is considered the next step in the evolution of network architecture. To implement this approach effectively, you will need a mature SDN Controller such as Tungsten Fabric. Read our blog post to get a comprehensive overview of Tungsten Fabric architecture.</strong></p>
+
+
+
+<h2 class="wp-block-heading">What is Tungsten Fabric</h2>
+
+
+
+<p><a href="https://codilime.com/tungsten-fabric/">Tungsten Fabric</a>&nbsp;(previously OpenContrail) is an open-source&nbsp;<a href="https://codilime.com/glossary/sdn-controller/">SDN controller</a>&nbsp;that provides connectivity and security for virtual, containerized or bare-metal workloads. It is developed under the umbrella of&nbsp;<a href="https://tungsten.io/">the Linux Foundation</a>. Since most of its features are platform- or device agnostic, TF can connect mixed VM-container-legacy stacks. What Tungsten Fabric sees is only a source and target API. The technology stack that TF can connect includes:</p>
+
+
+
+<ul>
+<li>Orchestrators or virtualization platforms (e.g. OpenShift, Kubernetes, Mesos or VMware vSphere/Orchestrator)</li>
+
+
+
+<li>OpenStack (via a monolithic plug-in or an ML2/3 network driver mechanism)</li>
+
+
+
+<li>SmartNIC devices</li>
+
+
+
+<li>SR-IOV clusters</li>
+
+
+
+<li>Public clouds (multi-cloud or hybrid solutions)</li>
+
+
+
+<li>Third-party proprietary solutions</li>
+</ul>
+
+
+
+<p>One of TF’s main strengths is its ability to connect both the physical and virtual worlds. In other words, to connect in one network different workloads regardless of their nature. They can be Virtual Machines, physical servers or containers.</p>
+
+
+
+<p>To deploy Tungsten Fabric, you may need&nbsp;<a href="https://codilime.com/network-professional-services/">Professional Services (PS)</a>&nbsp;to integrate it with your existing infrastructure and ensure ease of use and security.</p>
+
+
+
+<h2 class="wp-block-heading">Tungsten Fabric components</h2>
+
+
+
+<p>The entire TF architecture can be divided into the&nbsp;<a href="https://codilime.com/glossary/control-plane/">control plane</a>&nbsp;and&nbsp;<a href="https://codilime.com/glossary/data-plane/">data plane</a>&nbsp;components. Control plane components include:</p>
+
+
+
+<ul>
+<li>Config—managing the entire platform</li>
+
+
+
+<li>Control—sending rules for network traffic management to vRouter agents</li>
+
+
+
+<li>Analytics—collecting data from other TF components (config, control, compute)</li>
+</ul>
+
+
+
+<p>Additionally, there are two optional components of the Config:</p>
+
+
+
+<ul>
+<li>Device Manager—managing underlay physical devices like switches or routers</li>
+
+
+
+<li>Kube Manager—observing and reporting the status of Kubernetes cluster</li>
+</ul>
+
+
+
+<p>Data plane or compute components include:</p>
+
+
+
+<ul>
+<li>vRouter and its agents—managing packet flow at the virtual interface vhost0 according to the rule defined in the control component and received using vRouter agents</li>
+</ul>
+
+
+
+<h2 class="wp-block-heading">TF Config—the brain of the platform</h2>
+
+
+
+<p>TF Config is the main part of the platform where network topologies are configured. It is the biggest TF component developed by the largest number of developers. In a nutshell, it is a database where all configurations are stored. All other TF components depend on the Config. The term itself has two meanings:</p>
+
+
+
+<ul>
+<li>VM where all containers are stored</li>
+
+
+
+<li>A container named “config” where the entire business logic is stored</li>
+</ul>
+
+
+
+<p>TF Config has two APIs: North API (provided by Config itself) and South API (provided by other control plane components). The first one is more important here because it is the API used for communication. The South API is used by Device Manager (also a part of TF and discussed later) and other tools.</p>
+
+
+
+<p>TF Config uses an intent-based approach. The network administrator does not need to define all conditions but only how the network is expected to work. Other elements are configured automatically. For example, you want to enable network traffic from one network to another. It is enough to define this intention, and all the magic is done under the hood.</p>
+
+
+
+<p>The schema transformer listens to the database to check if there is a new entry. When such an entry is added, it checks for lacking data and completes it using the Northbound API. In this way, network routings are created, a firewall is unblocked to enable the traffic to flow between these two networks, and the devices obtain all the data necessary to get the network up and running.&nbsp;</p>
+
+
+
+<p>An intent-based approach automates network creation. There are many settings that need to be defined when creating a new network, and it takes time to set up all of them. As a process, it is also error-prone. Using TF simplifies everything, as most settings are default ones and are completed automatically.</p>
+
+
+
+<p>When it comes to communication with Config, its API is shared via http. Alternatively, you can use a TF UI or cURL, a command line tool for file transfer with a URL syntax supporting a number of protocols including HTTP, HTTPS, FTP, etc. There is also a TF CLI tool.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/2e290badcc110dcce6a0552dbc336d7aff19ec7a/0799e/img/codilime_tungsten-fabric-config-with-openstack.png" alt="Tungsten Fabric Config with OpenStack" title="Fig 1. Tungsten Fabric Config with OpenStack"/></figure>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/ae5f2aa3d9d32d1df4f649baa05ea40cd4f30dff/7e06b/img/codilime_tungsten_fabric_config_with_kubernetes.png" alt="Tungsten Fabric Config with Kubernetes" title="Fig 2. Tungsten Fabric Config with Kubernetes"/></figure>
+
+
+
+<p></p>
+
+
+
+<h2 class="wp-block-heading">Managing physical devices with Device Manager</h2>
+
+
+
+<p>Device Manager is an optional component with two major functions. Both are related to fabric management, which is the management of underlay physical devices like switches or routers.</p>
+
+
+
+<p>First, it is responsible for listening to configuration events from the Config API Server and then for pushing required configuration changes to physical devices. Virtual Networks, Logical Routers and other overlay objects can be extended to physical routers and switches. Device Manager enables homogeneous configuration management of overlay networking across compute hosts and hardware devices. In other words, bare-metal servers connected to physical switches or routers may be a part of the same Virtual Network as virtual machines or containers running on compute hosts.</p>
+
+
+
+<p>Secondly, this component manages the life cycle of physical devices. It supports the following features:</p>
+
+
+
+<ul>
+<li>onboarding fabric—detect and import brownfield devices</li>
+
+
+
+<li>zero-touch provisioning—detect, import and configure greenfield devices</li>
+
+
+
+<li>software image upgrade—individual or bulk upgrade of device software</li>
+</ul>
+
+
+
+<p>Today only Juniper’s MX routers and QFX switches have&nbsp;<a href="https://github.com/tungstenfabric/tf-controller/tree/master/src/config/device-manager/device_manager/plugins/juniper/">an open-source plug-in</a>.</p>
+
+
+
+<h2 class="wp-block-heading">Device Manager: under the hood</h2>
+
+
+
+<p>Device Manager reports job progress by sending UVEs (User Visible Entities) to the Collector. Users can retrieve job status and logs using the Analytics API and it’s Query Engine. Device Manager works in full or partial mode. There can be only one active instance in the full mode. In this mode, it is responsible for processing events sent via RABBITMQ. It evaluates high-level intents like Virtual Networks or Logical Routers and translates them into a low-level configuration that can be pushed into physical devices. It also schedules jobs on the message queue that can be consumed by other instances running in partial mode. Those followers listen for new job requests and execute ansible scripts, which&nbsp; push the desired configuration to devices.</p>
+
+
+
+<p>Device Manager has the following components:</p>
+
+
+
+<ul>
+<li>device-manager—translates high-level intents into a low-level configuration</li>
+
+
+
+<li>device-job-manager—executes ansible playbooks, which configure routers and switches</li>
+
+
+
+<li>DHCP server—in a zero-touch provisioning use case, physical device gets management IP address from a local DHCP server running alongside device-manager</li>
+
+
+
+<li>TFTP server—in the zero-touch provision use case, this server is used to provide a script with the initial configuration</li>
+</ul>
+
+
+
+<h2 class="wp-block-heading">Kube Manager</h2>
+
+
+
+<p>Kube Manager is an additional component launched together with other Tungsten Fabric SDN Controller components. It is used to establish communication between Tungsten Fabric and Kubernetes, and is essential to their integration. In a nutshell, it listens to the Kubernetes API server events such as creation, modification or deletion of k8s objects (pods, namespaces or services). When such an event occurs, Kube Manager processes it and creates, modifies or deletes an appropriate object in the Tungsten Fabric Config API. Tungsten Fabric Control will then find those objects and send information about them along to the vRouter agent. After that, the vRouter agent can finally create the correctly configured interface for the container.&nbsp;</p>
+
+
+
+<p>The following example should clarify this process. Let’s say that an annotation is added to the namespace in Kubernetes, saying that the network in this namespace should be isolated from the rest of the network. Kube Manager gets the information about it and changes the setup of the TF object accordingly.</p>
+
+
+
+<h2 class="wp-block-heading">Control</h2>
+
+
+
+<p>The Control component is responsible for sending network traffic configurations to vRouter agents. Such configurations are received from the Config’s Cassandra database, which offers consistency, high availability and easy scalability. To represent the configuration and operational state of the environment, the IF-MAP (The Interface to Metadata Access Point) protocol is used. The control nodes exchange routes with one another using IBGP protocol to ensure that all control nodes have the same network state. Communication between Control and vRouter agents is done via Extensible Messaging and the Presence Protocol (XMPP)—a communications protocol for message-oriented middleware based on XML. Finally, the Control communicates with gateway nodes (routers and switches) using the BGP protocol.</p>
+
+
+
+<p>TF Control works similarly to a hardware router. Control is a control plane component responsible for steering the data plane and sending the traffic flow configuration to vRouter agents. For their part, hardware routers are responsible for handling traffic according to the instructions they receive from the control plane. In TF architecture, physical routers and their agent services work alongside vRouters and vRouter agents, as Tungsten Fabric can handle both physical and virtual worlds.</p>
+
+
+
+<p>TF Control communicates with a vRouter using XMPP, which is equivalent to a standard BGP session, though XMPP carries more information (e.g. configurations). Still, thanks to its reliance on XMPP, TF Control can send network traffic configurations to both vRouters and physical ones—the code used for communication is exactly the same.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/78293605fc2e819777b61ebc74e950624e0ebc2b/46b16/img/codilime_tungsten_fabric_control.png" alt="Tungsten Fabric Control" title="Fig. 3 Tungsten Fabric Control"/></figure>
+
+
+
+<p></p>
+
+
+
+<h2 class="wp-block-heading">Analytics</h2>
+
+
+
+<p>Analytics is a separate TF component that collects data from other components (config, control, compute). The following data are collected:</p>
+
+
+
+<ul>
+<li>Object logs (concrete objects in the TF structure)</li>
+
+
+
+<li>System logs</li>
+
+
+
+<li>Trace buffers</li>
+
+
+
+<li>Flow statistics in TF modules</li>
+
+
+
+<li>Status of TF modules (i.e. if they are working and what their state is)</li>
+
+
+
+<li>Debugging data (if a required data collection level is enabled in the debugging mode)</li>
+</ul>
+
+
+
+<p>Analytics is an additional component of Tungsten Fabric. TF works fine without it using just its main components. It can even be enabled as an additional plugin long after the TF solution was originally deployed.</p>
+
+
+
+<p>To collect the data coming from other TF components, an original Juniper protocol called Sandesh is used. The name comes from&nbsp;<a href="http://sandesh.com/">an Indian newspaper in Gujarati language</a>. “Sandesh” means “message” or “news”. Analogically, the protocol is the messenger that brings news about the SDN.</p>
+
+
+
+<p>In the Analytics component, there are two databases. One is based on the Cassandra database and contains historical data: statistics, logs, TF data flow information. It is commonly used for Analytics and Config components. Cassandra is the database that allows you to write data quickly, but it reads data more slowly. It is therefore used to write and store historical data. If there is a need to analyze how TF deployment worked over a longer period of time, this data can be read. In practice, such a need does not occur very often. This feature is most often used by developers to debug a problem.</p>
+
+
+
+<p>The second database is based on the Redis database and collects UVE (User Visible Entities) such as information about existing virtual networks, vRouters, virtual machines and about their actual state (whether it’s working or not). These are the components of the system infrastructure defined by users (in contrast to the elements created automatically under the hood by TF). Since the data about their state are dynamic, they are stored in the Redis database, which allows users to read them much more quickly than in the Cassandra database.&nbsp;</p>
+
+
+
+<p>All these TF components send data to the Collector, which writes them in either the Cassandra or Redis database. On the other side, there is an API Server which is sometimes called the Analytics API to distinguish it from the API Server, e.g. in the Config. This Analytics API provides a REST API for extracting data from the database.</p>
+
+
+
+<p>Apart from these, Analytics has one additional component, called QueryEngine. This is an indirect process taking a user query for historical data. The user sends an SQL-like query to the Analytics API (API Server) REST port. Then the query is sent to QueryEngine, which performs a database query in Cassandra and, via the Analytics API, sends the result back to the user.</p>
+
+
+
+<p>&nbsp;Figure 4 shows the Analytics Node Manager and Analytics Database Node Manager. In fact, there are many different node managers in the TF architecture that are used to monitor specific parts of the architecture and send reports about them. In our case, Analytics Node Manager monitors Collector, QueryEngine and API Server, while the Analytics Database Node Manager monitors databases in the Analytics component. In this way, Analytics also collects data on itself.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/ed127b73f4599b0f2fb94db2feca0d26b6878792/b3bb1/img/codilime_tungsten_fabric_analytics.png" alt="Tungsten Fabric Analytics" title="Fig. 4 Tungsten Fabric Analytics"/></figure>
+
+
+
+<p></p>
+
+
+
+<h2 class="wp-block-heading">The VRouter forwarder and agent</h2>
+
+
+
+<p>This component is installed on all compute hosts that run the workload. It provides Integrated routing and bridging functions for network traffic from and between Virtual Machines, Containers and external networks. It applies network and security rules defined by the Tungsten Fabric controller. This component is not mandatory, but it is required for any use case with virtualized workloads.&nbsp;</p>
+
+
+
+<ul>
+<li>Agent</li>
+</ul>
+
+
+
+<p>The agent is a user-space application that maintains XMPP sessions with the Tungsten Fabric controllers. It is used to get VRF (Virtual Routing and Forwarding) and ACLs (Access Control Lists) that are derived from high-level intents like Virtual Networks. The agent maintains a local database of VRFs and ACLs. This component reports its state to the Analytics API by sending Sandesh messages with UVEs (User Visible Entities) with logs and statistics. It is responsible for maintaining the correct forwarding state in Forwarder. The agent also handles some protocols like DHCP, DNS or ARP.</p>
+
+
+
+<p>Communication with the forwarder is achieved with the help of a KSync module, which uses Netlink sockets and shared memory between the agent and the forwarder. In some cases, application and kernel modules also use the pkt0 tap interface to exchange packets. Those mechanisms are used to update the flow table with flow entries based on the agent’s local data.</p>
+
+
+
+<ul>
+<li>Forwarder</li>
+</ul>
+
+
+
+<p>The forwarder performs packet processing based on flows pushed by the agent. It may drop the packet, forward it to the local virtual machine, or encapsulate it and send it to another destination.</p>
+
+
+
+<p>The forwarder is usually deployed as a kernel module. In that case, it is a software solution independent of NIC or server type. Packet processing in kernel space is more efficient than in user-space and provides some room for optimization. The drawback is that it can only be installed with a specific supported kernel version. For advanced users, modules for a different kernel version can be built. Default kernel versions are specified&nbsp;<a href="https://github.com/tungstenfabric/tf-packages">here</a>.</p>
+
+
+
+<p>This kernel module is released as a docker image that contains a pre-built module and user-space tools. When this image is run, it copies binaries to the host system and installs the kernel module on the host (it needs to be run in privileged mode). After successful installation, a vrouter module should be loaded into the kernel (“lsmod | grep vrouter”) and new tap interfaces pkt0 and vhost0 created. If problems occur, checking the kernel logs (“dmesg”) can help you arrive at a solution.</p>
+
+
+
+<p>The forwarder can also be installed as a userspace application that uses The Data Plane Development Kit (DPDK), which enables higher performance than the kernel module.</p>
+
+
+
+<ul>
+<li>Packet flow</li>
+</ul>
+
+
+
+<p>For every incoming packet from a VM, vRouter forwarder needs to decide how to process it. The options are DROP, FORWARD, MIRROR, NAT or HOLD. Information about what to do is stored in flow table entries. The forwarder is using packet headers to find a corresponding entry in the above-mentioned tables. With the first packet from a new flow, the entry might be empty. In that case, the vRouter forwarder sends this packet to the pkt0 interface, where the agent is listening. Using its local information about VRFs and ACLs, the agent pushes (using KSync and shared memory) a new flow to the forwarder and resends a packet. In other words, the vRouter forwarder doesn’t have full knowledge of how to process every packet in the system so it cooperates with the agent to get that knowledge. It is because this process may take some time that the first packet sent through the vRouter may come with a visible delay.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/ce7df33860634d6884826a143b59fff25354c849/9bb3f/img/codilime_tungsten-fabric-compute-with-openstack.png" alt="Tungsten Fabric Compute with OpenStack" title="Fig. 5 Tungsten Fabric Compute with OpenStack"/></figure>
+
+
+
+<p></p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/bb1cb15886dadd0311a7daf94482d72eab948af1/f69c8/img/codilime_tungsten_fabric_compute_with_kubernetes.png" alt="Tungsten Fabric Compute with Kubernetes" title="Fig. 6 Tungsten Fabric Compute with Kubernetes"/></figure>
+
+
+
+<p></p>
+
+
+
+<h2 class="wp-block-heading">Tungsten Fabric with OpenStack and Kubernetes—an overview</h2>
+
+
+
+<p>To sum up, Figures 7 and 8 provide an overview of the TF integration with Openstack and Kubernetes, respectively.</p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/66268e490e805fb49cfee8bea9e0da362f9bdd17/31273/img/codilime_tungsten-fabric-with-openstack.png" alt="Tungsten Fabric with Openstack" title="Fig. 7 Tungsten Fabric with Openstack"/></figure>
+
+
+
+<p></p>
+
+
+
+<figure class="wp-block-image"><img decoding="async" src="https://d33wubrfki0l68.cloudfront.net/b2f1d82056fa087b400a34859992f4e7f5fc36ff/1af44/img/codilime_tungsten_fabric_with_kubernetes.png" alt="Tungsten Fabric with Kubernetes" title="Fig. 8 Tungsten Fabric with Kubernetes"/></figure>
+
+
+
+<p></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>New TSC and New Release R21.05</title>
+		<link>https://tungsten.io/new-tsc-and-new-release-r21-05/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Tue, 20 Jul 2021 17:41:51 +0000</pubDate>
+				<category><![CDATA[Community]]></category>
+		<category><![CDATA[Juju]]></category>
+		<category><![CDATA[OpenShift]]></category>
+		<category><![CDATA[R21.05]]></category>
+		<category><![CDATA[TSC]]></category>
+		<category><![CDATA[Ubuntu]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8337</guid>
+
+					<description><![CDATA[By: Szymon Golebiewski (TSC Chair) I’m pleased to announce that earlier this year, I was elected to be the new TSC Chair for Tungsten Fabric. First, I’d like to thank...]]></description>
+										<content:encoded><![CDATA[<p><span style="font-weight: 400;">By: Szymon Golebiewski (TSC Chair)</span></p>
+<p><span style="font-weight: 400;">I’m pleased to announce that earlier this year, I was elected to be the new TSC Chair for Tungsten Fabric. First, I’d like to thank the outgoing TSC Chair Prabhjot Sethi, who did a great job leading the community and advancing the project. Second, I’d like to congratulate the other TSC Board Members elected last spring that can be seen </span><a href="https://tungsten.io/community/" target="_blank" rel="noopener"><span style="font-weight: 400;">here</span></a><span style="font-weight: 400;">.</span></p>
+<p><span style="font-weight: 400;">I’ve been working with Tungsten Fabric now for several years, leading the teams responsible for Contrail Command and Contrail Multicloud, as PTL for Tungsten Fabric documentation, and developing a sense for the possibilities and limitations of open source software development. One of my main objectives is to </span><span style="font-weight: 400;">help grow Tungsten Fabric as a fully transparent open source project.</span></p>
+<p><span style="font-weight: 400;">I’m also excited to announce that the most recent Tungsten Fabric Release, R21.05, was formerly released in May. The release brings many benefits including:</span></p>
+<ul>
+<li style="font-weight: 400;" aria-level="1"><span style="font-weight: 400;">Support for Red Hat OpenShift 4.6 3</span></li>
+<li style="font-weight: 400;" aria-level="1"><span style="font-weight: 400;">Ironic Support with Juju 3</span></li>
+<li style="font-weight: 400;" aria-level="1"><span style="font-weight: 400;">Support for OpenStack Ussuri and Ubuntu Version 20.04 3</span></li>
+<li style="font-weight: 400;" aria-level="1"><span style="font-weight: 400;">Support for Red Hat OpenStack Platform Director 16.1 3</span></li>
+<li style="font-weight: 400;" aria-level="1"><span style="font-weight: 400;">Support for 4 Byte AS Number</span></li>
+</ul>
+<p><span style="font-weight: 400;">Learn more in the Release Notes </span><a href="https://drive.google.com/file/d/1K0dlfu213a5zUtTOaV2N4C2SABFJTX_7/view" target="_blank" rel="noopener"><span style="font-weight: 400;">seen here</span></a><span style="font-weight: 400;">. The release of course was a community effort starting in August 2020. Learn more about the release evolution </span><a href="https://wiki.tungsten.io/display/TUN/R21.05+Release+Overview" target="_blank" rel="noopener"><span style="font-weight: 400;">seen here</span></a><span style="font-weight: 400;">.</span></p>
+<p><span style="font-weight: 400;">We invite you to come work with us on our journey toward a multi cloud and multi-stack future! </span><a href="https://tungsten.io/resources/" target="_blank" rel="noopener"><span style="font-weight: 400;">Get Started here</span></a><span style="font-weight: 400;">.</span></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Tungsten Fabric Migration from Gerrit to GitHub, Part 1</title>
+		<link>https://tungsten.io/tungsten-fabric-migration-from-gerrit-to-github-part-1/</link>
+		
+		<dc:creator><![CDATA[vmbrasseur]]></dc:creator>
+		<pubDate>Tue, 26 May 2020 21:33:04 +0000</pubDate>
+				<category><![CDATA[Community]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8304</guid>
+
+					<description><![CDATA[By: VM Brasseur One of the benefits of open source communities is the ability to collaborate across organizations and choose the platforms and tooling best suited to the goals of...]]></description>
+										<content:encoded><![CDATA[
+<p>By: VM Brasseur</p>
+
+
+
+<div class="wp-block-image"><figure class="alignleft size-large is-resized"><img fetchpriority="high" decoding="async" src="https://tungsten.io/wp-content/uploads/sites/73/2020/05/OctoCat_from_CC.jpg" alt="" class="wp-image-8320" width="344" height="459" srcset="https://tungsten.io/wp-content/uploads/sites/73/2020/05/OctoCat_from_CC.jpg 307w, https://tungsten.io/wp-content/uploads/sites/73/2020/05/OctoCat_from_CC-225x300.jpg 225w" sizes="(max-width: 344px) 100vw, 344px" /><figcaption>&#8220;Octocat&#8221; by Philippe Lin is licensed under CC BY-NC-SA 2.0</figcaption></figure></div>
+
+
+
+<p>One of the benefits of open source communities is the ability to collaborate across organizations and choose the platforms and tooling best suited to the goals of the project. Recently, the Tungsten Fabric community decided to migrate its repositories from Gerrit to GitHub. The work has already started and we&#8217;re excited to execute this migration over the proceeding months. We&#8217;re learning a lot along the way and this post will be the first of a series to share our key findings and explain what this will mean for the community going forward.We hope the migration will fortify the project foundation for years to come and that these posts will be helpful to other open source communities facing similar challenges.</p>
+
+
+
+<p>Before taking this step, the TF community took a data-driven approach to validate the feelings that many of us in the community have held for a long time, especially&nbsp; around tooling usability. The lifeblood of any open source project is the ability to attract and retain new developers and the usability of tools — especially at the beginning — can be a “make or break” for developers deciding where to focus their time and attention. Data we received from participating in Google’s Summer of Code program confirmed Gerrit usability issues for project newcomers and this helped shift the community towards a longer-term view.&nbsp;</p>
+
+
+
+<p>However, migrating repositories is a big deal and not something to take lightly. The migration impacts, along with a spider web of interdependencies, need to be mapped carefully. It turns out migration wasn’t possible at all until recently because TF’s former CI/CD system, Zuul, wouldn’t work the way we needed it to with GitHub. Once the decision was made to migrate CI/CD from Zuul to Jenkins the final obstacle to a GitHub transition disappeared. Prioritizing usability, the TF TSC made the official decision to migrate Gerrit to GitHub.&nbsp;</p>
+
+
+
+<p>As power users of the platforms, TF chose the docs team to take the plunge first and help forge a path for the community to follow. Their role as project scribes naturally means that the process and workflow for migration will be chronicled clearly in Jira tickets, meeting minutes, and captured in the documentation itself.</p>
+
+
+
+<p>The docs migration Beta will inform the overall TF repo migration plan and timeline. By rolling out the migration in stages, the community can benefit from lessons learned early on and make adjustments along the way. This reduces risk and builds familiarity for new processes among community members. For tooling, GitHub is of course already ubiquitous in the open source space. In fact, TF has been mirroring the Gerrit repos in GitHub already so that developers could more easily find the project, though contributions had to be made in Gerrit! Therefore, consolidation onto GitHub repos entirely reduces system complexity and allows contributors to work with just one platform.&nbsp;</p>
+
+
+
+<p>Once through the migration process, the community is looking forward to a number of benefits, primarily:</p>
+
+
+
+<ul><li>Improved usability</li><li>Easier discovery</li><li>Faster onboarding&nbsp;</li><li>Less complexity</li></ul>
+
+
+
+<p>You can take a peek at the Docs work in progress on GitHub <a href="https://github.com/tungstenfabric/docs">here</a>. </p>
+
+
+
+<p></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Getting Started with Tungsten Fabric using tf-devstack</title>
+		<link>https://tungsten.io/getting-started-with-tungsten-fabric-using-tf-devstack/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Fri, 23 Aug 2019 23:24:07 +0000</pubDate>
+				<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8172</guid>
+
+					<description><![CDATA[To help potential users test out Tungsten Fabric quickly, the community recommends installing tf-devstack on a. This post outlines how to do that. As a part of my first Google...]]></description>
+										<content:encoded><![CDATA[<p>To help potential users test out Tungsten Fabric quickly, the community recommends installing tf-devstack on a. This post outlines how to do that.</p>
+<p>As a part of my first Google Summer of Code (<a href="https://summerofcode.withgoogle.com">GSOC</a>) experience, tf-devstack has been a great walkthrough of how to deploy Tungsten Fabric from published containers or building directly from the source using instances spawned in AWS, Openstack, or your local laptop. Find the latest instance of tf-devstack in the <a href="https://github.com/tungstenfabric/tf-devstack">Tungsten Fabric repository</a>.</p>
+<p>In this walk through, I will be showing how to setup tf-devstack referring to the link above on whatever system you chose. The most exciting thing about the tf-devstack is that this tool brings up Tungsten Fabric along with Kubernetes on a single node deployment. With this Kubernetes deployment, Tungsten Fabric offers many capabilities, such as pod addressing, network isolation, gateway services, load balancing in services, etc.</p>
+<p><strong>Recommendations for Hardware/Software requirements:</strong></p>
+<ul>
+<li>CentOS 7 (x86_64) &#8211; with Updates HVM</li>
+<li>xlarge instance type</li>
+<li>50 GiB disk Storage</li>
+</ul>
+<p><strong>Quick start on an </strong><strong>AWS instance: </strong></p>
+<ol>
+<li>Create an instance using the specifications in the previous section. This walkthrough uses AWS.</li>
+<li>SSH into the instance launched using the public IP address.</li>
+</ol>
+<p><em>ssh centos@&lt;public_instance_ipaddress&gt;</em></p>
+<ol start="3">
+<li>Get root access</li>
+</ol>
+<p><em>sudo su</em></p>
+<ol start="4">
+<li>In case of centos, yum may be used to install git to clone the repository –</li>
+</ol>
+<p><em> yum install -y git</em></p>
+<ol start="5">
+<li>Clone the repository and start the contrail networking deployment process–</li>
+</ol>
+<p><em>git clone https://github.com/tungstenfabric/tf-devstack</em></p>
+<p><em>cd tf-devstack</em></p>
+<p><em>export K8S_VERSION=1.12.7</em></p>
+<p><em>./startup.sh</em></p>
+<p>This script allows the root user to connect to a host via ssh, install and configure docker, build contrail-dev-control container and helps the user start the contrail networking deployment process.</p>
+<p><strong>Known errors – </strong></p>
+<ol>
+<li>Permission denied or unable to establish connection –It is important to map the private IP address with the public IP address in order to gain access to the UI for the contrail deployed on the instance. Thus, the user should not forget to add the inbound security rule for a custom TCP connection on port 8143 since the contrail works on port 8143.</li>
+</ol>
+<ol start="2">
+<li>Occasional errors prevent deployment of Kubernetes on a VirtualBox machine; retry can help. Also, keep in mind this is not idempotent, hence there might be broken connections which the user might not be able to figure out. Hence, spawning a new instance may be recommended.</li>
+</ol>
+<p><strong>Getting Access to the Tungsten Fabric UI &#8211; </strong></p>
+<p>After being successfully able to run the scripts above to get started you may be prompted with the username and id with the service deployed on the public IP address with the help of which you may be able to log into the Tungsten Fabric UI.</p>
+<p><img decoding="async" class="alignnone  wp-image-8174" src="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-1B-300x187.png" alt="" width="497" height="310" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-1B-300x187.png 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-1B-1024x640.png 1024w" sizes="(max-width: 497px) 100vw, 497px" /></p>
+<p><img decoding="async" class="alignnone  wp-image-8173" src="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blof-2B-300x187.png" alt="" width="496" height="309" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blof-2B-300x187.png 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blof-2B-1024x640.png 1024w" sizes="(max-width: 496px) 100vw, 496px" /></p>
+<p><strong>Creating Workloads in Kubernetes – </strong></p>
+<p>Users must keep in mind that Kubernetes sometimes prevents from pushing pods/workloads to the control nodes. Also, having a single node working, the user needs to remove the taint while working with the following command hence removing the taint from the host.</p>
+<p>kubectl taint nodes NODENAME node-role.kubernetes.io/master-, where NODENAME is name from &#8220;kubectl get node&#8221;</p>
+<p>It’s time to relax and start your service now with Kubernetes!</p>
+<ol>
+<li><strong>Create a basic test.yaml</strong></li>
+</ol>
+<p>Follow the link <a href="https://github.com/kubernetes/examples">https://github.com/kubernetes/examples</a> to learn on how to create a sample test.yaml for your first service deployment. Here is one example that I am using from the link below &#8211;<em>https://github.com/paulbouwer/hello-kubernetes</em></p>
+<p>Refer to the wiki pages for kubernetes for basic references on how it works.</p>
+<ol start="2">
+<li><strong>use Kubectl to upgrade/operate the cluster and deploy the objects.</strong></li>
+</ol>
+<p>This service may also be used to deploy your first Hello World service. <em>kubectl apply -f test.yaml</em></p>
+<p>&nbsp;</p>
+<p><img loading="lazy" decoding="async" class="alignnone  wp-image-8182" src="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-hello-k8s-300x41.jpg" alt="" width="541" height="74" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-hello-k8s-300x41.jpg 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-hello-k8s.jpg 950w" sizes="(max-width: 541px) 100vw, 541px" /></p>
+<ol start="3">
+<li>Check the status of your pods using:</li>
+</ol>
+<p><em>kubectl get pods</em></p>
+<p><img loading="lazy" decoding="async" class="alignnone  wp-image-8179" src="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-3-300x56.jpg" alt="" width="546" height="102" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-3-300x56.jpg 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-blog-3.jpg 964w" sizes="(max-width: 546px) 100vw, 546px" /></p>
+<p>Congratulations, you are now a master of Kubernetes who has deployed the service simple using the tf-devstack. Never thought it would be this easy :p</p>
+<p>At last, the user may be able to check the endpoints of their service and test it out.</p>
+<p><img loading="lazy" decoding="async" class="alignnone  wp-image-8180" src="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-Blog-4-300x40.jpg" alt="" width="563" height="75" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-Blog-4-300x40.jpg 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-Blog-4.jpg 1006w" sizes="(max-width: 563px) 100vw, 563px" /></p>
+<p><img loading="lazy" decoding="async" class="alignnone  wp-image-8181" src="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-Blog-5-300x139.jpg" alt="" width="563" height="261" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-Blog-5-300x139.jpg 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/08/TF-Blog-5.jpg 981w" sizes="(max-width: 563px) 100vw, 563px" /></p>
+<p>In order to reach your end points, try using the curl command as per the screenshot above and see your application deployed now.</p>
+<p>Lastly, to be able to enable logs enable the dstat service and check the performance for your system. Tcpdump may be used as well.</p>
+<p>I hope you enjoyed reading about and the implementation of your very own network containerized environment using tf-devstack.</p>
+<p><strong>ABOUT THE AUTHOR</strong></p>
+<p><em>Nishita Sikka is  a graduate student at Northeastern University, pursuing an MS in computer system networking and telecommunications. Her Google Summer Of Code experience with Tungsten Fabrics has allowed her explore more on cloud technologies, automation tools, and networking.  She worked with Ansible and Kubernetes aid is making her way with Python and learning to integrate networking with automation. Besides being super passionate about working on independent projects and practicing code, she enjoys sports and Crossfit.</em></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Tungsten Fabric Heads to China</title>
+		<link>https://tungsten.io/tungsten-fabric-heads-to-china/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Wed, 24 Jul 2019 00:01:48 +0000</pubDate>
+				<category><![CDATA[Community]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8164</guid>
+
+					<description><![CDATA[By Edward Ting Along with other significant open source projects, Tungsten Fabric participated in the 2019 Network &#38; Compute Developer’s Conference (NCDC), in Beijing,  to rally community developers in the...]]></description>
+										<content:encoded><![CDATA[<p><i>By Edward Ting</i></p>
+<p>Along with other significant open source projects, Tungsten Fabric participated in the 2019 Network &amp; Compute Developer’s Conference (NCDC), in Beijing,  to rally community developers in the Greater China region.</p>
+<p>Tungsten Fabric’s booth featured a wall-sized image of TF architecture as well our key “RULE THEM ALL WITH ONE” message. Next to it stood a  giant, stand-up Tungsten Fabric banner that traveled 6,000 miles with community member <a href="https://wiki.tungsten.io/display/~sukhdevkapur">Sukhdev Kapur</a>!</p>
+<p>Following the morning session on the first day of the event, developers flocked to the booth, many asking what “multicloud multistack SDN” means. After a brief explanation, we invited attendees to join the TF workshop after lunch. And they showed up and filled the room starting 1:30pm.</p>
+<p><img loading="lazy" decoding="async" class="size-medium wp-image-8165 alignleft" src="https://tungsten.io/wp-content/uploads/sites/73/2019/07/TF-blog-table-1-300x241.jpg" alt="" width="300" height="241" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/07/TF-blog-table-1-300x241.jpg 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/07/TF-blog-table-1.jpg 907w" sizes="(max-width: 300px) 100vw, 300px" /> <img loading="lazy" decoding="async" class="size-full wp-image-8166 aligncenter" src="https://tungsten.io/wp-content/uploads/sites/73/2019/07/TF-blog-2.png" alt="" width="270" height="180" /></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><b>Highlights from The TF Workshop</b></p>
+<ul>
+<li><a href="https://wiki.tungsten.io/display/~sukhdevkapur">Sukhdev Kapur</a> started the workshop with a presentation entitled,  “Tungsten Fabric &amp; Akraino SDN and NFV for Edge,” followed by an interactive Q&amp;A session.</li>
+<li>Raymond later presented on TF 5.1 features, with impressive animations of use cases showing live traffic and flow, which further demonstrated how TF can “RULE THEM ALL WITH ONE.”</li>
+<li><a href="https://wiki.tungsten.io/display/~ocean1598">Edward Ting</a> walked through the TF 5.1 community release-building process, from source code to deployment, following the steps documented here: “<a href="https://wiki.tungsten.io/display/TUN/Building+a+Release">https://wiki.tungsten.io/display/TUN/Building+a+Release</a>.”The whole 2-hour build-time was condensed to 30 minutes in PPT!</li>
+<li>The closing panel session featured  <a href="https://wiki.tungsten.io/display/~ocean1598">Edward Ting</a> as the moderator asking <a href="https://wiki.tungsten.io/display/~sukhdevkapur">Sukhdev Kapur</a> and Raymond questions about TF. The discussion ranged from ML2 plugin, VXLAN/MPLS tunnels, to VMware &amp; Ubuntu use cases. After this workshop, they plan to try TF 5.1 and hopefully join the community soon.</li>
+</ul>
+<p><img loading="lazy" decoding="async" class="alignnone  wp-image-8168" src="https://tungsten.io/wp-content/uploads/sites/73/2019/07/TF-blog-4-300x225.jpeg" alt="" width="226" height="170" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/07/TF-blog-4-300x225.jpeg 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/07/TF-blog-4-1024x768.jpeg 1024w" sizes="(max-width: 226px) 100vw, 226px" /> <img loading="lazy" decoding="async" class="alignnone  wp-image-8167" src="https://tungsten.io/wp-content/uploads/sites/73/2019/07/TF-blog-3-300x225.jpeg" alt="" width="223" height="167" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/07/TF-blog-3-300x225.jpeg 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/07/TF-blog-3-1024x768.jpeg 1024w" sizes="(max-width: 223px) 100vw, 223px" /> <img loading="lazy" decoding="async" class="alignnone  wp-image-8169" src="https://tungsten.io/wp-content/uploads/sites/73/2019/07/TF-blog-5-panel-300x200.jpeg" alt="" width="251" height="167" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/07/TF-blog-5-panel-300x200.jpeg 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/07/TF-blog-5-panel-1024x683.jpeg 1024w" sizes="(max-width: 251px) 100vw, 251px" /></p>
+<p>We consider this a very successful event for the Tungsten Fabric comunity –  thanks to all who participated &#8211; from the TF community, to the event organizers and staff. Kudos for a well-executed event!</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Introducing Tungsten Fabric 5.1</title>
+		<link>https://tungsten.io/introducing-tungsten-fabric-5-1/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Wed, 12 Jun 2019 20:11:14 +0000</pubDate>
+				<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8155</guid>
+
+					<description><![CDATA[The Tungsten Fabric (TF) community is excited and proud to announce our latest release, 5.1. The TF community has been hard at work on both community and technical challenges to...]]></description>
+										<content:encoded><![CDATA[<p><span style="font-weight: 400"><img loading="lazy" decoding="async" class="size-medium wp-image-8156 alignleft" src="https://tungsten.io/wp-content/uploads/sites/73/2019/06/TungstenFabric_Stacked_Gradient_3000px-2-300x144.png" alt="" width="300" height="144" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/06/TungstenFabric_Stacked_Gradient_3000px-2-300x144.png 300w, https://tungsten.io/wp-content/uploads/sites/73/2019/06/TungstenFabric_Stacked_Gradient_3000px-2-1024x492.png 1024w" sizes="(max-width: 300px) 100vw, 300px" />The Tungsten Fabric (TF) community is excited and proud to announce our latest release, 5.1. The TF community has been hard at work on both community and technical challenges to ensure a rich and vibrant community to solve the toughest networking challenges regardless of public cloud, orchestrator, or workload. The 5.1 release reflects that effort. It is an excellent time to take a look at Tungsten Fabric as a developer or an operator for your networking needs in this multi-cloud world. Here is a quick summary of the TF 5.1 release highlights.</span></p>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">Code quality first: all known P1 and P2 bugs are squashed prior to release!</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">New features for containers and hybrid cloud to make life awesome for developers.</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">Performance and scalability enhancements to delight network operators.</span></li>
+</ul>
+<p><b>Additional information on what’s new in the 5.1 release</b></p>
+<p><span style="font-weight: 400">Here are some of the Tungsten Fabric 5.1 benefits and features in more depth!</span></p>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">A strong commitment to code quality.</span>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">The TF community has learned a lot over the years about how to create feature-rich networking for all orchestrators and public clouds. The latest release of TF squashes over 1600 P1 and P2 bugs prior to release, and there are currently zero known P1 and P2 issues! Special thanks to all TF community members for your dedication to optimizing development practices and the countless hours of effort on rigorous software testing.</span></li>
+</ul>
+</li>
+<li style="font-weight: 400"><span style="font-weight: 400">Networking feature enhancements for a variety of customer use cases.</span>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">Tungsten Fabric 5.1 now supports container service chaining by supporting containers with multiple network interfaces. Service chaining is a powerful, differentiating feature of TF which is now available for all cloud-native / container workloads.</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">The TF 5.1 control plane also supports extended communities allowing operators to build flexible routing policies to integrate with your existing network designs.</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">Finally, are you trying to offer “cloud router” VRF services using BGP to your customers? The TF 5.1 implementation of </span><a href="https://blueprints.launchpad.net/juniperopenstack/+spec/bgp-as-a-service"><span style="font-weight: 400">BGPaaS</span></a><span style="font-weight: 400"> now includes support for selectively peering with control nodes, so you can integrate VNFs running BGP while guaranteeing high availability when control nodes fail.</span></li>
+</ul>
+</li>
+<li style="font-weight: 400"><span style="font-weight: 400">High performance networking.</span>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">TF 5.1 continues its dedication to high performance networking through supporting “fat flows” to optimize flow setup for high performance use cases. In scenarios where TF must support millions of flows for use cases such as subscriber internet access, fat flow support allows network operators to aggregate flows reducing latency in flow setup.</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">TF 5.1 also features a number of flow table optimizations to reduce performance bottlenecks. Specifically, the TF vrouter now leverages Cuckoo hashing to remove performance bottlenecks where vrouter must perform numerous flow table lookups under heavy load.</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">TF 5.1 introduces DPDK optimizations through batch processing to increase data plane performance. We want to meet your most demanding throughput needs!</span></li>
+</ul>
+</li>
+</ul>
+<p><b>Many clouds; one (Tungsten) Fabric</b></p>
+<p><span style="font-weight: 400">TF’s  mission is to provide the network fabric for any cloud, any orchestrator, and any workload. Take a look at some of our latest enhancements to support this multi-cloud world.</span></p>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">Tungsten Fabric as a networking overlay for any orchestrator and any workload.</span>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">TF 5.1 supports the following orchestrators with its latest release.</span>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">Kubernetes 1.12</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">OpenShift 3.11</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">OpenStack Ocata and newer</span></li>
+<li style="font-weight: 400"><span style="font-weight: 400">VMware vCenter</span> <span style="font-weight: 400">6.7</span></li>
+</ul>
+</li>
+</ul>
+</li>
+<li style="font-weight: 400"><span style="font-weight: 400">Tungsten Fabric in public cloud.</span>
+<ul>
+<li style="font-weight: 400"><span style="font-weight: 400">Multi-cloud is table stakes for nearly every customer running workloads in public cloud. Tungsten Fabric 5.1 supports AWS and Azure with GCP support in progress to support developer’s and operator’s mult-cloud needs!</span></li>
+</ul>
+</li>
+</ul>
+<p><b>Want to learn more about the 5.1 release?</b></p>
+<p><span style="font-weight: 400">The Tungsten Fabric community documents all new features as blueprints. Check out all new 5.1 features </span><a href="https://jira.tungsten.io/projects/TFP"><span style="font-weight: 400">here</span></a><span style="font-weight: 400">. (Note for those familiar with Tungsten Fabric and its history, we migrated blueprints from GitHub to Jira.)</span></p>
+<p><b>Getting Started and Next Steps</b></p>
+<p><span style="font-weight: 400">Are you just getting started with TF or do you need a refresher? First, check out our </span><a href="https://tungstenfabric.github.io/website/Tungsten-Fabric-Architecture.html"><span style="font-weight: 400">architecture document</span></a><span style="font-weight: 400">. Then, try kicking the tires on </span><a href="https://tungstenfabric.github.io/website/Tungsten-Fabric-15-minute-deployment-with-k8s-on-AWS.html"><span style="font-weight: 400">Tungsten Fabric Carbide</span></a><span style="font-weight: 400"> to launch a working TF cluster with Kubernetes in AWS in 15 minutes. We also have a tf-devstack project in beta with a number of community members trying it out before making it official. With our instance of tf-devstack, developers will be able to try out Tungsten Fabric on their laptops quickly and easily. Stay tuned for an announcement on our blog in the coming weeks.</span></p>
+<p><span style="font-weight: 400">Finally, we heard the community requests to clarify the release process and cycle. This is still a work in progress to meet the needs of all members of the community, but rest assured you will always be able to access the latest release in the </span><a href="https://hub.docker.com/u/tungstenfabric/"><span style="font-weight: 400">Tungsten Fabric Docker Hub</span></a><span style="font-weight: 400">. </span></p>
+<p><b>Do you have suggestions for us?</b></p>
+<p><span style="font-weight: 400">Join us in our </span><a href="https://tungsten.io/community/"><span style="font-weight: 400">community</span></a><span style="font-weight: 400"> via regular meetings, Slack, or our mailing lists and bring your feedback. We want to hear from developers and operators alike, and we welcome your contributions! </span></p>
+<p>&nbsp;</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>A very warm welcome to our new GSoC interns, Nishita and Fayaz!</title>
+		<link>https://tungsten.io/a-very-warm-welcome-to-our-new-gsoc-interns-nishita-and-fayaz/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Wed, 15 May 2019 01:42:57 +0000</pubDate>
+				<category><![CDATA[Community]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<category><![CDATA[Interns]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8137</guid>
+
+					<description><![CDATA[We&#8217;re very excited to introduce the two latest additions to the Tungsten Fabric community: Our Google Summer of Code (GSoC) interns! Despite being a relatively young project[*], Tungsten Fabric (TF)...]]></description>
+										<content:encoded><![CDATA[<p>We&#8217;re very excited to introduce the two latest additions to the Tungsten Fabric community: Our Google Summer of Code (GSoC) interns!</p>
+<p>Despite being a relatively young project[*], Tungsten Fabric (TF) received a lot of interest from GSoC applicants. After all the dust had settled from the initial flurry of questions we ended up with eight excellent candidates…but only two internships. While all of the applicants were great, our two new community members really impressed us with their knowledge and enthusiasm.</p>
+<div id="attachment_8139" style="width: 160px" class="wp-caption alignleft"><img loading="lazy" decoding="async" aria-describedby="caption-attachment-8139" class="wp-image-8139 size-thumbnail" src="https://tungsten.io/wp-content/uploads/sites/73/2019/05/nishita_sikka-150x150.jpeg" alt="" width="150" height="150"><p id="caption-attachment-8139" class="wp-caption-text">Nishita Sikka</p></div>
+<p><strong>Nishita Sikka</strong>&nbsp;will be working on the&nbsp;<a href="https://wiki.tungsten.io/display/TUN/GSoC+2019#GSoC2019-ExtendContrailAnsibleDeployertoSupportSoftwareUpgrades" rel="nofollow">Extend Contrail Ansible Deployer to Support Software Upgrades</a>&nbsp;project along with her mentor Darien Hirotsu from&nbsp;<a href="https://www.redapt.com/" rel="nofollow">Redapt</a>. She&#8217;s a graduate student at Northeastern University, studying computer system networking and telecommunications.</p>
+<p><em>&#8220;As a part of my previous and current projects, I am exploring cloud technologies, automation tools, and networking. Making my way with Python and learning to integrate networking with automation I have learned a whole lot and would say this opportunity with GSOC would make this journey even better. Besides being super passionate about working on independent projects and practicing code, I enjoy sports and Crossfit.&#8221;</em></p>
+<div id="attachment_8140" style="width: 160px" class="wp-caption alignright"><img loading="lazy" decoding="async" aria-describedby="caption-attachment-8140" class="wp-image-8140 size-thumbnail" src="https://tungsten.io/wp-content/uploads/sites/73/2019/05/fayaz_akhtar-150x150.jpg" alt="" width="150" height="150"><p id="caption-attachment-8140" class="wp-caption-text">Fayaz Akhtar</p></div>
+<p><strong>Fayaz Akhtar</strong>&nbsp;will be working on the&nbsp;<a href="https://wiki.tungsten.io/display/TUN/GSoC+2019#GSoC2019-QuickstartScriptsforTungstenfabricinKubernetes" rel="nofollow">Quickstart Scripts for Tungsten fabric in Kubernetes</a>&nbsp;project along with his mentor Syed Ahmed from&nbsp;<a href="https://www.cloudops.com/" rel="nofollow">CloudOps</a>. He&#8217;s a PhD candidate at Waterford Institute of Technology, studying the use of machine learning in software defined networks.</p>
+<p><em>&#8220;I have mostly been exploring the theoretical side of SDN, trying to resolve existing challenges through an analytical approach. I am also an avid Python programmer and have used it for scrapping and automation projects. Besides reading up on the latest research taking place, I also enjoy cooking and playing FPS games&#8221;</em></p>
+<p>We&#8217;re thrilled to have them join us and are looking forward to all of their contributions to the project and the community!</p>
+<p>[*] Tungsten Fabric is only one and a half years old, but it owes a huge debt to its former incarnation of Open Contrail, which had five great years before handing over the reins to TF.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Tungsten Fabric and Akraino for SDN/NFV for 5G and edge Use Cases</title>
+		<link>https://tungsten.io/tungsten-fabric-and-akraino-for-sdn-nfv-for-5g-and-edge-use-cases/</link>
+		
+		<dc:creator><![CDATA[tungstenfabric]]></dc:creator>
+		<pubDate>Tue, 14 May 2019 23:07:03 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[NFV]]></category>
+		<category><![CDATA[SDN]]></category>
+		<category><![CDATA[Use Case]]></category>
+		<guid isPermaLink="false">https://tungsten.io/?p=8130</guid>
+
+					<description><![CDATA[By Sukhdev Kapur The rollout of 5G is a technological disruption for telecom and technology business players. This requires management of real time data flows, with central control, between various...]]></description>
+										<content:encoded><![CDATA[<h4>By Sukhdev Kapur</h4>
+<p>The rollout of <a href="https://en.wikipedia.org/wiki/5G">5G</a> is a technological disruption for telecom and technology business players. This requires management of real time data flows, with central control, between various <a href="https://en.wikipedia.org/wiki/Edge_device">edge</a> and core deployments. In order to minimize the latency, 5G and IoT deployments require compute power to move toward the edge, closer to the end-users and devices that produce or consume the real time data.</p>
+<p><a href="https://en.wikipedia.org/wiki/Software-defined_networking">SDN</a> controllers are proven to manage such workloads in telco as well as enterprise deployments. In this article, we discuss the SDN stack <a href="https://tungsten.io">Tungsten Fabric</a> and how it can be used for 5G networks and an edge cloud that is based upon <a href="https://www.lfedge.org/projects/akraino/">Akraino Edge Stack</a>.</p>
+<p><a href="https://tungsten.io/">Tungsten Fabric</a> (AKA &#8216;TF&#8217;) is an open source SDN project in the <a href="https://www.lfnetworking.org">LF Networking</a> initiative. TF provides a single point of control, visibility, and management for networking &amp; security for different types of data center deployments or clouds. It has taken SDN technology to next level by:</p>
+<ul>
+<li>Providing consistent network functionality and enforcing security policies for different types of workloads (virtual machines, containers, bare metal) orchestrated with different available orchestrators (OpenStack, Kubernetes, VMware , etc)</li>
+<li>Providing production grade networking &amp; security stack for Data Center and Public Clouds (AWS, Azure, GCP) &amp; Edge cloud deployments</li>
+</ul>
+<p>Tungsten Fabric evolved as a network software stack for providing an SDN solution for Telco Cloud and <a href="https://en.wikipedia.org/wiki/Network_function_virtualization">NFV</a> use cases.</p>
+<h3>Tungsten Fabric Integration with Akraino Edge Cloud</h3>
+<p>TF, by integrating with <a href="https://www.lfedge.org/projects/akraino/">Akraino Edge Stack</a>, can act as unified SDN controller to enhance many features for 5G core and edge nodes, including:</p>
+<ul>
+<li>Enabling distributed edge computing using TF remote compute architecture</li>
+<li>A common SDN controller for different workloads in network cloud i.e. CNF, <a href="https://en.wikipedia.org/wiki/Network_function_virtualization">VNF</a>, PNFs (Containerized, Virtual, and Physical Network Functions)</li>
+<li>Service chaining at different types of edge sites or clouds (public or private)</li>
+<li>Common security policy enforcement for all nodes</li>
+<li>Advanced networking performance features: <a href="https://en.wikipedia.org/wiki/Single-root_input/output_virtualization">SR/IOV</a>, <a href="https://www.dpdk.org">DPDK</a>, BGP-VPN, IPSec/TLS Support, etc.</li>
+</ul>
+<p><img loading="lazy" decoding="async" class="alignnone size-full wp-image-8131" src="https://tungsten.io/wp-content/uploads/sites/73/2019/05/Tungsten-Fabric-SDN.png" alt="" width="776" height="465" srcset="https://tungsten.io/wp-content/uploads/sites/73/2019/05/Tungsten-Fabric-SDN.png 776w, https://tungsten.io/wp-content/uploads/sites/73/2019/05/Tungsten-Fabric-SDN-300x180.png 300w" sizes="(max-width: 776px) 100vw, 776px" /></p>
+<h3>Tungsten Fabric powered Akraino Blueprints</h3>
+<p>These Akraino blueprints address different edge use cases:</p>
+<ul>
+<li>Network Cloud &#8211; <a href="https://wiki.akraino.org/display/AK/Akraino+Network+Cloud+and+TF+Integration">Telco edge cloud use case</a></li>
+<li>Kubernetes Native Infrastructure for Edge &#8211; <a href="https://wiki.akraino.org/display/AK/Provider+Access+Edge+%28PAE%29+Blueprint">Provider access use case</a></li>
+<li>Integrated Edge Cloud &#8211; <a href="https://wiki.akraino.org/pages/viewpage.action?pageId=11993339">AI/ML and AR/VR applications at Edge</a></li>
+</ul>
+<h3>Learn more at Cloud Native Network Services Day @ KubeCon + CloudNativeCon EU 2019</h3>
+<p>Intrigued? I&#8217;ll be doing a deep dive on this subject at the <a href="https://www.linuxfoundation.org/calendar/kubecon-cloudnativecon-europe/">Cloud Native Network Services Day</a> at KubeCon EU on May 20th. If you&#8217;re going to be in Barcelona for the conference, come by and learn more.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

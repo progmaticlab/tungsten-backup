@@ -1,0 +1,998 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>Service Instance Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/service-instance/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/service-instance/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Thu, 21 Jul 2016 00:25:54 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>Service Instance Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/service-instance/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Tracing Flows through Virtual Networks and Service Instances in OpenStack and OpenContrail</title>
+		<link>https://tungsten.io/tracing-flows-through-virtual-networks-and-service-instances-in-openstack-and-opencontrail/</link>
+		
+		<dc:creator><![CDATA[Johnny Chen]]></dc:creator>
+		<pubDate>Thu, 21 Jul 2016 00:25:54 +0000</pubDate>
+				<category><![CDATA[Cloud]]></category>
+		<category><![CDATA[KVM]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[Service Chaining]]></category>
+		<category><![CDATA[Service Instance]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7134</guid>
+
+					<description><![CDATA[This is a guest blog by Johnny Chen from AT&#38;T with contributions by Qasim Arham, Henon Huang, Vijay Kamisetty from Juniper Networks. Overview The purpose of this is to lay out a...]]></description>
+										<content:encoded><![CDATA[<p><strong><em>This is a guest blog by Johnny Chen from AT&amp;T with contributions by Qasim Arham, Henon Huang, Vijay Kamisetty from Juniper Networks.</em></strong></p>
+<h2 id="Overview">Overview</h2>
+<p>The purpose of this is to lay out a method of tracing flows through OpenStack &amp; Contrail environment with a scaled-out Service Instance (virtual firewall) in the path.</p>
+<p>Environment Versions:<br />
+OpenStack == Juno (2014.2.4)<br />
+Contrail == 3.0.0</p>
+<p>&nbsp;</p>
+<hr />
+<h2 id="Contents">Table of Contents</h2>
+<p><a href="#Overview">Overview</a></p>
+<p><a href="#Contents">Table of Contents</a></p>
+<p><a href="#Background_Drawings">Background &amp; Drawings</a></p>
+<p><a href="#Tracing_Outside_In">Tracing: Outside =&gt; In</a></p>
+<p><a href="#TOI_Step_1">Step 1: On the SDNGW, find the NEXT-HOP (NH) to the vFW VM in the routing table</a><br />
+<a href="#TOI_Step_2">Step 2: Verify Traffic to vFW Service Instance VM Compute</a><br />
+<a href="#TOI_Step_3">Step 3: Trace Flow into vFW Service Instance VM</a><br />
+<a href="#TOI_Step_4">Step 4: Verify Traffic is leaving vFW towards DST VM</a><br />
+<a href="#TOI_Step_5">Step 5: Verify Traffic is getting to DST VM TAP Interface</a><br />
+<a href="#TOI_Step_6">Step 6: On DST VM, Verify Traffic Inbound</a></p>
+<p><a href="#Tracing_Inside_Out">Tracing: Inside =&gt; Out</a></p>
+<p><a href="#TIO_Step_1">Step 1: On DST VM Compute, Trace Return Flow</a><br />
+<a href="#TIO_Step_2">Step 2: Verify Return Traffic hitting same vFW as Inbound Path</a></p>
+<p><a href="#References">References</a></p>
+<hr />
+<h2 id="Background_Drawings">Background &amp; Drawings</h2>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/07/Tracing-Flows-through-Virtual-Networks-and-Service-Instances_background-drawings.jpg"><img fetchpriority="high" decoding="async" class="alignnone size-full wp-image-7141" src="http://www.opencontrail.org/wp-content/uploads/2016/07/Tracing-Flows-through-Virtual-Networks-and-Service-Instances_background-drawings.jpg" alt="Tracing Flows through Virtual Networks and Service Instances_background drawings" width="982" height="731" data-id="7141" /></a></p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<hr />
+<h4>Access to some useful elements for this exercise:</h4>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div>RESOURCE</div>
+</td>
+<td>
+<div>DESCRIPTION</div>
+</td>
+</tr>
+<tr>
+<td>
+<div>OpenStack Horizon</div>
+</td>
+<td>
+<div>OpenStack Horizon Web GUI</div>
+</td>
+</tr>
+<tr>
+<td>
+<div>Juniper Contrail</div>
+</td>
+<td>
+<div>Contrail Web GUI</div>
+</td>
+</tr>
+<tr>
+<td>
+<div>SDNGW</div>
+</td>
+<td>
+<div>SDN Gateway</div>
+</td>
+</tr>
+<tr>
+<td>
+<div>Compute</div>
+</td>
+<td>
+<div>Contrail vRouter Commands and tcpdump</div>
+</td>
+</tr>
+<tr>
+<td>
+<div>Splunk or Juniper JSA/STRM Console</div>
+</td>
+<td>
+<div>SEIM Log and Correlation (Optional)</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Caveat: There is often more than one way to get to the end result so while this is an attempt to document one method, there could be other ways of achieving to a diagnosis. For this example, we will use a lab network depicted in the drawing below as a reference and trace the packet flow between 12.12.0.102 (SRC) and 10.10.0.100 (DST) where the destination is a VM in the Overlay Network.</p>
+<p>The flow path is as follows:<br />
+12.12.0.102 &lt;&gt; Physical Network &lt;&gt; SDN-GW &lt;&gt; VN_A &lt;&gt; FW Service Instance &lt;&gt; VN_B &lt;&gt; 10.10.0.100</p>
+<p>&nbsp;</p>
+<hr />
+<h2 id="Tracing_Outside_In">Tracing: Outside =&gt; In</h2>
+<hr />
+<h3 id="TOI_Step_1">STEP 1: On the SDNGW, find the NEXT-HOP (NH) to the vFW VM in the routing table.</h3>
+<h4>1a. Single VM or Compute (Single Next-Hop)</h4>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div><mark>In a single VM architecture for FW, you would see a single next-hop in the table for that routing-instance. However, in the case of a scaled-out service instance, there might be multiple next-hops pointing to the computes where the FW VM’s instantiated on. When dealing with Composite Next-Hop, identifying which FW on which Compute can get tricky (either log into all the FW’s and look through the session tables for the flow in question or use a SEIM or Log Correlator like Splunk or STRM/JSA). Here, we will focus on Single VM or Compute (Single Next-Hop).</mark></div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>&nbsp;</p>
+<p>On SDNGW:</p>
+<pre>SDNGW&gt; show route <span style="color: #ff0000;"><em><strong>10.10.0.100</strong></em></span>
+
+<span class="skimlinks-unlinked">vntest.inet.0</span>: 50 destinations, 150 routes (50 active, 0 holddown, 0 hidden)
+ @ = Routing Use Only, # = Forwarding Use Only
+ + = Active Route, - = Last Active, * = Both
+
+10.10.0.0/24 *[BGP/170] 1w1d 21:30:43, MED 100, localpref 200, from 172.20.0.5
+ AS path: ?, validation-state: unverified
+ &gt; via <span style="color: #ff0000;"><em><strong>gr-0/1/0.19283, Push 31</strong></em></span>
+ [BGP/170] 1w1d 21:30:43, MED 100, localpref 200, from 172.20.0.6
+ AS path: ?, validation-state: unverified
+ &gt; via gr-0/1/0.19283, Push 31
+
+SDNGW&gt; show interfaces <span style="color: #ff0000;"><em><strong>gr-0/1/0.19283</strong></em></span>
+ Logical interface gr-0/1/0.19283 (Index 345) (SNMP ifIndex 526)
+ Flags: Up Point-To-Point SNMP-Traps 0x4000 IP-Header <span style="color: #ff0000;"><strong><em>172.20.0.23</em></strong></span>:10.10.10.10:47:df:64:0000000800000000 Encapsulation: GRE-NULL
+ Gre keepalives configured: Off, Gre keepalives adjacency state: down
+ Input packets : 4332961
+ Output packets: 7699862
+ Protocol inet, MTU: 9062
+ Flags: None
+ Protocol mpls, MTU: 9050, Maximum labels: 3
+ Flags: None</pre>
+<p>Useful Information from Output:<br />
+– <span style="color: #ff0000;"><em><strong>172.20.0.23</strong></em></span>: NEXT-HOP Compute<br />
+– <span style="color: #ff0000;"><em><strong>31</strong></em></span>: Label of NEXT-HOP on Compute</p>
+<p>What we find is the GRE interface (Label 31) for the NEXT-HOP points to the COMPUTE at <span style="color: #ff0000;"><em><strong>172.20.0.23</strong></em></span>. You can find which COMPUTE this is via the Contrail WebGUI (Monitor =&gt; Virtual Routers =&gt; [Search Field]<span style="color: #ff0000;"><em><strong>172.20.0.23</strong></em></span> or search for the VHOST0 IP’s of your computes. In this case, the COMPUTE “Hostname” matches with the NEXT-HOP IP <span style="color: #ff0000;"><em><strong>172.20.0.23 </strong></em></span>matches with COMPUTE<span style="color: #ff0000;"> <em><strong>cmpt001</strong></em>. <em><strong>cmpt001 </strong></em></span>hosts the VM of the vFW Service Instance that is the next element in the path to the DST VM. From here, go to Step 2.</p>
+<h4>1b. Multiple VM / Compute (Composite Next-Hop)</h4>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div><mark>Here, we will focus on Multiple VM’s or Computes (Composite Next-Hop).</mark></div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>On SDNGW:</p>
+<pre>SDNGW&gt; show route <span style="color: #ff0000;"><em><strong>10.10.0.100</strong></em></span>
+
+<span class="skimlinks-unlinked">vntest.inet.0</span>: 70 destinations, 150 routes (70 active, 0 holddown, 0 hidden)
+ @ = Routing Use Only, # = Forwarding Use Only
+ + = Active Route, - = Last Active, * = Both
+
+10.10.0.0/24 @[BGP/170] 1w1d 21:11:22, MED 100, localpref 200, from 172.20.0.4
+ AS path: ?, validation-state: unverified
+ &gt; via gr-0/1/0.74659, Push 62
+ [BGP/170] 1w1d 21:14:54, MED 100, localpref 200, from 172.20.0.5
+ AS path: ?, validation-state: unverified
+ &gt; via gr-0/1/0.19283, Push 31
+ [BGP/170] 1w1d 21:11:22, MED 100, localpref 200, from 172.20.0.6
+ AS path: ?, validation-state: unverified
+ &gt; via gr-0/1/0.74659, Push 62
+ [BGP/170] 1w1d 21:14:54, MED 100, localpref 200, from 172.20.0.6
+ AS path: ?, validation-state: unverified
+ &gt; via gr-0/1/0.19283, Push 31
+ #[Multipath/255] 1w1d 21:13:23, metric 100, metric2 0
+ via gr-0/1/0.74659, Push 62
+ &gt; via gr-0/1/0.19283, Push 31
+
+SDNGW&gt; show interfaces <span style="color: #ff0000;"><em><strong>gr-0/1/0.19283</strong></em></span>
+ Logical interface gr-0/1/0.19283 (Index 345) (SNMP ifIndex 526)
+ Flags: Up Point-To-Point SNMP-Traps 0x4000 IP-Header <span style="color: #ff0000;"><em><strong>172.20.0.23</strong></em></span>:10.10.10.10:47:df:64:0000000800000000 Encapsulation: GRE-NULL
+ Gre keepalives configured: Off, Gre keepalives adjacency state: down
+ Input packets : 4332961
+ Output packets: 7699862
+ Protocol inet, MTU: 9062
+ Flags: None
+ Protocol mpls, MTU: 9050, Maximum labels: 3
+ Flags: None</pre>
+<p>If your environment utilizes logging correlation software like the Splunk or Juniper JSA/STRM, that tool would be useful to figure out which “next-hop” scaled-out service instance vFW. Otherwise, we will have to log into each vFW and look at the flow or session table entries to figure out which compute is next in path.</p>
+<p>Based on the above information, we can see the traffic transit a particular vFW in the scaled-out Service Instance and we can go directly to Compute where that vFW VM resides. If you know which vFW is taking the traffic (we will assume <span style="color: #ff0000;"><em><strong>VFW001</strong> </em></span>in this case), you can look up with COMPUTE that VM is instantiated on and go from there.</p>
+<p>Figure out which COMPUTE the ServiceInstance vFW is on:</p>
+<pre>toolsvm:~$ nova list | grep -i vfw
+ | <span style="color: #ff0000;"><em><strong>a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q</strong></em></span> | <span style="color: #ff0000;"><em><strong>VFW001 </strong></em></span>| ACTIVE | - | Running | ADMIN=192.168.0.194; VN_A=11.11.0.64; LOGNET=192.168.11.65; VN_B=10.10.0.64 |
+ | z1y2x3w4v5u6t-7s8r-9q0p-1o2n3m4l5k6j | VFW002 | ACTIVE | - | Running | ADMIN=192.168.0.196; VN_A=11.11.0.66; LOGNET=192.168.11.67; VN_B=10.10.0.65 |
+
+toolsvm:~$ nova show <span style="color: #ff0000;"><em><strong>a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q</strong></em></span>
+ +------------------------------------------+------------------------------------------------------------+
+ | Property | Value |
+ +------------------------------------------+------------------------------------------------------------+
+ | VN_A network | 11.11.0.64 |
+ | LOGNET network | 192.168.11.65 |
+ | ADMIN network | 192.168.0.194 |
+ | VN_B network | 10.10.0.64 |
+ | OS-DCF:diskConfig | MANUAL |
+ | OS-EXT-AZ:availability_zone | default |
+ | OS-EXT-SRV-ATTR:host | <span style="color: #ff0000;"><em><strong>cmpt001 </strong></em></span>|
+ | OS-EXT-SRV-ATTR:hypervisor_hostname | cmpt001.<span class="skimlinks-unlinked">test.net</span> |
+ | OS-EXT-SRV-ATTR:instance_name | instance-00000eef |
+ | OS-EXT-STS:power_state | 1 |
+ | OS-EXT-STS:task_state | - |
+ | OS-EXT-STS:vm_state | active |
+ | OS-SRV-USG:launched_at | 2016-06-01T00:35:36.000000 |
+ | OS-SRV-USG:terminated_at | - |
+ | accessIPv4 | |
+ | accessIPv6 | |
+ | config_drive | |
+ | created | 2016-06-01T00:35:36Z |
+ | flavor | flv_vsrx (12345678-012a-3bcd-e4f5-6789g01h2345) |
+ | hostId | asdflkijhbalk1h23k132427896r98a7asfhio1u241234iuhewnoafs |
+ | id | <span style="color: #ff0000;"><em><strong>a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q</strong></em></span> |
+ | image | vsrx15.1x49d30.3 (6baishdu-ewiu-9238-sibh-02394isfoayx) |
+ | key_name | - |
+ | name | <span style="color: #ff0000;"><em><strong>VFW001</strong> </em></span>|
+ | os-extended-volumes:volumes_attached | [] |
+ | progress | 0 |
+ | security_groups | default |
+ | status | ACTIVE |
+ | tenant_id | 9asdf2983riahdf9987sdf9ya9sya9sy |
+ | updated | 2016-06-01T00:35:36Z |
+ | user_id | d8923923hisuadfhf893923h2hfdasfh |
+ +------------------------------------------+------------------------------------------------------------+
+
+toolsvm:~$ for x in $(nova list | grep -i foam | awk {'print $4'}); do nova show $x | sed -n '10p;24p;28p' | awk {'print $4'} | xargs | sed 's/ / || /g'; done
+<span style="color: #ff0000;"><em><strong> cmpt001 </strong></em></span>|| <span style="color: #ff0000;"><em><strong>a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q</strong></em></span> || <span style="color: #ff0000;"><em><strong>VFW001</strong></em></span>
+ cmpt003 || z1y2x3w4v5u6t-7s8r-9q0p-1o2n3m4l5k6j || VFW002</pre>
+<p>We see that <span style="color: #ff0000;"><em><strong>VFW001 </strong></em></span>with ID <span style="color: #ff0000;"><em><strong>a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q</strong></em></span> is on COMPUTE <span style="color: #ff0000;"><em><strong>cmpt001</strong></em></span>.</p>
+<p><a href="https://packetsio.wordpress.com/#Overview">TOP</a></p>
+<hr />
+<h3 id="TOI_Step_2">STEP 2: Verify Traffic is making it into vFW ServiceInstance VM Compute</h3>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/07/27440195245_4ffd43cd65_b.jpg"><img decoding="async" class="alignnone size-full wp-image-7139" src="http://www.opencontrail.org/wp-content/uploads/2016/07/27440195245_4ffd43cd65_b.jpg" alt="27440195245_4ffd43cd65_b" width="674" height="731" data-id="7139" /></a></p>
+<p>&nbsp;</p>
+<h4>2a. Go to COMPUTE</h4>
+<pre>toolsvm ~]$ ssh user@cmpt001
+ password for [user]:
+ Welcome to Ubuntu 14.04.2 LTS (GNU/Linux 3.13.0-61-generic x86_64)</pre>
+<h4>2b. Find COMPUTE interfaces</h4>
+<pre>cmpt001:~# cat /etc/contrail/<span class="skimlinks-unlinked">contrail-vrouter-agent.conf</span> | grep -A13 -i virtual-host-interface
+ [VIRTUAL-HOST-INTERFACE]
+ # Everything in this section is mandatory
+
+# name of virtual host interface
+ name=vhost0
+
+# IP address and prefix in ip/prefix_len format
+ ip=172.20.0.23/32
+
+# Gateway IP address for virtual host
+ gateway=172.20.0.1
+
+# Physical interface name to which virtual host interface maps to
+ physical_interface=p1p1
+
+cmpt001:~# ifconfig vhost0
+ vhost0 Link encap:Ethernet HWaddr b0:ob:ab:ba:0a:a0
+ inet addr:172.20.0.23 Bcast:172.20.0.31 Mask:255.255.255.240
+ UP BROADCAST RUNNING MULTICAST MTU:9000 Metric:1
+ RX packets:84487487 errors:0 dropped:182627 overruns:0 frame:0
+ TX packets:82063519 errors:0 dropped:0 overruns:0 carrier:0
+ collisions:0 txqueuelen:1000
+ RX bytes:253984497954 (253.9 GB) TX bytes:67502412941 (67.5 GB)
+
+cmpt001:~# ifconfig p1p1
+ p1p1 Link encap:Ethernet HWaddr b0:ob:ab:ba:0a:a0
+ UP BROADCAST RUNNING MULTICAST MTU:9000 Metric:1
+ RX packets:194126327 errors:0 dropped:0 overruns:0 frame:0
+ TX packets:125130748 errors:0 dropped:0 overruns:0 carrier:0
+ collisions:0 txqueuelen:1000
+ RX bytes:286638778868 (286.6 GB) TX bytes:94956347917 (94.9 GB)
+ Interrupt:40 Memory:f3000000-f37fffff</pre>
+<h4>2c. Verify vRouter is exchanging XMPP information with the CONTRAIL CONTROLLER(s)</h4>
+<pre>cmpt001:~# tcpdump -D | grep -i vhost0
+ 1.vhost0
+
+cmpt001:~# tcpdump -nei 1 port xmpp-server
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on vhost0, link-type EN10MB (Ethernet), capture size 65535 bytes
+ 12:04:23.420090 c9:36:dd:24:po:p0 &gt; b0:ob:ab:ba:0a:a0, ethertype IPv4 (0x0800), length 66: 172.20.0.5.5269 &gt; 172.20.0.23.58699: Flags [.], ack 3731677826, win 8748, options [nop,nop,TS val 1268013680 ecr 1267113680], length 0
+ 12:04:23.420120 b0:ob:ab:ba:0a:a0 &gt; c9:36:dd:24:po:p0, ethertype IPv4 (0x0800), length 66: 172.20.0.23.58699 &gt; 172.20.0.5.5269: Flags [.], ack 1, win 6792, options [nop,nop,TS val 1267114931 ecr 1268012429], length 0
+ ^C
+ 2 packets captured
+ 4 packets received by filter
+ 0 packets dropped by kernel</pre>
+<h4>2d. Verify ICMP packets from example (12.12.0.102 =&gt; 10.10.0.100) is making it into the COMPUTE cmpt001</h4>
+<pre>cmpt001:~# tcpdump -D | grep p1p1
+ 7.p1p1
+
+cmpt001:~# tcpdump -nei 7 proto 47 | grep 11.11.0.60
+ tcpdump: WARNING: bond0.2004: no IPv4 address assigned
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on bond0.2004, link-type EN10MB (Ethernet), capture size 65535 bytes
+ 12:07:02.093007 00:1d:c2:8f:22:db &gt; 0a:36:cc:61:aa:l0, ethertype IPv4 (0x0800), length 126: 172.20.0.25 &gt; 172.20.0.23: GREv0, proto MPLS unicast (0x8847), length 92: MPLS (label 31, exp 0, [S], ttl 255) 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 15119, seq 20030, length 64
+ 12:07:03.094702 00:1d:c2:8f:22:db &gt; 0a:36:cc:61:aa:l0, ethertype IPv4 (0x0800), length 126: 172.20.0.25 &gt; 172.20.0.23: GREv0, proto MPLS unicast (0x8847), length 92: MPLS (label 31, exp 0, [S], ttl 255) 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 15119, seq 20031, length 64
+ ^C
+ 2 packets captured
+ 4 packets received by filter
+ 0 packets dropped by kernel</pre>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div><mark>We see that ICMP is making it into the Compute in the above TCPDUMP output. (TCPDUMP can process PROTO 47 for MPLSoGRE but if the tunnels are MPLSoUDP, you’ll have to decode this in another packet analyzer like WireShark).</mark></div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a href="#Overview">TOP</a></p>
+<hr />
+<h3 id="TOI_Step_3">STEP 3: Trace the flow into vFW Service Instance VM</h3>
+<h4>3a. Find NEXT-HOP (mpls –dump will output the entire Label =&gt; NextHop table) – we found the MPLS Label 31 from the Next-Hop from the SDNGW</h4>
+<pre>cmpt001:~# mpls --get <span style="color: #ff0000;"><em><strong>31</strong></em></span>
+ MPLS Input Label Map
+
+Label NextHop
+ -------------------
+ 31 <span style="color: #ff0000;"><em><strong>49</strong></em></span></pre>
+<h4>3b. Find NEXT-HOP Interface and VRF that the FW VM interface that is created on for this flow on VN_A.</h4>
+<pre>cmpt001:~# nh --get <span style="color: #ff0000;"><em><strong>49</strong></em></span>
+ Id:49 Type:Encap Fmly: AF_INET Rid:0 Ref_cnt:8 Vrf:11
+ Flags:Valid, Policy,
+ EncapFmly:0806 Oif:<span style="color: #ff0000;"><em><strong>24 </strong></em></span>Len:14
+ Encap Data: 02 95 3d 1d c9 69 00 00 5e 00 01 00 08 00
+
+cmpt001:~# vif --get <span style="color: #ff0000;"><em><strong>24</strong></em></span>
+ Vrouter Interface Table
+
+Flags: P=Policy, X=Cross Connect, S=Service Chain, Mr=Receive Mirror
+ Mt=Transmit Mirror, Tc=Transmit Checksum Offload, L3=Layer 3, L2=Layer 2
+ D=DHCP, Vp=Vhost Physical, Pr=Promiscuous, Vnt=Native Vlan Tagged
+ Mnp=No MAC Proxy, Dpdk=DPDK PMD Interface, Rfl=Receive Filtering Offload, Mon=Interface is Monitored
+ Uuf=Unknown Unicast Flood, Vof=VLAN insert/strip offload
+
+vif0/24 OS: <span style="color: #ff0000;"><em><strong>tap93d2dja8-22</strong></em></span>
+ Type:Virtual HWaddr:bk:2a:n6:00:02:00 IPaddr:0
+ Vrf:11 Flags:PL3L2D MTU:9160 Ref:6
+ RX packets:728634 bytes:71113479 errors:0
+ TX packets:756736 bytes:89113687 errors:0</pre>
+<h4>3c. [IGNORE FOR NOW] On Vrf:11 (VN_A), we see the routing-table point to the FW’s “RIGHT” interface as the NEXT-HOP to 10.10.0.0/24 Network (VN_B)</h4>
+<pre>cmpt001:~# rt --dump 11 | grep 10.10.0
+ Vrouter inet4 routing table 0/13/unicast
+ Flags: L=Label Valid, P=Proxy ARP, T=Trap ARP, F=Flood ARP
+
+Destination PPL Flags Label Nexthop Stitched MAC(Index)
+ 10.10.0.0/24 24 P - 164 -
+
+cmpt001:~# nh --get 164
+ Id:164 Type:Composite Fmly: AF_INET Rid:0 Ref_cnt:2 Vrf:11
+ Flags:Valid, Policy, Ecmp,
+ Sub NH(label): 95(31) -1 14(62)
+
+root@cmpt001:~# nh --get 95
+ Id:95 Type:Encap Fmly: AF_INET Rid:0 Ref_cnt:25 Vrf:11
+ Flags:Valid,
+ EncapFmly:0806 Oif:24 Len:14
+ Encap Data: 02 95 3d 1d c9 69 00 00 5e 00 01 00 08 00
+
+cmpt001:~# vif --get 24
+ Vrouter Interface Table
+
+Flags: P=Policy, X=Cross Connect, S=Service Chain, Mr=Receive Mirror
+ Mt=Transmit Mirror, Tc=Transmit Checksum Offload, L3=Layer 3, L2=Layer 2
+ D=DHCP, Vp=Vhost Physical, Pr=Promiscuous, Vnt=Native Vlan Tagged
+ Mnp=No MAC Proxy, Dpdk=DPDK PMD Interface, Rfl=Receive Filtering Offload, Mon=Interface is Monitored
+ Uuf=Unknown Unicast Flood, Vof=VLAN insert/strip offload
+
+vif0/24 OS: tap93d2dja8-22
+ Type:Virtual HWaddr:bk:2a:n6:00:02:00 IPaddr:0
+ Vrf:11 Flags:PL3L2D MTU:9160 Ref:6
+ RX packets:733959 bytes:71635018 errors:0
+ TX packets:762144 bytes:89646655 errors:0
+
+cmpt001:~# cat /var/lib/nova/instances/a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q/<span class="skimlinks-unlinked">libvirt.xml</span> | grep -i tap
+ &lt;target dev="tapc218da9d-32"/&gt;
+ &lt;target dev="tap13a2d42c-5d"/&gt;
+ &lt;target dev="tap93d2dja8-22"/&gt;
+ &lt;target dev="tapa8d2gf3a-k4"/&gt;</pre>
+<p>(Interfaces are enumerated in the order MGMT, LEFT, RIGHT, OTHER… so the TAP interface above it the “RIGHT” interface in VN_A)</p>
+<h4>3d. Check for “Discards” on Vrf:11</h4>
+<pre>cmpt001:~# watch vrfstats --get 11
+
+Every 2.0s: vrfstats --get 11 Fri Jun 03 19:13:13 2016
+
+Vrf: 11
+<span style="color: #ff0000;"><em><strong> Discards 0</strong></em></span>, Resolves 0, Receives 0, L2 Receives 7783, Vrf Translates 0, Unknown Unicast Floods 0
+ Ecmp Composites 0, L2 Mcast Composites 26818, Fabric Composites 24593, Encap Composites 24593, Evpn Composites 0
+ Udp Tunnels 0, Udp Mpls Tunnels 4000360, Gre Mpls Tunnels 7780, Vxlan Tunnels 0
+ L2 Encaps 3321946, Encaps 32480
+ GROs 2662900, Diags 0
+ Arp Virtual Proxys 654, Arp Virtual Stitchs 1539, Arp Virtual Floods 600, Arp Physical Stitchs 0, Arp Tor Proxys 0, Arp Physical Flo
+ ods 0</pre>
+<p>Based on the above output, it does not appear that there are any discards on Vrf:11 that would be causing the connectivity failure (Counter at “0” and not incrementing).</p>
+<h4>3e. Look for “Discards” via dropstats and check relevant counters (“Flow Action Drop” &amp; “Discards” in this case) to see if they increment</h4>
+<pre>cmpt001:~# watch dropstats
+
+Every 2.0s: dropstats Fri Jun 03 19:16:59 2016
+
+GARP 0
+ ARP no where to go 0
+ Invalid ARPs 0
+
+Invalid IF 0
+ Trap No IF 0
+ IF TX Discard 0
+ IF Drop 0
+ IF RX Discard 0
+
+Flow Unusable 0
+ Flow No Memory 0
+ Flow Table Full 0
+ Flow NAT no rflow 0
+<span style="color: #ff0000;"><em><strong> Flow Action Drop 12040</strong></em></span>
+ Flow Action Invalid 0
+ Flow Invalid Protocol 0
+ Flow Queue Limit Exceeded 132
+
+<span style="color: #ff0000;"><em><strong>Discards 8372</strong></em></span>
+ TTL Exceeded 0
+ Mcast Clone Fail 0
+ Cloned Original 348762341
+
+Invalid NH 20637113
+ Invalid Label 0
+ Invalid Protocol 0
+ Rewrite Fail 0
+ Invalid Mcast Source 0
+
+Push Fails 0
+ Pull Fails 0
+ Duplicated 0
+ Head Alloc Fails 0
+ Head Space Reserve Fails 0
+ PCOW fails 0
+ Invalid Packets 0
+
+Misc 764
+ Nowhere to go 0
+ Checksum errors 0
+ No Fmd 0
+ Invalid VNID 0
+ Fragment errors 0
+ Invalid Source 12
+ Jumbo Mcast Pkt with DF Bit 0
+ ARP No Route 0
+ ARP Reply No Route 0
+ No L2 Route 136423</pre>
+<p>“Discards” and “Flow Action Drop” counters stayed steady at “<span style="color: #ff0000;"><em><strong>12040</strong></em></span>” and “<span style="color: #ff0000;"><em><strong>8372</strong></em></span>” respectively and did not increment.</p>
+<h4>3f. Find which VM is associated with TAP Interface tap93d2dja8-22 (there is more than one way to get this information)</h4>
+<p>CLI Method:</p>
+<p>– From previous discovery, we know that the ID of the VM VFW001 on cmpt001 is <span style="color: #ff0000;"><em><strong>a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q</strong></em></span>. Map the TAP Interface to the VM:</p>
+<pre>cmpt001:~# cat /var/lib/nova/instances/<span style="color: #ff0000;"><em><strong>a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q</strong></em></span>/<span class="skimlinks-unlinked">libvirt.xml</span> | grep -i tap
+ &lt;target dev="tapc218da9d-32"/&gt;
+ &lt;target dev="tap13a2d42c-5d"/&gt;
+ &lt;target dev="<span style="color: #ff0000;"><em><strong>tap93d2dja8-22</strong></em></span>"/&gt;
+ &lt;target dev="tapa8d2gf3a-k4"/&gt;</pre>
+<p>Contrail GUI Method: Find the Compute where the VM resides (cmpt001) via Monitor =&gt; Virtual Routers = cmpt001 // Interfaces. From there, do a search for the interface tap93d2dja8-22. From there, you should be able to find which VM the TAP Interface is mapped to.</p>
+<h4>3g. From the above information, we know that this is mapped to the vFW”RIGHT” interface which is on the VN_A Network. We can do a TCPDUMP to verify if the traffic is making it to the FW’s Ingress/VN_A interface:</h4>
+<pre>cmpt001:~# tcpdump -nei tap93d2dja8-22
+ tcpdump: WARNING: tap93d2dja8-22: no IPv4 address assigned
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on tap93d2dja8-22, link-type EN10MB (Ethernet), capture size 65535 bytes
+ 12:09:41.995714 bk:2a:n6:00:02:00 &gt; 02:95:3d:1d:c9:69, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 61, seq 10575, length 40
+ 12:09:42.995769 bk:2a:n6:00:02:00 &gt; 02:95:3d:1d:c9:69, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 61, seq 10593, length 40
+^C
+2 packets captured
+4 packets received by filter
+ 0 packets dropped by kernel</pre>
+<h4>3h. From the above, we see ICMP echo requests going into the FW, but no replies. Let’s check for what the vFW sees:</h4>
+<pre>toolsvm:~$ ssh 192.168.0.194
+
+Password:
+ --- JUNOS 15.1X49-D30.3 built 2015-12-17 04:39:24 UTC
+ VFW001&gt;
+
+VFW001&gt; show security flow session destination-prefix 10.10.0.100
+ Session ID: 206346, Policy name: allow_restricted/6, Timeout: 2, Valid
+ In: 12.12.0.102/34054 --&gt; 10.10.0.100/61;icmp, If: ge-0/0/1.0, Pkts: 1, Bytes: 60,
+ Out: 10.10.0.100/61 --&gt; 12.12.0.102/34054;icmp, If: ge-0/0/0.0, Pkts: 1, Bytes: 0,
+
+Session ID: 206347, Policy name: allow_restricted/6, Timeout: 4, Valid
+ In: 12.12.0.102/34058 --&gt; 10.10.0.100/61;icmp, If: ge-0/0/1.0, Pkts: 1, Bytes: 60,
+ Out: 10.10.0.100/61 --&gt; 12.12.0.102/34058;icmp, If: ge-0/0/0.0, Pkts: 1, Bytes: 0,
+
+Session ID: 206350, Policy name: allow_restricted/6, Timeout: 2, Valid
+ In: 12.12.0.102/34057 --&gt; 10.10.0.100/61;icmp, If: ge-0/0/1.0, Pkts: 1, Bytes: 60,
+ Out: 10.10.0.100/61 --&gt; 12.12.0.102/34057;icmp, If: ge-0/0/0.0, Pkts: 1, Bytes: 0,
+ Total sessions: 3</pre>
+<p>The vFW sees packets inbound through it to the VM 10.10.0.100 but no return traffic (which matches what we see on the TCPDUMP on the FW’s GE-0/0/1 or “RIGHT” interface). At this point, we need to look at the traffic leaving the FW on the “LEFT”/VN_B interface.</p>
+<h4>3i. Check the COMPUTE vRouter Flow Table to see if the traffic is being forwarded.</h4>
+<pre>cmpt001:~# flow --match 10.10.0.100
+ Flow table(size 68157440, entries 542386)
+
+Entries: Created 898146 Added 898144 Processed 898146 Used Overflow entries 0
+ (Created Flows/CPU: 368496 140472 62462 39956 28374 22527 25634 19742 20169 15999 6767 6693 6514 6322 7041 6249 6200 6272 6324 6235 7985 9035 7329 9146 6741 6608 5981 7374 10025 8246 663 941 721 734 700 671 771 837 1120 4070)(oflows 0)
+
+Action:F=Forward, D=Drop N=NAT(S=SNAT, D=DNAT, Ps=SPAT, Pd=DPAT, L=Link Local Port)
+ Other:K(nh)=Key_Nexthop, S(nh)=RPF_Nexthop
+ Flags:E=Evicted, Ec=Evict Candidate, N=New Flow, M=Modified
+ TCP(r=reverse):S=SYN, F=FIN, R=RST, C=HalfClose, E=Established, D=Dead
+
+Listing flows matching ([10.10.0.100]:*)
+
+Index Source:Port/Destination:Port Proto(V)
+ -----------------------------------------------------------------------------------
+
+168624&lt;=&gt;23140 12.12.0.102:1393 1 (2-&gt;3)
+ 10.10.0.100:0
+ (Gen: 5, K(nh):33, Action:F, Flags:, S(nh):94, Stats:257760/25260480, SPort 53824)
+ --
+ 430164&lt;=&gt;119628 12.12.0.102:1393 1 (13-&gt;5)
+ 10.10.0.100:0
+ (Gen: 11, K(nh):49, Action:F, Flags:, S(nh):88, Stats:257760/21651840, SPort 60610)
+ --</pre>
+<p><a href="#Overview">TOP</a></p>
+<hr />
+<h3 id="TOI_Step_4">STEP 4: Verify traffic is leaving vFW Service Instance VM towards 10.10.0.100</h3>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/07/28163632680_7f52eebbe3_b.jpg"><img decoding="async" class="alignnone size-full wp-image-7142" src="http://www.opencontrail.org/wp-content/uploads/2016/07/28163632680_7f52eebbe3_b.jpg" alt="28163632680_7f52eebbe3_b" width="674" height="731" data-id="7142" /></a></p>
+<p>&nbsp;</p>
+<h4>4a. Verify next TAP Interface for FW (“LEFT” / VN_B) sees traffic exit the vFW destined for the VM at 10.10.0.100</h4>
+<pre>cmpt001:~# nh --get 33
+ Id:93 Type:Encap Fmly: AF_INET Rid:0 Ref_cnt:5 Vrf:12
+ Flags:Valid, Policy,
+ EncapFmly:0806 Oif:12 Len:14
+ Encap Data: 02 31 e6 d2 4c 7d 00 00 5e 00 01 00 08 00
+
+cmpt001:~# vif --get 12
+ Vrouter Interface Table
+
+Flags: P=Policy, X=Cross Connect, S=Service Chain, Mr=Receive Mirror
+ Mt=Transmit Mirror, Tc=Transmit Checksum Offload, L3=Layer 3, L2=Layer 2
+ D=DHCP, Vp=Vhost Physical, Pr=Promiscuous, Vnt=Native Vlan Tagged
+ Mnp=No MAC Proxy, Dpdk=DPDK PMD Interface, Rfl=Receive Filtering Offload, Mon=Interface is Monitored
+ Uuf=Unknown Unicast Flood, Vof=VLAN insert/strip offload
+
+vif0/12 OS: tap13a2d42c-5d
+ Type:Virtual HWaddr:bk:2a:n6:00:02:00 IPaddr:0
+ Vrf:12 Flags:PL3L2D MTU:9160 Ref:6
+ RX packets:1236404 bytes:135113415 errors:0
+ TX packets:1231952 bytes:120251878 errors:0
+
+cmpt001:~# cat /var/lib/nova/instances/a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q/<span class="skimlinks-unlinked">libvirt.xml</span> | grep -i tap
+ &lt;target dev="tapc218da9d-32"/&gt;
+ &lt;target dev="tap13a2d42c-5d"/&gt;
+ &lt;target dev="tap93d2dja8-22"/&gt;
+ &lt;target dev="tapa8d2gf3a-k4"/&gt;
+
+cmpt001:~# tcpdump -nei tap13a2d42c-5d
+ tcpdump: WARNING: tap13a2d42c-5d: no IPv4 address assigned
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on tap13a2d42c-5d, link-type EN10MB (Ethernet), capture size 65535 bytes
+ 12:24:31.175890 02:dd:26:2b:24:p2 &gt; 7b:23:a9:tu:c3:p0, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 61, seq 11410, length 40
+ 12:24:32.176227 02:dd:26:2b:24:p2 &gt; 7b:23:a9:tu:c3:p0, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 61, seq 11413, length 40
+ ^C
+ 2 packets captured
+ 4 packets received by filter
+ 0 packets dropped by kernel</pre>
+<h4>4b. Traffic (ICMP echo requests) is leaving vFW egress interface (GE-0/0/0) “LEFT” or VN_B interface destined towards the VM 10.10.0.100. Check to see if there are any discards on the VRF.</h4>
+<pre>cmpt001:~# watch vrfstats --get 12
+
+Every 2.0s: vrfstats --get 12 Fri Jun 03 19:13:13 2016
+
+Vrf: 12
+<span style="color: #ff0000;"><em><strong> Discards 0</strong></em></span>, Resolves 0, Receives 0, L2 Receives 12369, Vrf Translates 0, Unknown Unicast Floods 0
+ Ecmp Composites 0, L2 Mcast Composites 18742, Fabric Composites 12190, Encap Composites 12168, Evpn Composites 0
+ Udp Tunnels 0, Udp Mpls Tunnels 17, Gre Mpls Tunnels 4010, Vxlan Tunnels 0
+ L2 Encaps 71982, Encaps 1302371
+ GROs 2687, Diags 0
+ Arp Virtual Proxys 8658, Arp Virtual Stitchs 4858, Arp Virtual Floods 3748, Arp Physical Stitchs 0, Arp Tor Proxys 0, Arp Physical Floods 30</pre>
+<p>No discards.</p>
+<h4>4c. Verify routing on Vrf:10 (VN_B) FIB table for 10.10.0.100</h4>
+<pre>cmpt001:~# rt --dump 12 | grep 10.10.0.100
+ Vrouter inet4 routing table 0/2/unicast
+ Flags: L=Label Valid, P=Proxy ARP, T=Trap ARP, F=Flood ARP
+
+Destination PPL Flags Label Nexthop Stitched MAC(Index)
+ 10.10.0.100/32 32 LP 31 <span style="color: #ff0000;"><em><strong>88 </strong></em></span>2:38:c8:ea:9a:21(211664)</pre>
+<h4>4d. Find the NEXT-HOP COMPUTE to get to the VM on VN_B at 10.10.0.100</h4>
+<pre>cmpt001:~# nh --get 88
+ Id:88 Type:Tunnel Fmly: AF_INET Rid:0 Ref_cnt:144 Vrf:0
+ Flags:Valid, MPLSoUDP,
+ Oif:0 Len:14 Flags Valid, MPLSoUDP, Data:8c dc d4 10 74 c0 8c dc d4 10 75 a0 08 00
+ Vrf:0 Sip:172.20.0.23 Dip:172.20.0.24</pre>
+<p>Next-Hop 88 points to a destination IP of 172.20.0.24 (vhost0 Interface IP of the destination Compute on Default Vrf0) with MPLS Label 31</p>
+<p><a href="#Overview">TOP</a></p>
+<hr />
+<h3 id="TOI_Step_5">STEP 5: Verify traffic is getting to Destination VM at 10.10.0.100 on TAP Interface</h3>
+<h4>5a. Find NEXT-HOP COMPUTE at 172.29.2.82</h4>
+<p>CLI Method (From toolsvm – use the IP of the Destination VM to find Compute):</p>
+<pre>toolsvm:~$ for x in $(nova list | grep -i 10.10.0.100 | awk {'print $4'}); do nova show $x | sed -n '7p;21p;25p' | awk {'print $4'}; done
+<span style="color: #ff0000;"><em><strong> cmpt002</strong></em>
+<em><strong> 98asdfhjkn213-sdai-ncxv-3421987kjlsm</strong></em>
+<em><strong> testvm-VN_B_1</strong></em></span>
+
+toolsvm:~$ nova show 98asdfhjkn213-sdai-ncxv-3421987kjlsm
+ +------------------------------------------+-------------------------------------------------------------+
+ | Property | Value |
+ +------------------------------------------+-------------------------------------------------------------+
+ | MNS_shared_OAM_PROTECTED_NET_1_1 network | 10.10.0.100 |
+ | OS-DCF:diskConfig | AUTO |
+ | OS-EXT-AZ:availability_zone | nova |
+ | OS-EXT-SRV-ATTR:host | <span style="color: #ff0000;"><em><strong>cmpt002</strong> </em></span>|
+ | OS-EXT-SRV-ATTR:hypervisor_hostname | cmpt002.<span class="skimlinks-unlinked">test.net</span> |
+ | OS-EXT-SRV-ATTR:instance_name | instance-00000f28 |
+ | OS-EXT-STS:power_state | 1 |
+ | OS-EXT-STS:task_state | - |
+ | OS-EXT-STS:vm_state | active |
+ | OS-SRV-USG:launched_at | 2016-06-01T00:35:36.000000 |
+ | OS-SRV-USG:terminated_at | - |
+ | accessIPv4 | |
+ | accessIPv6 | |
+ | config_drive | |
+ | created | 2016-06-01T00:35:36Z |
+ | flavor | m1.tiny (2) |
+ | hostId | a0s9dfuwqehrlkqwerl89ydfkj1394874329y2nlkadfasygas98ydfs |
+ | id | <span style="color: #ff0000;"><em><strong>98asdfhjkn213-sdai-ncxv-3421987kjlsm</strong></em></span> |
+ | image | ubuntu-14 (1f062a45-4a90-437d-a2b8-b2b5a565d95a) |
+ | key_name | - |
+ | metadata | {} |
+ | name | testvm-VN_B_1 |
+ | os-extended-volumes:volumes_attached | [] |
+ | progress | 0 |
+ | security_groups | default |
+ | status | ACTIVE |
+ | tenant_id | 9asdf2983riahdf9987sdf9ya9sya9sy |
+ | updated | 2016-06-01T00:35:36Z |
+ | user_id | d8923923hisuadfhf893923h2hfdasfh |
+ +------------------------------------------+-------------------------------------------------------------+</pre>
+<p>GUI Method (From Contrail GUI)</p>
+<p>Monitor =&gt; Infrastructure =&gt; Virtual Routers =&gt; Search</p>
+<h4>5b. Go to COMPUTE <em><strong>cmpt002</strong></em>. Based on Label <em><strong>31 </strong></em>for NEXT-HOP on this COMPUTE, we can find where the traffic is destined to.</h4>
+<pre>cmpt002:~# mpls --get <span style="color: #ff0000;"><em><strong>31</strong></em></span>
+ MPLS Input Label Map
+
+Label NextHop
+ -------------------
+ 31 <span style="color: #ff0000;"><em><strong>73</strong></em></span>
+ root@cmpt002:~# nh --get <span style="color: #ff0000;"><em><strong>73</strong></em></span>
+ Id:73 Type:Encap Fmly: AF_INET Rid:0 Ref_cnt:6 Vrf:13
+ Flags:Valid, Policy,
+ EncapFmly:0806 Oif:<span style="color: #ff0000;"><em><strong>14 </strong></em></span>Len:14
+ Encap Data: 02 38 c8 ea 9a 21 00 00 5e 00 01 00 08 00
+
+cmpt002:~# vif --get <span style="color: #ff0000;"><em><strong>14</strong></em></span>
+ Vrouter Interface Table
+
+Flags: P=Policy, X=Cross Connect, S=Service Chain, Mr=Receive Mirror
+ Mt=Transmit Mirror, Tc=Transmit Checksum Offload, L3=Layer 3, L2=Layer 2
+ D=DHCP, Vp=Vhost Physical, Pr=Promiscuous, Vnt=Native Vlan Tagged
+ Mnp=No MAC Proxy, Dpdk=DPDK PMD Interface, Rfl=Receive Filtering Offload, Mon=Interface is Monitored
+ Uuf=Unknown Unicast Flood, Vof=VLAN insert/strip offload
+
+vif0/14 OS: <span style="color: #ff0000;"><em><strong>tap83f2ki4w-72</strong></em></span>
+ Type:Virtual HWaddr:bk:2a:n6:00:02:00 IPaddr:0
+ Vrf:13 Flags:PL3L2D MTU:9160 Ref:6
+ RX packets:2272968 bytes:214007093 errors:0
+ TX packets:2294863 bytes:287437540 errors:0</pre>
+<h4>5c. Verify the above output matches the VM libvert.xml</h4>
+<pre>cmpt002:~# cat /var/lib/nova/instances/<strong><span style="color: #ff0000;">9<em>8asdfhjkn213-sdai-ncxv-3421987kjlsm</em></span></strong>/<span class="skimlinks-unlinked">libvirt.xml</span> | grep -i tap83f2ki4w-72
+ &lt;target dev="<span style="color: #ff0000;"><em><strong>tap83f2ki4w-72</strong></em></span>"/&gt;</pre>
+<h4>5d. Check for Vrf:13 discards</h4>
+<pre>cmpt002:~# watch vrfstats --get 13
+
+Every 2.0s: vrfstats --get 13 Fri Jun 03 19:33:33 2016
+
+Vrf: 13
+<span style="color: #ff0000;"><em><strong> Discards 0</strong></em></span>, Resolves 0, Receives 0, L2 Receives 3299, Vrf Translates 0, Unknown Unicast Floods 0
+ Ecmp Composites 0, L2 Mcast Composites 3364, Fabric Composites 330, Encap Composites 739, Evpn Composites 0
+ Udp Tunnels 0, Udp Mpls Tunnels 4, Gre Mpls Tunnels 0, Vxlan Tunnels 0
+ L2 Encaps 3338, Encaps 2421364
+ GROs 40513, Diags 0
+ Arp Virtual Proxys 2906, Arp Virtual Stitchs 0, Arp Virtual Floods 0, Arp Physical Stitchs 0, Arp Tor Proxys 0, Arp Physical Floods 0</pre>
+<h4>5e. Check vRouter Flow Table for “Action:F”</h4>
+<pre>cmpt002:~# flow --match 10.10.0.100
+ Flow table(size 68157440, entries 532480)
+
+Entries: Created 2101736 Added 2100485 Processed 2101736 Used Overflow entries 0
+ (Created Flows/CPU: 367906 175642 111664 82241 69167 55275 51234 46499 43885 43268 16593 19378 19266 18389 18108 17846 17739 18159 17939 18510 31225 119065 99542 54060 37515 32004 30342 31058 41341 28021 7123 86430 156010 50283 20184 11714 9180 8086 7844 12001)(oflows 0)
+
+Action:F=Forward, D=Drop N=NAT(S=SNAT, D=DNAT, Ps=SPAT, Pd=DPAT, L=Link Local Port)
+ Other:K(nh)=Key_Nexthop, S(nh)=RPF_Nexthop
+ Flags:E=Evicted, Ec=Evict Candidate, N=New Flow, M=Modified
+ TCP(r=reverse):S=SYN, F=FIN, R=RST, C=HalfClose, E=Established, D=Dead
+
+Listing flows matching ([10.10.0.100]:*)
+
+Index Source:Port/Destination:Port Proto(V)
+ -----------------------------------------------------------------------------------
+ 14325&lt;=&gt;438965 12.12.0.102:61 1 (6-&gt;5)
+ 10.10.0.100:0
+ (Gen: 10, K(nh):73, <span style="color: #ff0000;"><em><strong>Action:F</strong></em></span>, Flags:, S(nh):22, Stats:1166/69960, SPort 61800)
+ --</pre>
+<h4>5f. Verify Traffic is being forwarded on TAP Interface on the VM</h4>
+<pre>cmpt002:~# tcpdump -nei tap83f2ki4w-72
+ tcpdump: WARNING: tap83f2ki4w-72: no IPv4 address assigned
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on tap83f2ki4w-72, link-type EN10MB (Ethernet), capture size 65535 bytes
+ 13:02:32.939608 bk:2a:n6:00:02:00 &gt; 7b:23:a9:tu:c3:p0, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 64, seq 59313, length 40
+ 13:02:33.935583 bk:2a:n6:00:02:00 &gt; 7b:23:a9:tu:c3:p0, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 64, seq 59317, length 40
+ 13:02:34.952637 bk:2a:n6:00:02:00 &gt; 7b:23:a9:tu:c3:p0, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 64, seq 59321, length 40
+ 13:02:35.960168 bk:2a:n6:00:02:00 &gt; 7b:23:a9:tu:c3:p0, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 64, seq 59322, length 40
+ ^C
+ 4 packets captured
+ 6 packets received by filter
+ 0 packets dropped by kernel</pre>
+<p>The traffic flow packets are making it all the to the TAP Interface on the vRouter of the Compute that is assigned to the VM 10.10.0.100. We need to get the DST VM owner to verify that they can see the traffic and at this point it could be any number of problems:<br />
+– VM Host Routing Table<br />
+– VM IPTables or similar service filtering inbound/outbound traffic<br />
+– OpenStack Security Group applied to VM<br />
+– Controller/Compute Routing Issue<br />
+– Etc.,</p>
+<p><a href="#Overview">TOP</a></p>
+<hr />
+<h3 id="TOI_Step_6">STEP 6: On VM, run TCPDUMP to inspect inbound traffic</h3>
+<h4>6a. Access VM (this example will utilize Link-Local Address from Compute)<br />
+Find Link-Local Address of TAP interface of VM via Contrail Web GUI</h4>
+<p>On Compute, SSH to Link-Local Address 169.254.0.14</p>
+<pre>cmpt002:/etc# ssh 169.254.0.14
+ 169.254.0.14's password:
+ Welcome to Ubuntu 14.04.1 LTS (GNU/Linux 3.13.0-32-generic x86_64)
+
+testvm-vn_b:~$</pre>
+<h4>6b. Verify Traffic is making it to the VM</h4>
+<pre>testvm-vn_b:~$ ifconfig
+ eth0 Link encap:Ethernet HWaddr 7b:23:a9:tu:c3:p0
+ inet addr:10.10.0.100 Bcast:172.20.50.255 Mask:255.255.255.0
+ UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
+ RX packets:2298122 errors:0 dropped:0 overruns:0 frame:0
+ TX packets:2276178 errors:0 dropped:0 overruns:0 carrier:0
+ collisions:0 txqueuelen:1000
+ RX bytes:287697225 (287.6 MB) TX bytes:214259840 (214.2 MB)
+
+eth1 Link encap:Ethernet HWaddr 02:8a:db:64:fb:45
+ inet addr:192.168.0.58 Bcast:192.168.0.255 Mask:255.255.255.0
+ UP BROADCAST RUNNING MULTICAST MTU:1500 Metric:1
+ RX packets:2298122 errors:0 dropped:0 overruns:0 frame:0
+ TX packets:2276178 errors:0 dropped:0 overruns:0 carrier:0
+ collisions:0 txqueuelen:1000
+ RX bytes:287697225 (287.6 MB) TX bytes:214259840 (214.2 MB)
+
+lo Link encap:Local Loopback
+ inet addr:127.0.0.1 Mask:255.0.0.0
+ UP LOOPBACK RUNNING MTU:65536 Metric:1
+ RX packets:34 errors:0 dropped:0 overruns:0 frame:0
+ TX packets:34 errors:0 dropped:0 overruns:0 carrier:0
+ collisions:0 txqueuelen:0
+ RX bytes:7130 (7.1 KB) TX bytes:7130 (7.1 KB)
+
+testvm-vn_b:~# tcpdump -D
+ 1.eth0
+ 2.eth1
+ 3.any (Pseudo-device that captures on all interfaces)
+ 4.lo
+
+testvm-vn_b:~$ tcpdump -nei 1 proto 1
+ tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+ listening on eth0, link-type EN10MB (Ethernet), capture size 65535 bytes
+ 13:16:15.056859 bk:2a:n6:00:02:00 &gt; 7b:23:a9:tu:c3:p0, ethertype IPv4 (0x0800), length 74: 12.12.0.102 &gt; 10.10.0.100: ICMP echo request, id 65, seq 109, length 40
+ 13:16:15.056963 7b:23:a9:tu:c3:p0 &gt; bk:2a:n6:00:02:00, ethertype IPv4 (0x0800), length 74: 10.10.0.100 &gt; 12.12.0.102: ICMP echo reply, id 65, seq 109, length 40
+ ^C
+ 2 packets captured
+ 4 packets received by filter
+ 0 packets dropped by kernel
+
+testvm-vn_b:~$</pre>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div><mark>At this point, we can safely say that the traffic flow packets are making it all the to the TAP Interface on the vRouter of the Compute that is assigned to the VM 10.10.0.100. There are any number of reasons why traffic may fail to/from a VM:</mark></div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>– VM Host Routing Table<br />
+– VM IPTables or similar service filtering inbound/outbound traffic<br />
+– OpenStack Security Group applied to VM<br />
+– Controller/Compute Routing Issue<br />
+– Etc.,</p>
+<p><a href="#Overview">TOP</a></p>
+<hr />
+<h2 id="Tracing_Inside_Out">Tracing: Inside =&gt; Out</h2>
+<hr />
+<h3 id="TIO_Step_1">STEP 1: On Compute where VM is being hosted on, Trace flow back out to Source Host</h3>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/07/29831101064_328e78b9ee_b.jpg"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-7143" src="http://www.opencontrail.org/wp-content/uploads/2016/07/29831101064_328e78b9ee_b.jpg" alt="29831101064_328e78b9ee_b" width="674" height="731" data-id="7143" /></a><br />
+&gt;&gt;*Assume traffic is fixed on the DST VM and now we are tracing the return flow back to the SRC IP</p>
+<h4>1a. Get vRouter Flow Table information for return traffic from 10.10.0.100 to 12.12.0.102</h4>
+<pre>cmpt002:~# flow --match 12.12.0.102
+ Flow table(size 68157440, entries 532480)
+
+Entries: Created 2105344 Added 2104093 Processed 2105344 Used Overflow entries 0
+ (Created Flows/CPU: 368319 176011 111801 82325 69226 55341 51282 46532 43914 43306 16597 19384 19280 18394 18114 17851 17745 18169 17948 18521 31269 119556 99662 54124 37564 32051 30401 31112 41397 28061 7134 86678 156797 50372 20220 11723 9190 8099 7854 12020)(oflows 0)
+
+Action:F=Forward, D=Drop N=NAT(S=SNAT, D=DNAT, Ps=SPAT, Pd=DPAT, L=Link Local Port)
+ Other:K(nh)=Key_Nexthop, S(nh)=RPF_Nexthop
+ Flags:E=Evicted, Ec=Evict Candidate, N=New Flow, M=Modified
+ TCP(r=reverse):S=SYN, F=FIN, R=RST, C=HalfClose, E=Established, D=Dead
+
+Listing flows matching ([12.12.0.102]:*)
+
+Index Source:Port/Destination:Port Proto(V)
+ -----------------------------------------------------------------------------------
+ 463620&lt;=&gt;89580 10.10.0.100:65 1 (6-&gt;5)
+ 12.12.0.102:0
+ (Gen: 14, K(nh):<span style="color: #ff0000;"><em><strong>73</strong></em></span>, Action:F, Flags:, <span style="color: #ff0000;"><em><strong>E:0</strong></em></span>, S(nh):73, Stats:3/222, SPort 51745)
+ --</pre>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div><em><mark>E:0</mark></em> == ECMP Index 0 (for ECMP Multi-Path, Next-Hop starts and increments from 0)</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4>1b. Find Return Next-Hop Information</h4>
+<pre>cmpt002:~# nh --get <span style="color: #ff0000;"><em><strong>73</strong></em></span>
+ Id:73 Type:Encap Fmly: AF_INET Rid:0 Ref_cnt:6 Vrf:13
+ Flags:Valid, Policy,
+ EncapFmly:0806 Oif:<span style="color: #ff0000;"><em><strong>14</strong> </em></span>Len:14
+ Encap Data: 02 38 c8 ea 9a 21 00 00 5e 00 01 00 08 00
+
+cmpt002:/etc# rt --dump 13 | grep 172.20.212
+ Vrouter inet4 routing table 0/6/unicast
+ Flags: L=Label Valid, P=Proxy ARP, T=Trap ARP, F=Flood ARP
+
+Destination PPL Flags Label Nexthop Stitched MAC(Index)
+ 172.20.212.0/24 0 P - <span style="color: #ff0000;"><em><strong>102</strong> </em></span>-
+
+cmpt002:~# nh --get 102
+ Id:102 Type:Composite Fmly: AF_INET Rid:0 Ref_cnt:6601 Vrf:13
+ Flags:Valid, Policy, Ecmp,
+ Sub NH(label): <span style="color: #ff0000;"><em><strong>22</strong></em></span>(27) 22(31)</pre>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div><mark>Here we see 2 Next-Hops and since we saw <em>E:0</em> in the vRouter Flow Table, it means we will take the first Next-Hop(Label) of <em>22</em>(27). Remember this MPLS Label <em>22 </em>as we will need this to get the VHOST0 IP of the Compute where the vFW resides on.</mark></div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<pre>cmpt002:/etc# nh --get <span style="color: #ff0000;"><em><strong>22</strong></em></span>
+ Id:22 Type:Tunnel Fmly: AF_INET Rid:0 Ref_cnt:100 Vrf:0
+ Flags:Valid, MPLSoUDP,
+ Oif:0 Len:14 Flags Valid, MPLSoUDP, Data:8c dc d4 10 75 a0 8c dc d4 10 74 c0 08 00
+ Vrf:0 Sip:172.20.0.24 Dip:<span style="color: #ff0000;"><em><strong>172.20.0.23</strong></em></span></pre>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div><span style="color: #ff0000;"><strong><em><mark>172.20.0.23</mark></em></strong> (<em>cmpt001</em>)</span> is the Compute where the vFW VM resides.</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a href="#Overview">TOP</a></p>
+<hr />
+<h3 id="TIO_Step_2">STEP 2: On Compute where Next-Hop vFW VM is being hosted on, verify return flow is hitting same egress vFW as ingress</h3>
+<h4>2a. Trace path of return flow back (MPLS Label 27) to vFWand verify it is the same vFW that was utilized for the inbound traffic.</h4>
+<p>The COMPUTE with Vhost0 IP of 172.20.0.23 == cmpt001 and VFW001 has a ID of a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q from previous discovery.</p>
+<pre>cmpt001:~# mpls --get <span style="color: #ff0000;"><em><strong>27</strong></em></span>
+ MPLS Input Label Map
+
+Label NextHop
+ -------------------
+ 27 <span style="color: #ff0000;"><em><strong>65</strong></em></span>
+ root@cmpt001:~# nh --get <span style="color: #ff0000;"><em><strong>65</strong></em></span>
+ Id:65 Type:Encap Fmly: AF_INET Rid:0 Ref_cnt:5 Vrf:12
+ Flags:Valid, Policy,
+ EncapFmly:0806 Oif:<span style="color: #ff0000;"><em><strong>29</strong></em></span> Len:14
+ Encap Data: 02 31 e6 d2 4c 7d 00 00 5e 00 01 00 08 00
+
+cmpt001:~# vif --get <span style="color: #ff0000;"><em><strong>29</strong></em></span>
+ Vrouter Interface Table
+
+Flags: P=Policy, X=Cross Connect, S=Service Chain, Mr=Receive Mirror
+ Mt=Transmit Mirror, Tc=Transmit Checksum Offload, L3=Layer 3, L2=Layer 2
+ D=DHCP, Vp=Vhost Physical, Pr=Promiscuous, Vnt=Native Vlan Tagged
+ Mnp=No MAC Proxy, Dpdk=DPDK PMD Interface, Rfl=Receive Filtering Offload, Mon=Interface is Monitored
+ Uuf=Unknown Unicast Flood, Vof=VLAN insert/strip offload
+
+vif0/29 OS: <span style="color: #ff0000;"><em><strong>tap13a2d42c-5d</strong></em></span>
+ Type:Virtual HWaddr:bk:2a:n6:00:02:00 IPaddr:0
+ Vrf:12 Flags:PL3L2D MTU:9160 Ref:6
+ RX packets:1311527 bytes:145819268 errors:0
+ TX packets:1305396 bytes:125789289 errors:0
+
+cmpt001:~# cat /var/lib/nova/instances/a1b2c3d4e5f6g-7h8i-9j0k-1l2m3n4o5p6q/<span class="skimlinks-unlinked">libvirt.xml</span> | grep -i tap
+ &lt;target dev="tapc218da9d-32"/&gt;
+ &lt;target dev="<span style="color: #ff0000;"><em><strong>tap13a2d42c-5d</strong></em></span>"/&gt;
+ &lt;target dev="tap93d2dja8-22"/&gt;
+ &lt;target dev="tapa8d2gf3a-k4"/&gt;</pre>
+<div>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div><mark>This is the same vFWas was used for the Ingress flow so this symmetric flow is now verified. If traffic was SOURCED from VM out, then you would follow the same procedure outbound the rest of the way as we used to trace the flow inbound into the VM 10.10.0.100.</mark></div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Continue the same process to trace the flows outbound from the vFW to the VM.</p>
+<p><a href="#Overview">TOP</a></p>
+<hr />
+<h2 id="References">References</h2>
+<table border="1" cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td>
+<div>RESOURCE</div>
+</td>
+<td>
+<div>DESCRIPTION</div>
+</td>
+</tr>
+<tr>
+<td><a href="http://www.opencontrail.org/a-journey-of-a-packet-within-opencontrail/">Juniper Contrail – Life of Packet</a></td>
+<td>Life of packet Blog</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Juniper/contrail-controller/wiki/A-guide-to-'vRouter'-command-line-utilities-(work-in-progress)">Juniper vRouter Commands</a></td>
+<td>Juniper GitHub for vRouter CLI Commands</td>
+</tr>
+<tr>
+<td><a href="https://www.juniper.net/techpubs/en_US/contrail2.21/topics/task/configuration/vrouter-cli-utilities-vnc.html">Juniper vRouter Utilities</a></td>
+<td>
+<div>Juniper TechPubs vRouter CLI Utilities</div>
+</td>
+</tr>
+<tr>
+<td><a href="http://docs.openstack.org/cli-reference/content/">OpenStack CLI Reference</a></td>
+<td>
+<div>OpenStack CLI Reference</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p><a href="#Overview">TOP</a></p>
+<hr />
+<p>&nbsp;</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

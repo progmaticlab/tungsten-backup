@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>ipv6 Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/ipv6/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/ipv6/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Fri, 25 Mar 2016 05:20:06 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>ipv6 Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/ipv6/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>OpenStack Neutron IPv6 support in OpenContrail SDN</title>
+		<link>https://tungsten.io/openstack-neutron-ipv6-support-in-opencontrail-sdn/</link>
+		
+		<dc:creator><![CDATA[Jakub Pavlik]]></dc:creator>
+		<pubDate>Fri, 25 Mar 2016 05:20:06 +0000</pubDate>
+				<category><![CDATA[DataCenter]]></category>
+		<category><![CDATA[ipv6]]></category>
+		<category><![CDATA[Routing/Switching]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6950</guid>
+
+					<description><![CDATA[This is a guest blog from tcpCloud, authored by Marek Celoud &#38; Jakub Pavlik (tcp cloud engineers). To see the original post,click here. As private cloud (primary based on OpenStack)...]]></description>
+										<content:encoded><![CDATA[<p><em>This is a guest blog from tcpCloud, authored by Marek Celoud &amp; Jakub Pavlik (tcp cloud engineers). To see the original post,<a href="http://www.tcpcloud.eu/en/blog/2016/03/23/openstack-neutron-ipv6-support-opencontrail-sdn/" target="_blank">click here</a>.</em></p>
+<p>As private cloud (primary based on OpenStack) deployers and integrators lots of customer ask as about support of IPv6. Most of our deployments run on OpenContrail SDN&amp;NFV. Reasons are described in our previous blogs (<a class="reference external" href="http://www.tcpcloud.eu/en/blog/2015/07/13/opencontrail-sdn-lab-testing-1-tor-switches-ovsdb/">http://www.tcpcloud.eu/en/blog/2015/07/13/opencontrail-sdn-lab-testing-1-tor-switches-ovsdb/</a>) . OpenContrail SDN supports IPv6 for quite long, but there is not so many real tests. Therefore we decided to share procedure how we configured and used IPv6 in OpenStack.</p>
+<p>This short blog desribes support of IPv6 in OpenStack using Neutron plugin for SDN/NFV &#8211; OpenContrail.</p>
+<p>With cloud deployments there is significant growth of need for public IP addresses. These deployments are facing problems due to lack of IPv4 addresses. One of the solutions is to migrate to public IPv6.</p>
+<p>We start with capability of IPv6 for internal communication between virtual machines within same virtal network and across different virtual network. Then we show how to expand IPv6 public addresses to external world. In our case we use Juniper MX routers as cloud gateway.</p>
+<h2>Creating IPv6 network</h2>
+<p>We need to consider few things when creating IPv6 virtual network. First one is adding also IPv4 subnet, because without IPv4 address instance can not connect to nova metadata api. Cloud images are built to use cloud-init to connect to API on 169.254.169.254:80 address. So if you create network without IPv4 subnet, you will not receive metadata to your instance. Second consideration is whether to you want to go to internet with your IPv6 capable instances. There is currently problem with IPv6 floating IP pool, so if you want to expand to external world, you need to boot to network with associated route target.</p>
+<p>We first create private IPv6 network for demonstation.</p>
+<p><img fetchpriority="high" decoding="async" class="size-full wp-image-6951 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv61.png" alt="ipv61" width="967" height="514" data-id="6951" /></p>
+<p>When the network is created we can boot instances. We will boot 2 of them to demonstrate functional communication. You will probably need to modify network interface configuration, because there is not enabled dhcp for IPv6. For nonpreemptive recieve you can use:</p>
+<pre><span style="font-family: 'courier new', courier;">#dhclient -6</span></pre>
+<p><img decoding="async" class="size-full wp-image-6953 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv63.png" alt="ipv63" width="559" height="176" data-id="6953" /></p>
+<p>As you can see, you have both IPv4 and IPv6 address associated with interface of instance.</p>
+<p><img decoding="async" class="aligncenter size-full wp-image-6954" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv64.png" alt="ipv64" width="815" height="241" data-id="6954" /></p>
+<p>Before testing communication, we need to modify security groups to enable traffic. For testing purposes we will enable everything.</p>
+<p><img loading="lazy" decoding="async" class="alignleft size-full wp-image-6952" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv62.png" alt="ipv62" width="1855" height="92" data-id="6952" /></p>
+<p>We choose ubuntu-ipv6-1 from instance list and try to ping instance ubuntu-ipv6-2 with fd00::3 IPv6 address.</p>
+<p><img loading="lazy" decoding="async" class="size-full wp-image-6955 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv65.png" alt="ipv65" width="691" height="149" data-id="6955" /></p>
+<p>As you can see, we are now able to ping other instance.</p>
+<p><img loading="lazy" decoding="async" class="size-full wp-image-6957 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv66.png" alt="ipv66" width="514" height="203" data-id="6957" /></p>
+<p>This capability is nice, but not very useful without connecting to external world. We will create route with associated route target to expand routes to Juniper MX routers via BGP. In the picture below is sample architecture. There is one VRF CLOUD-INET created on each of MX routers. The route target associated with this VRF matches route target added to virtual network in Contrail. In the picture is demonstrated both IPv4 and IPv6 addresses propagated to same VRF. There is also INET virtual-router, that is connected to VRF via lt tunnel interfaces running ospf and ospf3. From this virtual-router is aggregated default route ::/0 from all internet routes from upstream EBGP.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6956" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv66-expanded.png" alt="ipv66 expanded" width="617" height="883" data-id="6956" /></p>
+<p>There are few things to configure on MX routers to enable IPv6 traffic from cloud. First is enabling ipv6 tunneling through mpls tunnels.</p>
+<pre><span style="font-family: 'courier new', courier;">protocols {
+    mpls {
+        ipv6-tunneling;
+        interface all;
+        }</span></pre>
+<p>It is also good practice to filter what routes you export and import to and from cloud. We only need default route present in cloud. And we also want to filter only IPv6 addresses to be imported from Contrail, because of IPv4 pool created with IPv6 virtual network.</p>
+<pre><span style="font-family: 'courier new', courier;">
+policy-statement CLOUD-INET-EXPORT {
+    term FROM-MX-IPV6 {
+        from {
+            protocol ospf3;
+            route-filter ::/0 exact;
+        }
+        then {
+            community add CLOUD-INET-EXPORT-COMMUNITY;
+            accept;
+        }
+    }
+    term LAST {
+        then reject;
+    }
+}
+policy-statement CLOUD-INET-IMPORT {
+    term FROM-CONTRAIL-IPV6 {
+        from {
+            family inet6;
+            community CLOUD-INET-IMPORT-COMMUNITY;
+            route-filter 2a06:f6c0::/64 orlonger;
+        }
+        then accept;
+    }
+    term LAST {
+        then reject;
+    }
+}
+community CLOUD-INET-EXPORT-COMMUNITY members target:64513:10;
+community CLOUD-INET-IMPORT-COMMUNITY members target:64513:10;
+</span></pre>
+<p>So now we create network 2a06:f6c0::/64 and we associate route target 64513:10 to this network. We can also make it shared so all tenants can boot in this network. Once we create instance to this network, there is already routing information in MX routing table.</p>
+<pre><span style="font-family: 'courier new', courier;">
+# run show route table CLOUD-INET.inet6.0
+
+CLOUD-INET.inet6.0: 8 destinations, 9 routes (8 active, 0 holddown, 0 hidden)
++ = Active Route, - = Last Active, * = Both
+
+::/0               *[OSPF3/150] 20:37:13, metric 0, tag 0
+                    &gt; to fe80::6687:8800:0:2f7 via lt-0/0/0.3
+2a06:f6c0::3/128   *[BGP/170] 00:00:15, localpref 100, from 10.0.106.84
+                      AS path: ?, validation-state: unverified
+                    &gt; via gr-0/0/0.32789, Push 1046
+                    [BGP/170] 00:00:15, localpref 100, from 10.0.106.85
+                      AS path: ?, validation-state: unverified
+                    &gt; via gr-0/0/0.32789, Push 1046</span></pre>
+<p>We can also verify that default route is propagated by ispecting routing tables in Contrail.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6959" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv610.png" alt="ipv610" width="1728" height="696" data-id="6959" /></p>
+<p>When we verify that instance have public IPv6 address, we can try to access internet.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6958" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv67.png" alt="ipv67" width="810" height="240" data-id="6958" /></p>
+<div id="creating-ipv6-network" class="section">
+<p>ping google</p>
+</div>
+<div id="conclusion" class="section">
+<h2>Conclusion</h2>
+<p>We proved that OpenContrail SDN solution is fully IPv6 capable with cloud platform OpenStack for private and public communication and communicate directly with edge routers as Juniper MX, Cisco ASR, etc.</p>
+</div>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

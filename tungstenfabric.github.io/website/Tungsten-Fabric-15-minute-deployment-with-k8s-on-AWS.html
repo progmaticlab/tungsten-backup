@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-120516132-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-120516132-1');
+    </script>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,maximum-scale=2">
+    <link rel="stylesheet" type="text/css" media="screen" href="assets/css/style.css%3Fv=9ae6919b82d7f9b871eb06c0c2b979def1cca2b1.css">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Introduction | [“Tungsten Fabric”]</title>
+<meta name="generator" content="Jekyll v3.9.3" />
+<meta property="og:title" content="Introduction" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="[“Open source network virtualization”]" />
+<meta property="og:description" content="[“Open source network virtualization”]" />
+<link rel="canonical" href="Tungsten-Fabric-15-minute-deployment-with-k8s-on-AWS.html" />
+<meta property="og:url" content="https://tungstenfabric.github.io/website/Tungsten-Fabric-15-minute-deployment-with-k8s-on-AWS.html" />
+<meta property="og:site_name" content="[“Tungsten Fabric”]" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Introduction" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"[“Open source network virtualization”]","headline":"Introduction","url":"https://tungstenfabric.github.io/website/Tungsten-Fabric-15-minute-deployment-with-k8s-on-AWS.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto%3A100%2C200%2C300%2C400%2C500%2C600%2C700%2C800%2C900%2C100i%2C200i%2C300i%2C400i%2C500i%2C600i%2C700i%2C800i%2C900i&amp;subset=latin&amp;ver=4.9.6" type="text/css" media="all">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+  <title>Tungsten Fabric</title>
+  </head>
+  <body>
+
+    <!-- HEADER -->
+    <header>
+      <div id="lf_header">
+        <div class="container"><a id="lf-header" href="https://www.linuxfoundation.org/projects" target="_blank" rel="noopener"><img class="header_image" style="padding-top:1px" src="https://tungsten.io/wp-content/themes/salient-child/images/logo_lf_projects_horizontal_2018.png" width="500" height="28"/></a></div>
+        </div><div id="tungsten_header" style="text-align:right;">
+        <div class="container">
+          <!-- #site-logo -->
+          <div style="position:absolute; left 0px;">
+          <a href="https://tungsten.io/" rel="noopener"><img class="header_image" style="padding-top:6px" height="58" src="https://github.com/tungstenfabric/website/raw/master/TungstenFabric_Gradient_RGB-DarkBG.png"/></a></div>
+          <!-- #site-navigation -->
+          <nav style="float:right; padding-top:20px;">
+            <ul class="menu">
+              <li class="menu"><a href="https://tungsten.io/start/" class="menu-item">Get Started</a></li>
+              <li class="menu"><a href="https://tungsten.io/community/" class="menu-item">Community</a></li>
+              <li class="menu"><a href="../website.html" class="menu-item">Documentation</a></li>
+              <li class="menu"><a href="https://tungsten.io/blog/" class="menu-item">Blog</a></li>
+              <li class="menu"><a href="https://tungsten.io/wp-content/uploads/2018/03/Tungsten-Fabric-Project-Technical-Charter-3-13-2018-Final.pdf" class="menu-item">Charter</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h2 id="introduction">Introduction</h2>
+
+<p>This document contains instructions how to deploy a sandbox with Tungsten Fabric cluster orchestrated by Kubernetes in AWS. The Tungsten Fabric cluster is composed of deployment node, one controller and two compute nodes that run as EC2 VMs.</p>
+
+<p><a href="images/carbide_deployment.png"> <img src="images/carbide_deployment_small.png" alt="" /> </a></p>
+
+<h2 id="requirements">Requirements</h2>
+
+<p>It is necessary to subscribe to the official image of CentOS 7 x86_64 HVM before you start using the sandbox.</p>
+
+<p>Selected Region must have at least two Availability Zones.</p>
+
+<p>Once you have signed into the AWS console, go to the following URL: <a href="https://aws.amazon.com/marketplace/pp/B00O7WM7QW/" target="_blank">AWS Marketplace</a></p>
+
+<p>Press “Continue to Subscribe”, then “Accept Terms”.</p>
+
+<p>*If you are connected as an IAM user, and you can not perform a task in AWS Marketplace, check the Appendix at the end of the document for the instructions.</p>
+
+<h2 id="procedure">Procedure</h2>
+
+<ol>
+  <li>Just click on this button to create the sandbox (run as AWS CloudFormation stack) :</li>
+</ol>
+
+<p><a href="https://console.aws.amazon.com/cloudformation/home#/stacks/new?stackName=tungstenfabric-k8s&amp;templateURL=https://s3-us-west-2.amazonaws.com/tungsten-fabric-sandbox/tungsten_fabric_stack_template.yaml" target="_blank"><img alt="Launch Stack" src="https://cdn.rawgit.com/buildkite/cloudformation-launch-stack-button-svg/master/launch-stack.svg" /></a></p>
+
+<ol>
+  <li>Press Next.</li>
+  <li>Specify:
+    <ul>
+      <li>Your admin password for Sandbox UI</li>
+      <li><a href="https://aws.amazon.com/ec2/instance-types" target="_blank">EC2 Instance type</a></li>
+      <li><a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html" target="_blank">Key Pair</a> (required to access command-line utilities)</li>
+    </ul>
+  </li>
+  <li>Press Next twice.</li>
+  <li>Set checkbox “Acknowledge…” at the bottom of the page.</li>
+  <li>Press Create.</li>
+  <li>Reload Stacks page and wait for Stack CREATE_COMPLETE status.</li>
+  <li>Select the Stack (checkbox) and check “Output” tab in the bottom pane to find Sandbox UI URL.</li>
+</ol>
+
+<p><a href="images/status_stack_full.png"> <img src="images/status_stack_small.png" alt="" /> </a></p>
+
+<ol>
+  <li>Go to Sandbox UI URL and wait for the deployment (site will be available in 2-3 minutes after the creation of the stack).</li>
+  <li>After a successful deployment, the sandbox interface will provide information to connect to Tungsten Fabric and Kubernetes services.</li>
+  <li>Use Tungsten Fabric UI URLs, login and password to start.</li>
+</ol>
+
+<p>IMPORTANT: When you’ve finished using the sandbox you can use the DELETE SANDBOX button to clear all of the used resources.</p>
+
+<p><a href="images/delete_stack_full.png"> <img src="images/delete_stack_small.png" alt="" /> </a></p>
+
+<p>For double safety you can check the remaining resources in the AWS Interface after deleting.</p>
+
+<h2 id="accessing-the-cluster">Accessing the cluster:</h2>
+
+<p>You can use the ssh key specified during the launch of the stack to access any VM with the “centos” username.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh -i &lt;ssh-key name&gt; centos@&lt;ip&gt;   # &lt;ip&gt; can be the public IP or the private IP of the node
+sudo -s
+</code></pre></div></div>
+<p>The sandbox interface will provide information about how to connect to Tungsten Fabric UI and Kubernetes dashboard.</p>
+
+<p><a href="images/carbide_ui_full.png"> <img src="images/carbide_ui_small.png" alt="" /> </a></p>
+
+<h2 id="appendix-iam-users">Appendix: IAM Users</h2>
+
+<p>You need to grant additional privileges for the user if instead of using a root account you are signing with an IAM user.</p>
+
+<ul>
+  <li>Log on to the AWS console.</li>
+  <li>In the AWS services search at the top left of the console look for IAM and select it.</li>
+  <li>On the left navigation bar click on the user whose privileges you need to change.</li>
+  <li>At the right bottom click Add inline policy.</li>
+  <li>Go to the JSON tab and replace the content with the following policy:</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "cloudformation:*",
+                "aws-marketplace:*",
+                "sns:*",
+                "s3:*",
+                "ec2:*",
+                "elasticloadbalancing:*",
+                "cloudwatch:*",
+                "autoscaling:*",
+                "iam:*"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+</code></pre></div></div>
+
+<ul>
+  <li>Review policy. Add policy name. Create policy.</li>
+</ul>
+
+<h2 id="get-to-know-tungsten-fabric-more">Get to know Tungsten Fabric more</h2>
+
+<p><a href="https://www.juniper.net/documentation/en_US/release-independent/contrail/information-products/pathway-pages/index.html">All about Tungsten Fabric</a></p>
+
+<p><a href="https://github.com/Juniper/contrail-controller/wiki/Kubernetes">Tungsten Fabric and Kubernetes Intro</a></p>
+
+<p><a href="https://github.com/Juniper/contrail-controller/wiki/Install-K8s-using-Kubeadm">Install Kubernetes using Kubeadm</a></p>
+
+<p><a href="https://tungstenfabric.github.io/website/Tungsten-Fabric-one-line-install-on-k8s.md">Deploy Tungsten Fabric on Kubernetes in 1-step command</a></p>
+
+
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <footer id="site-footer">
+      <div>
+        <div id="footer-widgets">
+          <div class="container">
+
+            <div class="col col-1">
+              <div class="footer-menu">
+                <p class="footer_heading">MENU</p>
+                <ul class="footer-menu">
+                  <li class="footer-menu-item"><a href="https://tungsten.io/start/">Get Started</a></li>
+                  <li class="footer-menu-item"><a href="https://tungsten.io/community/">Community</a></li>
+                  <li class="footer-menu-item"><a target="_blank" href="../website.html">Documentation</a></li>
+                  <li class="footer-menu-item"><a href="https://tungsten.io/blog/">Blog</a></li>
+                  <li class="footer-menu-item"><a href="https://tungstenfabric.github.io/wp-content/uploads/2018/03/Tungsten-Fabric-Project-Technical-Charter-3-13-2018-Final.pdf">Charter</a></li>
+                </ul>
+              </div>
+              <div><a href="https://tungsten.io"><img class="header_image" width="20" height="17" src="https://i1.wp.com/tungstenfabric.io/wp-content/uploads/2018/03/TungstenFabric_White_logoonly.png"></a></div>
+            </div>
+
+            <div class="col col-2">
+              <div class="footer-menu">
+                <p class="footer_heading">Engage</p>
+                <ul class="footer-menu">
+                  <li class="no-label footer-menu-item"><a href="https://github.com/tungstenfabric/" target="_blank" title="Visit Tungsten Fabric on GitHub"><span class="fab fa-2x fa-github"></span></a></li>
+                  <li class="no-label footer-menu-item"><a href="https://join.slack.com/t/tungstenfabric/shared_invite/enQtMzM0MjMyMDIzMzk3LTZmY2FmY2JlZmRjN2YxMzgyOTNkNDZiNTRiYWU0NTRmNzI3N2RjMDIwY2UxZDlkODgzZDE0YzQ3MTlhNTg0N2I" target="_blank" title="Visit Tungsten Fabric on Slack"><span class="fab fa-2x fa-slack"></span></a></li>
+                  <li class="no-label footer-menu-item"><a href="https://twitter.com/tungstenfabric" target="_blank" title="Visit Tungsten Fabric on Twitter"><span class="fab fa-2x fa-twitter"></span></a></li>
+                  <li class="no-label footer-menu-item"><a href="https://www.facebook.com/tungstenfabric/" target="_blank" title="Visit Tungsten Fabric on Facebook"><span class="fab fa-2x fa-facebook"></span></a></li>
+                  <li class="no-label footer-menu-item"><a href="https://www.linkedin.com/groups/6517760" target="_blank" title="Visit Tungsten Fabric on LinkedIn"><span class="fab fa-2x fa-linkedin"></span></a></li>
+                </ul>
+              </div>
+              <div>
+                <div>
+                  <ul class="footer-menu">
+                    <li class="footer-menu-item"><a target="_blank" href="https://groups.google.com/forum/#!forum/tungsten-users">Mailing List: User Forum</a></li>
+                    <li class="footer-menu-item"><a target="_blank" href="https://groups.google.com/forum/#!forum/tungsten-dev">Mailing List: Developer Forum</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="col col-3 ">
+              <div class="footer-menu">
+                <p class="footer_heading">RESOURCES</p>
+                <ul class="footer-menu">
+                  <li class="footer-menu-item"><a target="_blank" href="https://github.com/tungstenfabric/">Code on GitHub</a></li>
+                  <li class="footer-menu-item"><a target="_blank" href="https://hub.docker.com/u/tungstenfabric/">Packages on DockerHub</a></li>
+                  <li class="footer-menu-item"><a target="_blank" href="https://drive.google.com/drive/folders/0AM-bGoKiRBuTUk9PVA">Community Google Drive</a></li>
+                  <li class="footer-menu-item"><a target="_blank" href="https://calendar.google.com/calendar?cid=ZW1xMjBjZmJyNmZ0NWIwcjNrdjZraG9udnNAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ">Community Calendar</a></li>
+                  <li class="footer-menu-item"><a target="_blank" href="https://www.youtube.com/channel/UCHX_THOp9d0vclXBMNp2g6g/">Community Videos</a></li>
+                </ul>
+              </div>
+            </div>
+
+          </div>  <!-- .container -->
+        </div>
+        <!-- #footer-widgets -->
+
+        <div id="footer-bottom">
+          <div class="container">
+            <div>
+              Copyright © 2018 Tungsten Fabric a Series of LF Projects, LLC For web site terms of use, trademark policy and general project policies please see <a href="https://lfprojects.org" target="_blank" rel="noopener">https://lfprojects.org</a>.</div>
+            <!-- #copyright -->
+          </div>
+          <!-- #footer-bottom-inner -->
+        </div>
+        <!-- #footer-bottom -->
+
+      </div>
+      <!-- #footer-inner -->
+    </footer>
+
+    
+  </body>
+</html>

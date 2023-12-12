@@ -1,0 +1,1192 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>BGPaaS Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/bgpaas/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/bgpaas/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Fri, 12 Aug 2016 17:43:37 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>BGPaaS Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/bgpaas/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>BGPaaS in OpenStack &#8211; Kubernetes with Calico in OpenStack with OpenContrail</title>
+		<link>https://tungsten.io/bgpaas-in-openstack-kubernetes-with-calico-in-openstack-with-opencontrail/</link>
+		
+		<dc:creator><![CDATA[Jakub Pavlik]]></dc:creator>
+		<pubDate>Fri, 12 Aug 2016 17:43:37 +0000</pubDate>
+				<category><![CDATA[BGPaaS]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[OpenStack]]></category>
+		<category><![CDATA[Orchestration]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=7160</guid>
+
+					<description><![CDATA[Note: This is a guest blog from tcpCloud, authored by Marek Celoud &#38; Jakub Pavlik (tcp cloud engineers). To see the original post,click here. It’s been a while since new version...]]></description>
+										<content:encoded><![CDATA[<p><em>Note: This is a guest blog from tcpCloud, authored by Marek </em>Celoud<em> &amp; Jakub Pavlik (</em>tcp<em> cloud engineers). To see the original post,<a href="http://www.tcpcloud.eu/en/blog/2016/08/12/bgpaasinopenstack/">click here</a>.</em></p>
+<p>It’s been a while since new version 3.X of OpenContrail was released and we have not got so much time to take a good look at new features of this most deployed SDN/NFV with OpenStack. This blog post therefore brings our perspective on specific use cases and how to use BGP as a Service in OpenStack private cloud.</p>
+<p>BGPaaS together with configurable ECMP, Intel DPDK and SRIOV support are key features of the new release. All of these features show that OpenContrail became the number one SDN/NFV solution for telco and service providers. Simply because telcos as Deutsche Telekom, France Telekom and AT&amp;T pick this as a solution for the SDN. The last named has significantly influenced features in the last OpenContrail release. To explain the reasons for these requirements and decisions you can watch Austin OC meetup videos, where AT&amp;T has explained their <a class="reference external" href="https://www.youtube.com/watch?v=WOWvsQwZdrQ">use cases</a> and why they like MPLS L3VPN approach.</p>
+<p>tcp cloud tries to bring the real use cases not only for telco VNF for running virtual router appliances. Therefore we try to show you another interesting use case for the global community, where BGPaaS is very important part not only for VNF. We deployed Kubernetes with Calico on top of OpenStack with OpenContrail and redistributed routes through the BGPaaS.</p>
+<div id="bgp-as-a-service" class="section">
+<h2>BGP as a Service</h2>
+<p>The BGP as a service (BGPaaS) allows a guest virtual machine (VM) to place routes in its own virtual routing and forwarding (VRF) instance using BGP. It has been implemented according to the following <a class="reference external" href="https://blueprints.launchpad.net/juniperopenstack/+spec/bgp-as-a-service">blueprint</a>.</p>
+<p>However, why do we need BGP route redistribution within Contrail? By default, virtual machines have only directly connected routes and default route pointing to Contrail IRB interface where all unknown traffic is being sent to. Then the route lookup occurs in that particular VRF. Normally, in VRF are only /32 routes of virtual machines and sometimes routes which are propagated via BGP from Cloud GW. When no match in route fits the lookup, the traffic is discarded.</p>
+<p>You can run into several issues with this default behavior. For example Calico does not use overlay tunnels between its containers/VMs so the traffic goes transparently through your infrastructure. That means all networking devices between Calico nodes must be aware of Calico routes, so the traffic can be routed properly.</p>
+<p>I’ll explain this issue on one of our use cases &#8211; Kubernetes with Calico. When we operate Kubernetes on top of OpenStack with OpenContrail, the problem occurs after the first container is started. Calico allocates /26 route for Kubernetes node, where the container started. This route is distributed via BGP to all the other Kubernetes nodes. But when you try to access this container, traffic goes to particular Kubernetes node. The problem is with traffic that is going back. By default there is Reverse Path Forwarding enabled, so when the traffic goes back, Contrail VRF discards traffic. The only solution prior OpenContrail 3.x release was to use static routes. This is not very agile since subnets for Calico nodes are generated dynamically and in larger scale it would be really painful to maintain all of these. In 3.x release we can use BGPaaS or disable Reverse Path Forwarding. In this blog we want to show how BGPaaS is implemented, therefore we leave Reverse Path Forwarding enabled. More detail explanation is in next section.</p>
+<p>Standard BGPaaS use cases are following:</p>
+<ul class="simple">
+<li>Dynamic Tunnel Insertion Within a Tenant Overlay</li>
+<li>Dynamic Network Reachability of Applications</li>
+<li>Liveness Detection for High Availability</li>
+</ul>
+<p>More information about this feature in general is available at <a class="reference external" href="http://www.juniper.net/techpubs/en_US/contrail3.0/topics/concept/bgp-as-a-service-overview.html">link</a>.</p>
+</div>
+<div id="kubernetes-with-calico-in-openstack-with-opencontrail" class="section">
+<h2>Kubernetes with Calico in OpenStack with OpenContrail</h2>
+<p>The motivation for this use case is not just to use BGPaaS feature for NFV/VNF service providers, but also for standard private clouds as well, where Kubernetes on OpenStack is deployed. Kubernetes can be used with OpenContrail plugin especially in mixing VMs with containers (multi-cloud networking <a class="reference external" href="http://www.tcpcloud.eu/en/blog/2016/02/12/kubernetes-and-openstack-multi-cloud-networking/">blog</a>). However, Overlay on top of Overlay is not really good idea from a performance point of view. OpenContrail <a href="http://www.opencontrail.org/newsletter-and-mailing-lists/">community </a>has already discussed working on reusing underlay vRouter instead of vRouter in vRouter, which is a little bit similar to BGPaaS feature of propagation routing information from VMs to underlay.</p>
+<p>Based on this we decided to use Calico as network plugin for Kubernetes, which uses <a class="reference external" href="http://bird.network.cz/">BIRD</a> routing engine without any overlay technology.</p>
+<p>Let’s explain the BGPaaS solution. Since Calico is using Bird, you can create BGP peering directly from each Calico node to OpenContrail. However, this full-mesh approach does not scale very well. So we decided to create two VMs with Bird service and use them as a route reflectors for Calico. Then we use these VMs as BGP peers with OpenContrail. The route exchange will be further described in following architecture section.</p>
+<div id="lab-architecture" class="section">
+<h3>Lab Architecture</h3>
+</div>
+</div>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/08/bgpasaservice-calico-opencontrail.png"><img fetchpriority="high" decoding="async" class="alignnone wp-image-7161" src="http://www.opencontrail.org/wp-content/uploads/2016/08/bgpasaservice-calico-opencontrail.png" alt="bgpasaservice-calico-opencontrail" width="867" height="600" data-id="7161" /></a></p>
+<div id="lab-architecture" class="section">
+<p>Let’s have a closer look on this figure. The red and black lines stand for BGP peering between our Bird route reflectors (RTR01 and RTR02) VMs and OpenContrail controllers. When you want to use BGPaaS you first create a peering with .1 which stands for default gateway (peering with ntw01) and .2 (peering with ntw02) which stands for DNS (both are OpenContrail interfaces), but the actual peering is done with Controllers and .1 .2 are just BGP proxies. There is also BGP peering between all Calico nodes and RTR01,02 router reflectors. Last peering is default XMPP connections between Contrail controllers and vRouters which is used to learn and distribute route information between vRouters.</p>
+<p>Now we have all information about connections in our use-case and we can now explain Control plane workflow on yellow balls. We start with creating a pod on Kubernetes master (1). Kubernetes scheduler scheduled the pod on Kubernetes Node02 and Calico allocated /26 network for that node as well as /32 route for pod (2). This /26 is distributed via BGP to route reflectors (3). Route reflectors then send the update to other Kubernetes nodes as well as to Contrail Controllers (4). Right now, all Kubernetes nodes are aware of this subnet and would be able to route traffic between them, but there is a need for route information in VRF as well. That is achieved in step (5), where route is distributed via XMPP to vRouters. Now we have dynamic Kubernetes with Calico environment on top of OpenStack with OpenContrail.</p>
+</div>
+<div id="configuration-and-outputs" class="section">
+<h3>Configuration and Outputs</h3>
+<p>First we had to setup and configure BIRD service on OpenStack VMs RTR01 and RTR02. It peers with default gateway and DNS server, which is propagated through vRouter to OpenContrail controls. Then it peers with each Calico node and second route reflector RTR01.</p>
+<div class="highlight-bash">
+<div class="highlight">
+<pre><span class="c1">#Peering with default GW/vRouter</span>
+    protocol bgp contrail1 <span class="o">{</span>
+            debug all<span class="p">;</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.1 as 64512<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+            source address 172.16.10.115<span class="p">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">#Peering with default DNS server/vRouter</span>
+    protocol bgp contrail2 <span class="o">{</span>
+            debug all<span class="p">;</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.2 as 64512<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">#Peering with calico nodes</span>
+    protocol bgp calico_master <span class="o">{</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.111 as 64512<span class="p">;</span>
+            rr client<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+    <span class="o">}</span>
+
+    protocol bgp calico_node1 <span class="o">{</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.112 as 64512<span class="p">;</span>
+            rr client<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+    <span class="o">}</span>
+
+    protocol bgp calico_node2 <span class="o">{</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.113 as 64512<span class="p">;</span>
+            rr client<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">#Peering with second route reflector BIRD</span>
+    protocol bgp rtr1 <span class="o">{</span>
+            local as 64512<span class="p">;</span>
+            neighbor 172.16.10.114 as 64512<span class="p">;</span>
+            import all<span class="p">;</span>
+            export all<span class="p">;</span>
+    <span class="o">}</span></pre>
+</div>
+</div>
+<p>After that we configured a new BGPaaS in OpenContrail UI under <strong>Configure -&gt; Services -&gt; BGPaaS</strong>.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/08/create_bgp_opencontrail.png"><img decoding="async" class="alignnone size-full wp-image-7162" src="http://www.opencontrail.org/wp-content/uploads/2016/08/create_bgp_opencontrail.png" alt="create_bgp_opencontrail" width="700" height="386" data-id="7162" /></a></p>
+</div>
+<p>Then we can see <em>Established</em> BGP peerings (172.16.10.114 and .115) under peers in Control Nodes.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/08/peering_opencontrail.png"><img decoding="async" class="alignnone wp-image-7163" src="http://www.opencontrail.org/wp-content/uploads/2016/08/peering_opencontrail.png" alt="peering_opencontrail" width="952" height="400" data-id="7163" /></a></p>
+<p>Calico uses by default bgp full mesh topology. We had to disable full mesh and configure only peerings with route reflectors (RTR01 and RTR02).</p>
+<div class="highlight-bash">
+<div class="highlight">
+<pre>root@kubernetes-node01:~# calicoctl bgp node-mesh off
+root@kubernetes-node01:~# calicoctl bgp peer add 172.16.10.114 as 64512
+root@kubernetes-node01:~# calicoctl bgp peer add 172.16.10.115 as 64512
+</pre>
+</div>
+</div>
+<p>Calico status shows <em>Established</em> peerings with our RTR01 and RTR02.</p>
+<div class="highlight-bash">
+<div class="highlight">
+<pre>root@kubernetes-node01:~# calicoctl status
+calico-node container is running. Status: Up <span class="m">44</span> hours
+Running felix version 1.4.0rc2
+
+IPv4 BGP status
+IP: 172.16.10.111    AS Number: <span class="m">64512</span> <span class="o">(</span>inherited<span class="o">)</span>
++---------------+-----------+-------+----------+-------------+
+<span class="p">|</span>  Peer address <span class="p">|</span> Peer <span class="nb">type</span> <span class="p">|</span> State <span class="p">|</span>  Since   <span class="p">|</span>     Info    <span class="p">|</span>
++---------------+-----------+-------+----------+-------------+
+<span class="p">|</span> 172.16.10.114 <span class="p">|</span>   global  <span class="p">|</span>   up  <span class="p">|</span> 13:14:54 <span class="p">|</span> Established <span class="p">|</span>
+<span class="p">|</span> 172.16.10.115 <span class="p">|</span>   global  <span class="p">|</span>   up  <span class="p">|</span> 07:26:10 <span class="p">|</span> Established <span class="p">|</span>
++---------------+-----------+-------+----------+-------------+
+</pre>
+</div>
+</div>
+<p>Finally we can see part of VRF routing table for our virtual network on compute 01. It shows direct interface for RTR01 VM (172.16.10.114/32) and tunnel to RTR02 (172.16.10.115/32). Subnet 192.168.156.192/26 is for Kubernetes pods and it is dynamically propagated by Calico through BIRD route reflectors.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2016/08/vrouter_routing_table_opencontrail.png"><img loading="lazy" decoding="async" class="alignnone wp-image-7164" src="http://www.opencontrail.org/wp-content/uploads/2016/08/vrouter_routing_table_opencontrail.png" alt="vrouter_routing_table_opencontrail" width="1007" height="600" data-id="7164" /></a></p>
+<h2>Conclusion</h2>
+<p>In this blog post we showed how easy it is to use BGPaaS in OpenContrail and how you can look at general use case of running Kubernetes on top of OpenStack. All OpenContrail installations can be automated via Heat templates, but contrail-heat resources for BGPaaS require some modifications to work properly.</p>
+<p>&nbsp;</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Multi DataCenter Interconnect using OpenContrail</title>
+		<link>https://tungsten.io/multi-datacenter-interconnect-using-opencontrail/</link>
+		
+		<dc:creator><![CDATA[Ranjini Rajendran]]></dc:creator>
+		<pubDate>Fri, 31 Jul 2015 02:14:04 +0000</pubDate>
+				<category><![CDATA[Automation]]></category>
+		<category><![CDATA[BGPaaS]]></category>
+		<category><![CDATA[Gateway]]></category>
+		<category><![CDATA[Network Services]]></category>
+		<category><![CDATA[Routing/Switching]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6454</guid>
+
+					<description><![CDATA[In typical Enterprise Data Center deployments, the data center would span across multiple sites and there would be a need to have workloads across these sites. This would boil down...]]></description>
+										<content:encoded><![CDATA[<p>In typical Enterprise Data Center deployments, the data center would span across multiple sites and there would be a need to have workloads across these sites. This would boil down to extending virtual networks to these multiple sites and ability to launch workloads on any site and be able to communicate between these workloads seamlessly as if they are in the same cluster.</p>
+<p>In OpenContrail, this is made possible by federating the controllers in the different sites of a Multi-site DC without the need of a physical gateway. The control nodes in each site are peered with other sites using BGP. With this it is possible to stretch both L2 and L3 networks across multiple DCs.</p>
+<p>The physical topology in this case is as shown below:</p>
+<p><img loading="lazy" decoding="async" class=" wp-image-6456 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2015/07/physical_topology_opencontrail_controller_federation_blogpost.png" alt="physical_topology_opencontrail_controller_federation_blogpost" width="700" height="166" data-id="6456" /></p>
+<p>The two DCs in different locations are having two different AS numbers and their control nodes are federated using BGP. The virtual networks can span across these two DCs. Also the network policies and security groups can also work seamlessly across these two DCs.</p>
+<p>The logical view of the system is shown below:</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/07/logical_view_opencontrail_controller_federation_blogpost.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-6455" src="http://www.opencontrail.org/wp-content/uploads/2015/07/logical_view_opencontrail_controller_federation_blogpost.png" alt="logical_view_opencontrail_controller_federation_blogpost" width="700" height="247" data-id="6455" /></a></p>
+<p>Logically, the virtual machines spawned in another DC in the same VN can talk to each other like VMs in the same DC. They don’t see any difference.</p>
+<p>A demo video on how controller can be federated in OpenContrail is available here:</p>
+[video_lightbox_youtube video_id=&#8221;HIslWml97Ps&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]
+<p>With this, we have shown that using controller federation in OpenContrail; we can seamlessly stretch virtual networks ( both Layer 3 and Layer 2), network policies and security groups across multiple remote data center locations.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>A journey of a packet within OpenContrail</title>
+		<link>https://tungsten.io/a-journey-of-a-packet-within-opencontrail/</link>
+		
+		<dc:creator><![CDATA[Sylvain Afchain]]></dc:creator>
+		<pubDate>Wed, 29 Jul 2015 20:40:58 +0000</pubDate>
+				<category><![CDATA[Automation]]></category>
+		<category><![CDATA[BGPaaS]]></category>
+		<category><![CDATA[Gateway]]></category>
+		<category><![CDATA[Network Services]]></category>
+		<category><![CDATA[Routing/Switching]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6435</guid>
+
+					<description><![CDATA[This is a guest blog by Sylvain Afchain from RedHat. Click here for the original post. In this post we will see how a packet generated by a VM is...]]></description>
+										<content:encoded><![CDATA[<p><em>This is a guest blog by <span class="author vcard"><a class="url fn n" title="Sylvain Afchain" href="https://twitter.com/s_afchain" target="_blank" rel="author">Sylvain Afchain </a></span> from RedHat. <a href="http://techs.enovance.com/7640/a-journey-of-a-packet-within-opencontrail" target="_blank">Click here</a> for the original post.</em></p>
+<p>In this post we will see how a packet generated by a VM is able to reach another VM or an external resource, what are the key concepts/components in the context of Neutron using the OpenContrail plugin. We will focus on OpenContrail, how it implements the overlay and the tools that it provides to check/troubleshoot how the packet are forwarded. Before getting started, I’ll give a little overview of the key concepts of OpenContrail.</p>
+<h4>Virtual networks, Overlay with OpenContrail</h4>
+<p>For the overlay, OpenContrail uses MPLS L3VPNs and MPLS EVPNs in order to address both l3 overlay and l2 overlay. There are a lot of components within OpenContrail, however we will focus on two key components – controller and the vRouter.</p>
+<p>For the control plane each controller acts as a BGP Route Reflector using the BGP and the XMPP protocols. BGP is used between the controllers and the physical routers. XMPP is used between the controllers and the vRouters. The XMPP protocol transports BGP route announcements but also some other informations for non routing needs.</p>
+<p>For the data plane, OpenContrail supports GRE/VXLAN/UDP for the tunneling. OpenContrail requires the following features to be supported by the gateway router :</p>
+<ul>
+<li>L3VPN
+<ul>
+<li><a href="http://tools.ietf.org/html/rfc4364">http://tools.ietf.org/html/rfc4364</a></li>
+</ul>
+</li>
+<li>MP-BGP
+<ul>
+<li><a href="http://tools.ietf.org/html/rfc4760">http://tools.ietf.org/html/rfc4760</a></li>
+</ul>
+</li>
+<li>Dynamic Tunneling</li>
+</ul>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/07/safchain_blogpost_728_image1.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-6436" src="http://www.opencontrail.org/wp-content/uploads/2015/07/safchain_blogpost_728_image1.png" alt="safchain_blogpost_728_image1" width="533" height="300" data-id="6436" /></a></p>
+<p>In this post we will focus on the data plane area.</p>
+<h2 id="3">The packet’s journey</h2>
+<p>In order to show what is the journey of a packet, let’s play with the following topology, where we have two VMs on two different networks connected thanks to a router.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6437" src="http://www.opencontrail.org/wp-content/uploads/2015/07/safchain_blogpost_728_image2.png" alt="safchain_blogpost_728_image2" width="564" height="552" data-id="6437" /></p>
+<p>Assuming we have allowed the ICMP packets by setting the security groups accordingly we can start a ping from <i>vm1</i> toward <i>vm2</i>.</p>
+<p>There are a lot of introspection tools within OpenContrail which can be used to get a clear status on how the packets are forwarded.</p>
+<p>Initiating a ping between <i>vm1</i> and <i>vm2</i>, we can check step by step where the packets go.</p>
+<p>Since the VMs are not on the same network, they will both use their default gateway. The local vRouter answers to the ARP request of the default gateway IP with its own MAC.</p>
+<pre><span style="font-family: 'courier new', courier;">
+vm1$ ip route
+default via 10.0.0.1 dev eth0
+10.0.0.0/24 dev eth0  src 10.0.0.3
+ 
+$ cat /proc/net/arp
+IP address       HW type     Flags       HW address            Mask     Device
+10.0.0.1         0x1         0x2         00:00:5e:00:01:00     *        eth0</span></pre>
+<p>Now that we have seen that the packets will be forwarded to the local vRouter, we are going to check how the vRouter will forward them.</p>
+<p>So let’s start by checking at the data plane layer by browsing the vRouter agent introspect Web interface running on the compute nodes hosting our VMs at <i>http://&lt;vrouter agent ip&gt;:8085/agent.xml</i></p>
+<p>There is a plenty of sub-interfaces, but we will only use three of them:</p>
+<ul>
+<li>VrfListReq, http://&lt;vrouter agent ip&gt;:8085/Snh_VrfListReqWhich gives you the networks and the VRFs related. For a given VRF – let’s say the Unicast VRF (ucindex) – we can see all the routes.</li>
+</ul>
+<ul>
+<li>ItfReq, http://&lt;vrouter agent ip&gt;:8085/Snh_ItfReqWhich gives you all the interfaces handled by the vRouter.</li>
+<li>MplsReq, http://&lt;vrouter agent ip&gt;:8085/Snh_MplsReqWhich gives all the association MPLS Label/NextHop for the given vRouter</li>
+</ul>
+<p>These interfaces are just XML document rendered thanks to a XSL stylesheet, so can be easily processed by some monitoring scripts for example.</p>
+<p>We can start by the interfaces (ItfReq) introspect page to find the TAP interface corresponding to VM1. The name of the TAP contains a part of the neutron port ID.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter wp-image-6445" src="http://www.opencontrail.org/wp-content/uploads/2015/07/safchain_blogpost_728_image6.png" alt="safchain_blogpost_728_image6" width="739" height="300" data-id="6445" /></p>
+<p>Beside the interface we see the VRF name associated to the network that the interface belong to. On the same line we have some others informations, security group, floating-ips, VM id, etc.</p>
+<p>Clicking on the VRF link brings us to the index page of this VRF. We see that we have links to VRFs according to their type: Unicast, Multicast, Layer 2. By default, OpenContrail doesn’t handle the Layer 2. As said before most of the Layer 2 traffic from the virtual machines are trapped by the local vRouter which acts as an ARP responder. But some specific packets like broadcasts still need to be handled, that’s why there is a specific Layer 2 VRF.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter wp-image-6442 size-full" src="http://www.opencontrail.org/wp-content/uploads/2015/07/safchain_blogpost_728_image3.png" alt="safchain_blogpost_728_image3" width="688" height="241" data-id="6442" /></p>
+<p>Clicking on the link in the <i>ucindex</i> (Unicast) column, we can see all the unicast L3 routes of our virtual network handled by this vRouter. Since <i>vm1</i> should be able to reach vm2, we should see a route with the IP of <i>vm2</i>.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter wp-image-6443" src="http://www.opencontrail.org/wp-content/uploads/2015/07/safchain_blogpost_728_image4.png" alt="safchain_blogpost_728_image4" width="842" height="400" data-id="6443" /></p>
+<p>Thanks to this interface we see that in order to reach the IP 192.168.0.3 which is the IP of our <i>vm2</i>, the packet is going to be forwarded through a GRE tunnel whose endpoint is the IP of the compute node hosting <i>vm2</i>. That’s what we see in the “<i>dip</i>” (Destination IP) field. We see that the packet will be encapsulated in a MPLS packet. The MPLS label will be 16, as shown in the label column.</p>
+<p>Ok, so we saw at the agent level how the packet is going to be forwarded, but we may want to check on the datapath side. OpenContrail provides command line tools for that purpose.</p>
+<p>In the case of the agent for instance, we can see the interfaces handled by the vRouter kernel module and the associated VRF.</p>
+<pre><span style="font-family: 'courier new', courier;">$ vif --list
+Vrouter Interface Table
+ 
+Flags: P=Policy, X=Cross Connect, S=Service Chain, Mr=Receive Mirror
+      Mt=Transmit Mirror, Tc=Transmit Checksum Offload, L3=Layer 3, L2=Layer 2
+      D=DHCP, Vp=Vhost Physical, Pr=Promiscuous, Vnt=Native Vlan Tagged
+      Mnp=No MAC Proxy, Dpdk=DPDK PMD Interface, Rfl=Receive Filtering Offload, 
+      Mon=Interface is Monitored, Uuf=Unknown Unicast Flood
+ 
+vif0/0      OS: eth0
+           Type:Physical HWaddr:fa:16:3e:68:f9:e8 IPaddr:0
+           Vrf:0 Flags:TcL3L2Vp MTU:1514 Ref:5
+           RX packets:1598309  bytes:315532297 errors:0
+           TX packets:1407307  bytes:383580260 errors:0
+ 
+vif0/1      OS: vhost0
+           Type:Host HWaddr:fa:16:3e:68:f9:e8 IPaddr:a2b5b0a
+           Vrf:0 Flags:L3L2 MTU:1514 Ref:3
+           RX packets:1403461  bytes:383378275 errors:0
+           TX packets:1595855  bytes:315456061 errors:0
+ 
+vif0/2      OS: pkt0
+           Type:Agent HWaddr:00:00:5e:00:01:00 IPaddr:0
+           Vrf:65535 Flags:L3 MTU:1514 Ref:2
+           RX packets:4389  bytes:400688 errors:0
+           TX packets:6931  bytes:548756 errors:0
+ 
+vif0/3      OS: tapa87ad91e-28
+           Type:Virtual HWaddr:00:00:5e:00:01:00 IPaddr:0
+           Vrf:1 Flags:PL3L2 MTU:9160 Ref:6
+           RX packets:565  bytes:105481 errors:0
+           TX packets:587  bytes:80083 errors:0
+ 
+vif0/4350   OS: pkt3
+           Type:Stats HWaddr:00:00:00:00:00:00 IPaddr:0
+           Vrf:65535 Flags:L3L2 MTU:9136 Ref:1
+           RX packets:3  bytes:294 errors:0
+           TX packets:3  bytes:252 errors:0
+ 
+vif0/4351   OS: pkt1
+           Type:Stats HWaddr:00:00:00:00:00:00 IPaddr:0
+           Vrf:65535 Flags:L3L2 MTU:9136 Ref:1
+           RX packets:10  bytes:840 errors:0
+           TX packets:10  bytes:840 errors:0</span></pre>
+<p>We have our TAP interface at this index 3 and the VRF associated which is the number 1.</p>
+<p>Let’s now check the routes for this VRF. For that purpose we use the rt command line.</p>
+<pre><span style="font-family: 'courier new', courier;">$ rt --dump 1
+Vrouter inet4 routing table 0/1/unicast
+Flags: L=Label Valid, P=Proxy ARP, T=Trap ARP, F=Flood ARP
+ 
+Destination          PPL        Flags        Label         Nexthop    Stitched MAC(Index)
+ 
+...
+192.168.0.3/32         32           LP         16             19        -
+...</span></pre>
+<p>We see that the MPLS label used is 16. In order to know how the packet will be forwarded we have to check the NextHop used for this route.</p>
+<pre><span style="font-family: 'courier new', courier;">$ nh --get 19
+Id:19         Type:Tunnel    Fmly: AF_INET  Flags:Valid, MPLSoGRE,   Rid:0  Ref_cnt:2 Vrf:0
+             Oif:0 Len:14 Flags Valid, MPLSoGRE,  Data:fa 16 3e 4b f6 05 fa 16 3e 68 f9 e8 08 00
+             Vrf:0  Sip:10.43.91.10  Dip:10.43.91.12</span></pre>
+<p>We have almost the same informations that the agent gave us. Here in the Oif field, we have the interface where the packet will be sent to the other compute node. Thanks to the vif command line we can get the details about this interface.</p>
+<pre><span style="font-family: 'courier new', courier;">$ vif --get 0
+Vrouter Interface Table
+ 
+Flags: P=Policy, X=Cross Connect, S=Service Chain, Mr=Receive Mirror
+      Mt=Transmit Mirror, Tc=Transmit Checksum Offload, L3=Layer 3, L2=Layer 2
+      D=DHCP, Vp=Vhost Physical, Pr=Promiscuous, Vnt=Native Vlan Tagged
+      Mnp=No MAC Proxy, Dpdk=DPDK PMD Interface, Rfl=Receive Filtering Offload, Mon=Interface is Monitored
+      Uuf=Unknown Unicast Flood
+ 
+vif0/0      OS: eth0
+           Type:Physical HWaddr:fa:16:3e:68:f9:e8 IPaddr:0
+           Vrf:0 Flags:TcL3L2Vp MTU:1514 Ref:5
+           RX packets:1602164  bytes:316196179 errors:0
+           TX packets:1410642  bytes:384855228 errors:0</span></pre>
+<p>As the packet will go through the eth0 interface, a tcpdump should confirm what we described above.</p>
+<pre><span style="font-family: 'courier new', courier;">$ sudo tcpdump -n -i eth0 dst 10.43.91.12
+12:13:16.908957 IP 10.43.91.10 &gt; 10.43.91.12: GREv0, 
+length 92: MPLS (label 16, exp 0, [S], ttl 63) 
+IP 10.0.0.3 &gt; 192.168.0.3: ICMP echo request, id 5889, seq 43, length 64</span></pre>
+<p>As the tunnel endpoint shows, the packet will be directly forwarded to the compute node that is hosting the destination VM, not using a third party routing device.</p>
+<p>On the other side, the vRouter on the second compute node will receive the encapsulated packet. According to the MPLS Label, it does a lookup on a MPLS Label/NextHop as we can see on its introspect.</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6444" src="http://www.opencontrail.org/wp-content/uploads/2015/07/safchain_blogpost_728_image5.png" alt="safchain_blogpost_728_image5" width="678" height="538" data-id="6444" /></p>
+<p>As we can see here the NextHop field for the Label 16 is the TAP interface of our second VM. On the datapath side we can check the same informations. Checking the MPLS Label/NextHop table :</p>
+<pre><span style="font-family: 'courier new', courier;">$ mpls --get 16
+MPLS Input Label Map
+ 
+  Label    NextHop
+-------------------
+     16        14</span></pre>
+<p>..and finally the NextHop and the interface with the following commands :</p>
+<pre><span style="font-family: 'courier new', courier;">$ nh --get 14
+Id:14         Type:Encap     Fmly: AF_INET  Flags:Valid, Policy,   Rid:0  Ref_cnt:4 Vrf:1
+             EncapFmly:0806 Oif:3 Len:14 Data:02 8a 39 ff 98 d3 00 00 5e 00 01 00 08 00
+
+$ vif --get 3
+Vrouter Interface Table
+ 
+Flags: P=Policy, X=Cross Connect, S=Service Chain, Mr=Receive Mirror
+      Mt=Transmit Mirror, Tc=Transmit Checksum Offload, L3=Layer 3, L2=Layer 2
+      D=DHCP, Vp=Vhost Physical, Pr=Promiscuous, Vnt=Native Vlan Tagged
+      Mnp=No MAC Proxy, Dpdk=DPDK PMD Interface, Rfl=Receive Filtering Offload, Mon=Interface is Monitored
+      Uuf=Unknown Unicast Flood
+ 
+vif0/3      OS: tap8a39ff98-d3
+           Type:Virtual HWaddr:00:00:5e:00:01:00 IPaddr:0
+           Vrf:1 Flags:PL3L2 MTU:9160 Ref:6
+           RX packets:2957  bytes:293636 errors:0
+           TX packets:3085  bytes:297115 errors:0</span></pre>
+<p>This post was just an overview on how the packets are forwarded from one node to another and what are the interfaces/tools that you can use for troubleshooting purpose. One of the interesting thing with OpenContrail is that almost all the components have their own introspect interface helping you a lot during troubleshooting sessions. As we saw, the routing is fully distributed in OpenContrail, each vRouter handles a part of the routing using well known routing protocols like BGP/MPLS which proved their ability to scale.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>OpenContrail SDN Lab testing 1 &#8211; ToR Switches with OVSDB</title>
+		<link>https://tungsten.io/opencontrail-sdn-lab-testing-1-tor-switches-with-ovsdb/</link>
+		
+		<dc:creator><![CDATA[Jakub Pavlik]]></dc:creator>
+		<pubDate>Tue, 14 Jul 2015 00:03:02 +0000</pubDate>
+				<category><![CDATA[Automation]]></category>
+		<category><![CDATA[BGPaaS]]></category>
+		<category><![CDATA[Gateway]]></category>
+		<category><![CDATA[Network Services]]></category>
+		<category><![CDATA[Routing/Switching]]></category>
+		<category><![CDATA[Uncategorized]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6368</guid>
+
+					<description><![CDATA[This is a guest blog from tcpCloud authored by Marek Celoud &#38; Jakub Pavlik (tcp cloud engineers) along with Rostislav Safar (Arrow ECS network engineer). To see the original post,...]]></description>
+										<content:encoded><![CDATA[<p>This is a guest blog from tcpCloud authored by Marek Celoud &amp; Jakub Pavlik (tcp cloud engineers) along with Rostislav Safar (Arrow ECS network engineer). To see the original post, <a href="http://tcpcloud.eu/en/blog/2015/07/13/opencontrail-sdn-lab-testing-1-tor-switches-ovsdb/">click here</a>.</p>
+<p>Nobody doubts that OpenStack is the best open source project for private and public clouds today. OpenStack has begun to be perceived as a standard platform not only for laboratory or development environments, but has became suitable for large enterprises and service providers as well. This OpenStack revolution brought along a new topic called SDN. Software Defined Networking (SDN) can be seen as kind of buzzword and lot of our customers thought that they did not have a need for SDN, because their environment is not large enough, too dynamic, etc. But SDN is not just about scaling, it gives you opportunity to use NFV (Network Function Virtualization) like LbaaS, FWaaS, VPNaaS. Finally the most important reason is that Neutron supports vendor driven SDN solutions (Neutron vendor plugin) and it is possible to use this vendor SDN solution together with OpenStack in real enterprise production. The reason to use vendor plugin is that upstream Neutron solution with OpenVSwitch (DVR or L3 agent) does not provide native High Availability, scalability, performance and service provider features (L3VPN, EVPN) required by the large enterprises.</p>
+<p>Our team in tcp cloud has been solving very advanced network questions and problems for different service providers for past 6 months. Based on that we had to choose SDN solution, which would let us to satisfy customer requirements and provide robust and stable cloud solution. We compared several SDN solutions from different vendors and chose OpenContrail, simply because “it works” and it is not only slideware or any other from of secret marketing product, which can be installed only by vendor behind the closed door.</p>
+<p>Therefore tcp cloud together with Arrow ECS decided to create LAB environment, where we can proof and verify all marketing messages in real deployment to show customer that given solution exists, works and we know how to implement it without hidden issues.</p>
+<p>This blog is first one from series of articles about OpenContrail SDN Lab testing, where we would like to cover topics like:</p>
+<ul class="simple">
+<li>L3VPN termination at cloud environment</li>
+<li>VxLAN to EVPN Stitching for L2 Extension</li>
+<li>VxLAN Routing and SDN</li>
+<li>OVSDB Provides Control for VxLAN</li>
+<li>Translating between SDN Types</li>
+<li>MPLSoverGRE or VxLAN encapsulation</li>
+<li>Kubernetes integration (container virtualization)</li>
+</ul>
+<div id="tor-integration-overview" class="section">
+<h2>TOR INTEGRATION OVERVIEW</h2>
+<p>SDN brings idea that everything can be virtualized, however there are still technological or legal limitation, which block possibility to integrate them into overlay like:</p>
+<ul class="simple">
+<li><strong>Legacy hardware infrastructure</strong> &#8211; PowerVM, HP Itanium, OEM appliances</li>
+<li><strong>Licenses</strong> &#8211; some software cannot be operated on virtual hardware</li>
+<li><strong>Physical network appliances</strong> &#8211; firewalls, load balancers, etc</li>
+<li><strong>Database clusters</strong> &#8211; Oracle SuperCluster, etc</li>
+</ul>
+<p>Therefore there must be way how to connect the underlay world with overlay. OpenContrail provides 3 ways to connect overlay with underlay:</p>
+<ul class="simple">
+<li><strong>Link Local Services</strong> &#8211; it might be required for a virtual machine to access specific services running on the fabric infrastructure. For example, a VM requiring access to the backup service running in the fabric. Such access can be provided by configuring the required service as a link local service.</li>
+<li><strong>Router L3/L2 gateway (VRF, EVI)</strong> &#8211; standard cloud gateway used for external routing networks. Standard use-case is OpenStack floating IPs. This will be discuss in next blog article.</li>
+<li><strong>ToR switch</strong> &#8211; top-of-rack switch provides L2 connection for baremetal server or any other L2 service.</li>
+</ul>
+<p>This blog focuses at ToR switch integration and should answer following questions:</p>
+<ul class="simple">
+<li><strong>Baremetal server into overlay VN</strong></li>
+<li><strong>VxLAN with OVSDB terminated at ToR switch</strong></li>
+<li><strong>Multi vendor support for ToR switches with OVSDB</strong> &#8211; OpenContrail lets to use any Switch vendor with standard OVSDB protocol.</li>
+<li><strong>Redundantly connected Bare Metal Servers</strong> &#8211; Physical port in virtual network is amazing, but how to solve HA for this server?</li>
+<li><strong>High Availability for ToR configuration</strong> &#8211; Functional test is not equal to production setup.</li>
+</ul>
+<p>The beginning covers OpenContrail’s support for ToR switches with OVSDB is explained at official Juniper documentation. The next section introduces the Lab infrastructure and architecture with server role description. At the end Contrail deployment is briefly described. The last two sections cover implementation of ToR Agent with Juniper QFX and OpenVSwitch.</p>
+</div>
+<div id="opencontrail-support-for-tor-switch-and-ovsdb" class="section">
+<h2>OPENCONTRAIL SUPPORT FOR TOR SWITCH AND OVSDB</h2>
+<p>This overview is taken from <a id="id1" class="reference internal" href="http://tcpcloud.eu/en/blog/2015/07/13/opencontrail-sdn-lab-testing-1-tor-switches-ovsdb/#contrailtor">[ContrailToR]</a>. Since 2.1 release, Contrail supports extending a cluster to include bare metal servers or other virtual instances connected to a top-of-rack (ToR) switch that supports the Open vSwitch Database Management (OVSDB) Protocol. The bare metal servers and other virtual instances can belong to any of the virtual networks configured in the Contrail overlay, facilitating communication with the virtual instances running in the OpenStack cluster. Contrail policy configuration is used to control behaviour of this communication.</p>
+<p>OVSDB protocol is used to configure the TOR switch and to import dynamically-learned addresses. VXLAN encapsulation is used in the data plane for communication with the TOR switch.</p>
+<div id="tor-services-node-tsn" class="section">
+<h3>TOR Services Node (TSN)</h3>
+<p>The TSN acts as the multicast controller for the TOR switches. The TSN also provides DHCP and DNS services to the bare metal servers or virtual instances running behind TOR ports.</p>
+<p>The TSN receives all the broadcast packets from the TOR, and replicates them to the required compute nodes in the cluster and to other EVPN nodes. Broadcast packets from the virtual machines in the cluster are sent directly from the respective compute nodes to the TOR switch.</p>
+<p>The TSN can also act as the DHCP server for the bare metal servers or virtual instances, leasing IP addresses to them, along with other DHCP options configured in the system. The TSN also provides a DNS service for the bare metal servers.</p>
+<p>Multiple TSN nodes can be configured in the system based on the scaling needs of the cluster.</p>
+</div>
+<div id="contrail-tor-agent" class="section">
+<h3>Contrail TOR Agent</h3>
+<p>A TOR agent provisioned in the Contrail cluster acts as the OVSDB client for the TOR switch, and all of the OVSDB interactions with the TOR are performed by using the TOR agent. The TOR agent programs the different OVSDB tables onto the TOR switch and receives the local unicast table entries from the TOR switch.</p>
+<p>There is more information about <a id="id2" class="reference internal" href="http://tcpcloud.eu/en/blog/2015/07/13/opencontrail-sdn-lab-testing-1-tor-switches-ovsdb/#contrailtor">[ContrailToR]</a>.</p>
+</div>
+</div>
+<div id="actual-lab-environment" class="section">
+<h2>ACTUAL LAB ENVIRONMENT</h2>
+<p>Arrow LAB infrastructure consists of several Juniper boxes. The following figure captures the testing rack.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/07/rack_oc_image1.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-6369" src="http://www.opencontrail.org/wp-content/uploads/2015/07/rack_oc_image1.png" alt="rack_oc_image1" width="573" height="400" data-id="6369" /></a></p>
+<p>The following diagram shows high level network design of the lab environment.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/07/high-level-design.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-6370" src="http://www.opencontrail.org/wp-content/uploads/2015/07/high-level-design.png" alt="high-level-design" width="548" height="300" data-id="6370" /></a></p>
+<p>The following diagram shows logical architecture for TOR testing. As already mentioned we use two Juniper MX5 routers and QFX5100 switches.</p>
+<ul class="simple">
+<li><strong>CTPx</strong> &#8211; Using 4 physical servers as compute nodes. Each compute node is KVM hypervisor with Contrail vRouter.</li>
+<li><strong>BMS01</strong> &#8211; Represents physical server with one 10Gbps port connected to QFX.</li>
+<li><strong>TNS01</strong> &#8211; Physical server (can be virtual) for TOR Services Node with 2 ToR agents (QFX and OpenVSwitch).</li>
+<li><strong>CTL</strong> &#8211; OpenStack and OpenContrail standalone controller. It contains all OpenStack APIs, database, message queue and OpenContrail control, config and analytics roles.</li>
+<li><strong>OVS</strong> &#8211; Physical server with OpenVSwitch installed that is used as ToR switch. Details are described in section with openvswitch integration.</li>
+<li><strong>BMS2</strong> &#8211; Physical server connected to OVS node.</li>
+</ul>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/07/arrowlab.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-6371" src="http://www.opencontrail.org/wp-content/uploads/2015/07/arrowlab.png" alt="arrowlab" width="466" height="400" data-id="6371" /></a></p>
+</div>
+<div id="actual-lab-environment" class="section">
+<p>The next section describes installation Contrail with TNS (ToR agent).</p>
+</div>
+<div id="contrail-installation" class="section">
+<h2>CONTRAIL INSTALLATION</h2>
+<p>The lab testing was commited on Contrail 2.1 with OpenStack IceHouse. The reason for choosing version 2.1 over 2.2 is that official Contrail 2.2 release has been available since last week. Therefore ToR in high availability setup will be discusses in next blog post, because of significant performance and availabitlity improvements in release 2.2.</p>
+<p>The installation guide is available at official Juniper <a id="id3" class="reference internal" href="http://tcpcloud.eu/en/blog/2015/07/13/opencontrail-sdn-lab-testing-1-tor-switches-ovsdb/#site">[site]</a>. The following output shows our testbed.py file, where hosts are:</p>
+<ul class="simple">
+<li><strong>host1</strong> &#8211; OpenStack and OpenContrail standalone controller. It contains all OpenStack APIs, database, message queue and OpenContrail control, config and analytics role.</li>
+<li><strong>host2 &#8211; 5</strong> &#8211; Compute nodes</li>
+<li><strong>host6</strong> &#8211; TNS node with ToR agents. We installed first ToR agent by Fabric provisioning and second ToR manually in OpenVSwitch section.</li>
+</ul>
+<p>&nbsp;</p>
+<pre><span style="font-family: 'courier new', courier;">from fabric.api import env 
+#Management ip addresses of hosts in the clusterhost1='ubuntu@10.10.90.129' host2='ubuntu@10.100.10.2' host3='ubuntu@10.100.10.3' host4='ubuntu@10.100.10.4' host5='ubuntu@10.100.10.5' host6='ubuntu@10.100.10.6'ext_routers=[]router_asn= 65412  
+host_build='ubuntu@10.10.90.129'
+env.roledefs ={'all': [host1, host2, host3,host6],
+     'cfgm': [host1], 
+     'openstack': [host1], 
+     'control': [host1], 
+     'compute': [host2,host3,host4,host5,host6], 
+     'collector': [host1], 
+     'webui': [host1], 
+     'database': [host1], 
+     'build': [host_build], 
+     'storage-master': [host1], 
+     'storage-compute': [host2, host3,host4,host5], 
+     'tsn': [host6], # Optional, Only to enable TSN. Only compute can support TSN'toragent': [host6], #, Optional, Only to enable Tor Agent. Only compute can support Tor Agent} 
+
+env.openstack_admin_password ='arrowlab' 
+env.hostnames ={'all': ['ctl01', 'cpt01', 'cpt02', 'cpt03', 'cpt04','tns01']} 
+
+env.passwords ={ 
+      host1: 'ubuntu', 
+      host2: 'ubuntu', 
+      host3: 'ubuntu', 
+      host4: 'ubuntu', 
+      host5: 'ubuntu', 
+      host6: 'ubuntu', 
+      host_build: 'ubuntu', 
+} 
+
+env.ostypes ={ 
+      host1:'ubuntu', 
+      host2:'ubuntu', 
+      host3:'ubuntu', 
+      host4:'ubuntu', 
+      host5:'ubuntu', 
+      host6:'ubuntu', 
+} 
+
+env.tor_agent ={ 
+host6: [{'tor_ip':'10.100.10.1', # IP address of the TOR'tor_id':'1', # Numeric value to uniquely identify TOR 'tor_type':'ovs''tor_ovs_port':'9999', # the TCP port to connect on the TOR'tor_ovs_protocol':'tcp', # always tcp, for now'tor_tsn_ip':'10.100.10.6', # IP address of the TSN for this TOR'tor_tsn_name':'tns01', # Name of the TSN node'tor_name':'qfx5100', # Name of the TOR switch'tor_tunnel_ip':'10.10.80.6', # IP address of Data tunnel endpoint'tor_vendor_name':'QFX5100', # Vendor name for TOR switch'tor_http_server_port':'8085', # HTTP port for TOR Introspect}]}
+
+</span></pre>
+<h2>CONTRAIL BAREMETAL TOR IMPLEMENTATION WITH JUNIPER QFX5100</h2>
+<p>This section shows how to setup Juniper QFX as ToR switch with baremetal server connection to the virtual network.</p>
+<pre><span style="font-family: 'courier new', courier;"><a href="http://www.opencontrail.org/wp-content/uploads/2015/07/torQFX1.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-6374" src="http://www.opencontrail.org/wp-content/uploads/2015/07/torQFX1.png" alt="torQFX1" width="471" height="350" data-id="6374" /></a></span></pre>
+<p class="section">Scenario for testing:</p>
+<p class="section">1. Create virtual network <em>vxlannet</em> 10.0.10.0/24 and set VxLAN encapsulation through VNI 10<br />
+2. Boot two instances VM1 (10.0.10.4) and VM2 (10.0.10.3) at two compute nodes into created virtual network <em>vxlannet3. </em><br />
+3. Configure QFX for managing by OVSDB.<br />
+4. Configure QFX port xe-0/0/40.1000 through Contrail as L2 10.0.10.100 to network <em>vxlannet</em>.<br />
+5. Verify connectivity and configuration.</p>
+<p>Step 1. and 2. is not covered in this blog post.</p>
+<div id="qfx5100-configuration" class="section">
+<h3>QFX5100 Configuration</h3>
+<p>OVSDB software package must be installed in order to enable following configuration in QFX side. We run Junos version 14.1X53-D15.2 with JUNOS SDN Software Suite 14.1X53-D15.2.</p>
+<p>The following output shows commands for configuration QFX switch to enable managing interface xe-0/0/40 through ovsdb. This configuration parameters have to meet values from <em>testbed.py</em>.</p>
+<pre><span style="font-family: 'courier new', courier;">set interfaces lo0 unit 0 family inet address 10.10.80.6/32 
+set switch-options ovsdb-managed 
+set switch-options vtep-source-interface lo0.0 
+set protocols ovsdb passive-connection protocol tcp port 6632 
+set protocols ovsdb interfaces xe-0/0/40 
+
+</span></pre>
+<h3>Contrail Configuration</h3>
+<p>Configuration for ToR agent was already defined in testbed.py, therefore the rest can be done in Contrail WebUI.</p>
+<p>On Contrail side we had to add physical device QFX. After that we added physical and logical port for bare metal server.</p>
+<p>In Contrail WebUI go to <em>Configure &gt; Physical Devices &gt; Physical Routers</em> and create new entry for the TOR switch, providing the TOR’s IP address and VTEP address. The router name should match the hostname of the TOR. Also configure the TSN and TOR agent addresses for the TOR.</p>
+<pre><span style="font-family: 'courier new', courier;"><a href="http://www.opencontrail.org/wp-content/uploads/2015/07/edit-physical-qfx.png"><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6375" src="http://www.opencontrail.org/wp-content/uploads/2015/07/edit-physical-qfx.png" alt="edit-physical-qfx" width="698" height="516" data-id="6375" /></a>
+</span></pre>
+<p>Go to <em>Configure &gt; Physical Devices &gt; Interfaces</em> and add physical and logical interface to be configured on the TOR. The name of the logical interface must match the name on the TOR (xe-0/0/40 and xe-0/0/40.1000). Also enter other logical interface configurations, such as VLAN ID, MAC address, and IP address of the bare metal server and the virtual network to which it belongs.</p>
+<p>We made several tests and this configuration shows connection of bare metal server with VLAN tagged with ID 1000.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/07/logical-port-qfx.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-6376" src="http://www.opencontrail.org/wp-content/uploads/2015/07/logical-port-qfx.png" alt="logical-port-qfx" width="980" height="300" data-id="6376" /></a></p>
+<p>The following output shows configuration changes done by Contrail on interfaces and VLAN section.</p>
+<pre><span style="font-family: 'courier new', courier;">softtronik@QFX5100_VC# show interfaces xe-0/0/40 
+flexible-vlan-tagging; 
+encapsulation extended-vlan-bridge; 
+unit 1000 { 
+           vlan-id 1000; 
+} 
+
+softtronik@QFX5100_VC# show vlans 
+Contrail-c68a622b-9248-4535-bf04-4859012d7a2a { 
+           interface xe-0/0/40.1000; 
+           vxlan { 
+                  vni 10; 
+           }} </span></pre>
+<p>To list interfaces managed via ovsdb, use <em>show ovsdb interface</em> command.</p>
+<pre><span style="font-family: 'courier new', courier;">softtronik@QFX5100_VC&gt; show ovsdb interface 
+Interface           VLAN ID           Bridge-domain 
+xe-0/0/40           1000              Contrail-c68a622b-9248-4535-bf04-4859012d7a2a</span></pre>
+<p>List all learned MAC addresses and connection with particular VTEP with <em>show ovsdb mac</em>. Grep only remote addresses by adding keyword remote at the end of the command.</p>
+<pre><span style="font-family: 'courier new', courier;">softtronik@QFX5100_VC&gt; show ovsdb mac 
+Logical Switch Name: Contrail-c68a622b-9248-4535-bf04-4859012d7a2a 
+Mac                                    IP                                 Encapsulation                                          Vtep 
+Address                                Address                                                                                   Address 
+ff:ff:ff:ff:ff:ff                      0.0.0.0                            Vxlan over Ipv4                                        10.10.80.6 
+10:0e:7e:bf:9e:ec                      0.0.0.0                            Vxlan over Ipv4                                        10.10.80.6 
+02:30:84:c3:d1:13                      0.0.0.0                            Vxlan over Ipv4                                        10.100.10.2 
+02:e1:bb:af:65:11                      0.0.0.0                            Vxlan over Ipv4                                        10.100.10.4 
+02:fc:94:91:42:f2                      0.0.0.0                            Vxlan over Ipv4                                        10.100.10.5 
+1a:7f:6d:fb:0e:3d                      0.0.0.0                            Vxlan over Ipv4                                        10.100.10.7 
+40:a6:77:9a:b3:38                      0.0.0.0                            Vxlan over Ipv4                                        10.10.80.4 
+ff:ff:ff:ff:ff:ff                      0.0.0.0                            Vxlan over Ipv4                                        10.100.10.6 
+
+softtronik@QFX5100_VC&gt; show ovsdb virtual-tunnel-end-point 
+
+Encapsulation                   Ip Address                               Num of MAC's 
+VXLAN over IPv4                 10.10.80.4                               1
+VXLAN over IPv4                 10.10.80.6                               2 
+VXLAN over IPv4                 10.100.10.2                              1 
+VXLAN over IPv4                 10.100.10.4                              1 
+VXLAN over IPv4                 10.100.10.5                              1 
+VXLAN over IPv4                 10.100.10.6                              1 
+VXLAN over IPv4                 10.100.10.7                              1</span></pre>
+<p>With this command we can see all Vtep addresses present in out network.</p>
+<pre><span style="font-family: 'courier new', courier;">softtronik@QFX5100_VC&gt; show vlans 
+Routing instance        VLAN name                                               Tag              Interfaces 
+default-switch          Contrail-c68a622b-9248-4535-bf04-4859012d7a2a           NA               vtep.32769* 
+                                                                                                 vtep.32770* 
+                                                                                                 vtep.32771* 
+                                                                                                 vtep.32772* 
+                                                                                                 vtep.32773* 
+                                                                                                 vtep.32774* 
+                                                                                                 xe-0/0/40.1000*</span></pre>
+<p>Vtep interfaces can be also listed with <em>show interfaces terse vtep</em> command.</p>
+<pre><span style="font-family: 'courier new', courier;">softtronik@QFX5100_VC&gt; show interfaces terse vtep 
+Interface                Admin            Link            Proto            Local           Remote 
+vtep                     up               up 
+vtep.32768               up               up 
+vtep.32769               up               up              eth-switch   
+vtep.32770               up               up              eth-switch 
+vtep.32771               up               up              eth-switch 
+vtep.32772               up               up              eth-switch 
+vtep.32773               up               up              eth-switch 
+vtep.32774               up               up              eth-switch</span></pre>
+<p>To see detailed information, use the previous command with particular interface.</p>
+<pre><span style="font-family: 'courier new', courier;">softtronik@QFX5100_VC&gt; show interfaces vtep.32769 
+     Logical interface vtep.32769 (Index 576)(SNMP ifIndex 544) 
+           Flags: Up SNMP-Traps Encapsulation: ENET2 
+           VXLAN Endpoint Type: Remote, VXLAN Endpoint Address: 10.100.10.2, L2 Routing Instance: default-switch, L3 Routing Instance: default 
+           Input packets : 0 
+           Output packets: 8 
+           Protocol eth-switch, MTU: 1600 
+              Flags: Trunk-Mode
+
+</span></pre>
+<div class="section">
+<div id="redundant-connection-of-bare-metal-servers" class="section">
+<h3>Redundant Connection of Bare Metal Servers</h3>
+<p>We wanted to use MC-LAG (QFX in virtual chassis) to enable run LACP on both ports, but MC-LAG is not currently supported with VxLAN (but it’s on the roadmap). Therefore only viable option is to connect both port into same Virtual Network (VNI) and configure active-passive bonding on the bare metal server.</p>
+</div>
+</div>
+<h2>CONTRAIL BAREMETAL TOR IMPLEMENTATION WITH OPENVSWITCH VTEP</h2>
+<p>We tested and verified Juniper QFX5100 works well as TOR switch in the previous section, which was no surprise to us because they are from the same vendor. At this part we want to show that Contrail in not a vendor locked-in solution by using standard network protocols. There are several switch vendors (Cumulus, Arista) who support OVSDB capability in their boxes. We have decided to proof this openness on OpenVSwitch.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/07/OVS.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-6377" src="http://www.opencontrail.org/wp-content/uploads/2015/07/OVS.png" alt="OVS" width="528" height="450" data-id="6377" /></a></p>
+<p>We deployed another two physical server OVS, BSM02 and ToR agent TNS1-02. OVS server with openvswitch represents same role as Juniper QFX. We tested 3 use cases:</p>
+<ul class="simple">
+<li>simulate netns <em>ns1</em> namespaces as BMS endpoint</li>
+<li>install KVM on OVS and launch VM5 as BMS endpoint</li>
+<li>use physical NIC eth3 and connect BMS02 physical bare metal server</li>
+</ul>
+<p class="section">Scenario for testing:</p>
+<p>1. Create TOR agent &#8211; deploy TOR agent for managing OVS<br />
+2. Setup OVS &#8211; install openvswitch-vtep, configure physical switch and connect namespace.<br />
+3. Connect KVM VM to cloud &#8211; install kvm, launch VM5 with OVS interface and connect through a new logical port.<br />
+4. Connect BMS to cloud &#8211; add OVS physical interface eth2 and verify connectivity from BMS02.</p>
+<h3>Create TOR agent</h3>
+<p class="section">In previous chapter we used tns1-01 TOR agent for QFX5100. If we want to manage another switch via OVSDB, next TOR agent service has to be started. It can be done on the same TNS node. Provisioning can be done through Fabric, but we show how to do that manually. Start witch copying config file of tns1-01 agent.</p>
+<pre><span style="font-family: 'courier new', courier;">root@tns01:~# cp /etc/contrail/contrail-tor-agent-1.conf /etc/contrail/contrail-tor-agent-2.conf</span></pre>
+<p>Then we had to change some values in this copied file.</p>
+<pre><span style="font-family: 'courier new', courier;">[DEFAULT]agent_name=tns01-2 
+log_file=/var/log/contrail/contrail-tor-agent-2.log 
+http_server_port=8086 
+[TOR]tor_ip=10.100.10.7</span></pre>
+<p>We have copy of supervisor file to start new service also.</p>
+<pre><span style="font-family: 'courier new', courier;">root@tns01:~# cp /etc/contrail/supervisord_vrouter_files/contrail-tor-agent-1.ini /etc/contrail/supervisord_vrouter_files/contrail-tor-agent-2.ini</span></pre>
+<p>And change these configuration values.</p>
+<pre><span style="font-family: 'courier new', courier;">command=/usr/bin/contrail-tor-agent --config_file /etc/contrail/contrail-tor-agent-2.conf 
+stdout_logfile=/var/log/contrail/contrail-tor-agent-2-stdout.log</span></pre>
+<p>Now restart supervisor to see changes.</p>
+<pre><span style="font-family: 'courier new', courier;">root@tns01:~# service supervisor-vrouter restart</span></pre>
+<p>And verify changes:</p>
+<pre><span style="font-family: 'courier new', courier;">root@tns01:~# contrail-status 
+== Contrail vRouter== 
+supervisor-vrouter:            active 
+contrail-tor-agent-1           active 
+contrail-tor-agent-2           active 
+contrail-vrouter-agent         active 
+contrail-vrouter-nodemgr       active 
+
+</span></pre>
+<h3>Setup OVS</h3>
+<p class="section">We need to install at least openvswitch-2.3.1, because it has ovs-vtep with VTEP simulator <a id="id4" class="reference internal" href="http://tcpcloud.eu/en/blog/2015/07/13/opencontrail-sdn-lab-testing-1-tor-switches-ovsdb/#vtep">[vtep]</a>. However Ubuntu 14.04.2 contains 2.0.2. Therefore you have to build your own packages or use source tarball. We found packages at PPA <a class="reference external" href="https://launchpad.net/~vshn/+archive/ubuntu/openvswitch">https://launchpad.net/~vshn/+archive/ubuntu/openvswitch</a>.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~# cat /etc/apt/sources.list.d/ovs.list 
+deb http://ppa.launchpad.net/vshn/openvswitch/ubuntu trusty main 
+deb-src http://ppa.launchpad.net/vshn/openvswitch/ubuntu trusty main 
+
+root@ovs:~# apt-get install openvswitch-vtep</span></pre>
+<p>We have to delete default existing database created during installation.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~#rm /etc/openvswitch/*.db</span></pre>
+<p>And create two new databases: ovs.db and vtep.db</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~#ovsdb-tool create /etc/openvswitch/ovs.db /usr/share/openvswitch/vswitch.ovsschema ; ovsdb-tool create /etc/openvswitch/vtep.db /usr/share/openvswitch/vtep.ovsschema</span></pre>
+<p>Restart services and make sure, that the ptcp port number matches the port number in contrail-tor-agent-2.conf on TNS node.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~#service openvswitch-switch stop 
+root@ovs:~#ovsdb-server --pidfile --detach --log-file --remote punix:/var/run/openvswitch/db.sock --remote=db:hardware_vtep,Global,managers --remote ptcp:6632 /etc/openvswitch/ovs.db /etc/openvswitch/vtep.db root@ovs:~#ovs-vswitchd --log-file --detach --pidfile unix:/var/run/openvswitch/db.sock</span></pre>
+<p>Verify creation of databases with:</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~#ovsdb-client list-dbs unix:/var/run/openvswitch/db.sock 
+Open_vSwitch 
+hardware_vtep</span></pre>
+<p>First we need to test our installation with connecting namespace to virtual network. Start with creating bridge.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~#ovs-vsctl add-br TOR1 
+root@ovs:~#vtep-ctl add-ps TOR1</span></pre>
+<p>Setup VTEP of bridge. IP addresses are underlay addresses of our node with OVS.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~#vtep-ctl set Physical_Switch TOR1 tunnel_ips=10.100.10.7 
+root@ovs:~#vtep-ctl set Physical_Switch TOR1 management_ips=10.100.10.7 
+root@ovs:~#python /usr/share/openvswitch/scripts/ovs-vtep --log-file=/var/log/openvswitch/ovs-vtep.log --pidfile=/var/run/openvswitch/ovs-vtep.pid --detach TOR1</span></pre>
+<p>Now create namespace and link its interface with OVS interface.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~#ip netns add ns1 
+root@ovs:~#ip link add nstap1 type veth peer name tortap1 
+root@ovs:~#ovs-vsctl add-port TOR1 tortap1 
+root@ovs:~#ip link set nstap1 netns ns1 
+root@ovs:~#ip netns exec ns1 ip link set dev nstap1 up 
+root@ovs:~#ip link set dev tortap1 up</span></pre>
+<p>And configure namespace to be able to communicate with world.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~#ip netns
+root@ovs:~#ip netns exec ns1 ip a a 127.0.0.1/8 dev lo
+root@ovs:~#ip netns exec ns1 ip a
+root@ovs:~#ip netns exec ns1 ip a a 10.0.10.120/24 dev nstap1
+root@ovs:~#ip netns exec ns1 ping 10.0.10.120
+root@ovs:~#ip netns exec ns1 ip link set up dev lo
+root@ovs:~#ip netns exec ns1 ping 10.0.10.120</span></pre>
+<p>You can verify previous steps with looking into database.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~# vtep-ctl list Physical_Switch
+_uuid               : f00f2242-409e-43fc-8d4f-32e2225937d8
+description         : "OVS VTEP Emulator"
+management_ips      : ["10.100.10.7"]
+name                : "TOR1"
+ports               : [82afe753-25f8-4127-839b-2c5c8f7948b2]
+switch_fault_status : []
+tunnel_ips          : ["10.100.10.7"]
+tunnels             : []</span></pre>
+<p>Now we have to add TOR1 as a new physical device in Contrail managed by TOR agent tns01-2.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6380" src="http://www.opencontrail.org/wp-content/uploads/2015/07/edit-physical-router.png" alt="edit-physical-router" width="697" height="514" data-id="6380" /></p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6381" src="http://www.opencontrail.org/wp-content/uploads/2015/07/physical-routers.png" alt="physical-routers" width="806" height="187" data-id="6381" /></p>
+<p>Then create physical port tortap1 with logical tortap1.0 interface, which goes to our ns1 namespace.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/07/interfaces.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-6382" src="http://www.opencontrail.org/wp-content/uploads/2015/07/interfaces.png" alt="interfaces" width="972" height="300" data-id="6382" /></a></p>
+<p>&nbsp;</p>
+<p>We can verify Contrail configuration by following output.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~# vtep-ctl list-ls
+Contrail-c68a622b-9248-4535-bf04-4859012d7a2a</span></pre>
+<p>Check namespace IP addresses.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~# ip netns exec ns1 ip a
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+7: nstap1: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 1a:7f:6d:fb:0e:3d brd ff:ff:ff:ff:ff:ff
+    inet 10.0.10.120/24 scope global nstap1
+       valid_lft forever preferred_lft forever
+    inet6 fe80::187f:6dff:fefb:e3d/64 scope link
+       valid_lft forever preferred_lft forever</span></pre>
+<p>Try to ping VM4 from ns1.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~# ip netns exec ns1 ping 10.0.10.3
+PING 10.0.10.3 (10.0.10.3) 56(84) bytes of data.
+64 bytes from 10.0.10.3: icmp_seq=1 ttl=64 time=1.25 ms
+64 bytes from 10.0.10.3: icmp_seq=2 ttl=64 time=0.311 ms
+64 bytes from 10.0.10.3: icmp_seq=3 ttl=64 time=0.307 ms
+64 bytes from 10.0.10.3: icmp_seq=4 ttl=64 time=0.270 ms
+^C
+--- 10.0.10.3 ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss, time 2999ms
+rtt min/avg/max/mdev = 0.270/0.536/1.256/0.416 ms</span></pre>
+<p>Following output shows all interface on physical server OVS.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~# ip a
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 00:50:56:95:60:e8 brd ff:ff:ff:ff:ff:ff
+    inet 10.10.70.135/24 brd 10.10.70.255 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::250:56ff:fe95:60e8/64 scope link
+       valid_lft forever preferred_lft forever
+3: eth1: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 00:50:56:95:6b:14 brd ff:ff:ff:ff:ff:ff
+    inet 10.100.10.7/24 brd 10.100.10.255 scope global eth1
+       valid_lft forever preferred_lft forever
+    inet6 fe80::250:56ff:fe95:6b14/64 scope link
+       valid_lft forever preferred_lft forever
+4: ovs-system: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noop state DOWN group default
+    link/ether 4a:4f:14:53:c6:df brd ff:ff:ff:ff:ff:ff
+5: TOR1: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noop state DOWN group default
+    link/ether 2a:11:8c:74:61:46 brd ff:ff:ff:ff:ff:ff
+6: tortap1: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast master ovs-system state UP group default qlen 1000
+    link/ether 16:62:97:5a:62:e8 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::1462:97ff:fe5a:62e8/64 scope link
+       valid_lft forever preferred_lft forever
+8: vtep_ls1: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noop state DOWN group default
+    link/ether 62:2b:86:c3:c2:4b brd ff:ff:ff:ff:ff:ff </span></pre>
+<p>Following output shows openvswitch configuration. Patch ports 0000-tortap1-p and 0000-tortap1-lwere created by Contrail.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~# ovs-vsctl show
+93d90385-f9c6-4cfc-b67d-4f64eec15479
+    Bridge "TOR1"
+        Port "TOR1"
+            Interface "TOR1"type: internal
+        Port "tortap1"
+            Interface "tortap1"
+        Port "0000-tortap1-p"
+            Interface "0000-tortap1-p"type: patch
+                options: {peer="0000-tortap1-l"}
+    Bridge "vtep_ls1"
+        Port "vx4"
+            Interface "vx4"type: vxlan
+                options: {key="10", remote_ip="10.100.10.2"}
+        Port "vx2"
+            Interface "vx2"type: vxlan
+                options: {key="10", remote_ip="10.100.10.5"}
+        Port "vx5"
+            Interface "vx5"type: vxlan
+                options: {key="10", remote_ip="10.100.10.6"}
+        Port "vx3"
+            Interface "vx3"type: vxlan
+                options: {key="10", remote_ip="10.100.10.4"}
+        Port "vx9"
+            Interface "vx9"type: vxlan
+                options: {key="10", remote_ip="10.10.80.6"}
+        Port "vtep_ls1"
+            Interface "vtep_ls1"type: internal
+        Port "0000-tortap1-l"
+            Interface "0000-tortap1-l"type: patch
+                options: {peer="0000-tortap1-p"}</span></pre>
+<h4>Connect KVM VM to the Cloud</h4>
+<p>Now we want to try to boot VM5 on OVS server and connect it into our virtual network as a bare metal server. At first we need to install qemu and boot a virtual machine.</p>
+<pre><span style="font-family: 'courier new', courier;">sudo apt-get install qemu-system-x86 ubuntu-vm-builder uml-utilities
+sudo ubuntu-vm-builder kvm precise</span></pre>
+<p>Once that is done, create a VM, if necessary, and edit its Domain XML file:</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~# virsh list
+ Id    Name                           State
+----------------------------------------------------
+ 7     ubuntu                         running
+
+% virsh destroy ubuntu
+% virsh edit ubuntu</span></pre>
+<p>Look at the Domain XML file the section. There should be one XML section for each interface the VM</p>
+<div id="stcpDiv">
+<p class="section">has.</p>
+<div class="highlight-bash">
+<div class="highlight">
+<pre>&lt;interface <span class="nb">type</span><span class="o">=</span><span class="s1">'network'</span>&gt;
+ &lt;mac <span class="nv">address</span><span class="o">=</span><span class="s1">'52:54:00:3a:b6:13'</span>/&gt;
+ &lt;<span class="nb">source </span><span class="nv">network</span><span class="o">=</span><span class="s1">'default'</span>/&gt;
+ &lt;address <span class="nb">type</span><span class="o">=</span><span class="s1">'pci'</span><span class="nv">domain</span><span class="o">=</span><span class="s1">'0x0000'</span><span class="nv">bus</span><span class="o">=</span><span class="s1">'0x00'</span><span class="nv">slot</span><span class="o">=</span><span class="s1">'0x03'</span><span class="k">function</span><span class="o">=</span><span class="s1">'0x0'</span>/&gt;
+&lt;/interface&gt;
+</pre>
+</div>
+</div>
+<p class="section">And change it to something like this:</p>
+<div id="stcpDiv">
+<div class="highlight-bash">
+<div class="highlight">
+<pre>&lt;interface <span class="nb">type</span><span class="o">=</span><span class="s1">'bridge'</span>&gt;
+ &lt;mac <span class="nv">address</span><span class="o">=</span><span class="s1">'52:54:00:3a:b6:13'</span>/&gt;
+ &lt;<span class="nb">source </span><span class="nv">bridge</span><span class="o">=</span><span class="s1">'TOR1'</span>/&gt;
+ &lt;virtualport <span class="nb">type</span><span class="o">=</span><span class="s1">'openvswitch'</span>/&gt;
+ &lt;address <span class="nb">type</span><span class="o">=</span><span class="s1">'pci'</span><span class="nv">domain</span><span class="o">=</span><span class="s1">'0x0000'</span><span class="nv">bus</span><span class="o">=</span><span class="s1">'0x00'</span><span class="nv">slot</span><span class="o">=</span><span class="s1">'0x03'</span><span class="k">function</span><span class="o">=</span><span class="s1">'0x0'</span>/&gt;
+&lt;/interface&gt;
+</pre>
+</div>
+</div>
+<p>Start VM5 and verify that it uses openvswitch interface. There is automatically created interface</p>
+<div id="stcpDiv">
+<p class="section">vnet0.</p>
+<div class="highlight-bash">
+<div class="highlight">
+<pre>    % virsh start ubuntu
+
+&lt;interface <span class="nb">type</span><span class="o">=</span><span class="s1">'bridge'</span>&gt;
+  &lt;mac <span class="nv">address</span><span class="o">=</span><span class="s1">'52:54:00:3a:b6:13'</span>/&gt;
+  &lt;<span class="nb">source </span><span class="nv">bridge</span><span class="o">=</span><span class="s1">'TOR1'</span>/&gt;
+  &lt;virtualport <span class="nb">type</span><span class="o">=</span><span class="s1">'openvswitch'</span>&gt;
+    &lt;parameters <span class="nv">interfaceid</span><span class="o">=</span><span class="s1">'5def61f9-7123-43a5-b7ae-35f0fbd22fca'</span>/&gt;
+  &lt;/virtualport&gt;
+  &lt;target <span class="nv">dev</span><span class="o">=</span><span class="s1">'vnet0'</span>/&gt;
+  &lt;model <span class="nb">type</span><span class="o">=</span><span class="s1">'virtio'</span>/&gt;
+  &lt;<span class="nb">alias </span><span class="nv">name</span><span class="o">=</span><span class="s1">'net0'</span>/&gt;
+  &lt;address <span class="nb">type</span><span class="o">=</span><span class="s1">'pci'</span><span class="nv">domain</span><span class="o">=</span><span class="s1">'0x0000'</span><span class="nv">bus</span><span class="o">=</span><span class="s1">'0x00'</span><span class="nv">slot</span><span class="o">=</span><span class="s1">'0x03'</span><span class="k">function</span><span class="o">=</span><span class="s1">'0x0'</span>/&gt;
+&lt;/interface&gt;
+</pre>
+</div>
+</div>
+<p class="section">Now we can add a new port vnet0 as physical and logical port in Contrail.</p>
+</div>
+</div>
+</div>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6383" src="http://www.opencontrail.org/wp-content/uploads/2015/07/add-vnet0.png" alt="add-vnet0" width="700" height="433" data-id="6383" /></p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/07/logical-ports-vnet0.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-6384" src="http://www.opencontrail.org/wp-content/uploads/2015/07/logical-ports-vnet0.png" alt="logical-ports-vnet0" width="833" height="300" data-id="6384" /></a></p>
+<p>We can check new patch interfaces in openvswitch.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~# ovs-vsctl show
+93d90385-f9c6-4cfc-b67d-4f64eec15479
+    Bridge "TOR1"
+        Port "vnet0"
+            Interface "vnet0"
+        Port "TOR1"
+            Interface "TOR1"type: internal
+        Port "tortap1"
+            Interface "tortap1"
+        Port "0000-vnet0-p"
+            Interface "0000-vnet0-p"type: patch
+                options: {peer="0000-vnet0-l"}
+        Port "0000-tortap1-p"
+            Interface "0000-tortap1-p"type: patch
+                options: {peer="0000-tortap1-l"}
+    Bridge "vtep_ls1"
+        Port "vx4"
+            Interface "vx4"type: vxlan
+                options: {key="10", remote_ip="10.100.10.2"}
+        Port "0000-vnet0-l"
+            Interface "0000-vnet0-l"type: patch
+                options: {peer="0000-vnet0-p"}
+        Port "vx2"
+            Interface "vx2"type: vxlan
+                options: {key="10", remote_ip="10.100.10.5"}
+        Port "vx5"
+            Interface "vx5"type: vxlan
+                options: {key="10", remote_ip="10.100.10.6"}
+        Port "vx3"
+            Interface "vx3"type: vxlan
+                options: {key="10", remote_ip="10.100.10.4"}
+        Port "vtep_ls1"
+            Interface "vtep_ls1"type: internal
+        Port "0000-tortap1-l"
+            Interface "0000-tortap1-l"type: patch
+                options: {peer="0000-tortap1-p"}</span></pre>
+<p>We can open console at VM5, manually set IP address and try to ping VM4.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6385" src="http://www.opencontrail.org/wp-content/uploads/2015/07/ubuntu-vm-ping.png" alt="ubuntu-vm-ping" width="796" height="545" data-id="6385" /></p>
+<p>We can check the same thing from baremetal namespace.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~# ip netns exec ns1 ping 10.0.10.121
+PING 10.0.10.121 (10.0.10.121) 56(84) bytes of data.
+64 bytes from 10.0.10.121: icmp_seq=1 ttl=64 time=0.709 ms
+64 bytes from 10.0.10.121: icmp_seq=2 ttl=64 time=0.432 ms
+64 bytes from 10.0.10.121: icmp_seq=3 ttl=64 time=0.302 ms
+^C
+--- 10.0.10.121 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 1999ms
+rtt min/avg/max/mdev = 0.302/0.481/0.709/0.169 ms</span></pre>
+<p>The following screen shows L2 routes at vRouter with VM4, where you can see all details about VxLAN tunnel.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/07/l2-vxlan-tunnel.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-6386" src="http://www.opencontrail.org/wp-content/uploads/2015/07/l2-vxlan-tunnel.png" alt="l2-vxlan-tunnel" width="692" height="350" data-id="6386" /></a></p>
+<h3>Connect BMS to cloud</h3>
+<p class="section">Last test use case is to connect another baremetal server BMS02 through the physical NIC of OVS server.In this case OVS server represents a true switch.Add a physical interface eth3to you server with OVS.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~#ovs-vsctl add-port TOR1 eth3
+
+root@ovs:~# ip a
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc mq state UP group default qlen 1000
+    link/ether 00:50:56:95:60:e8 brd ff:ff:ff:ff:ff:ff
+    inet 10.10.70.135/24 brd 10.10.70.255 scope global eth0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::250:56ff:fe95:60e8/64 scope link
+       valid_lft forever preferred_lft forever
+...
+24: eth3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc mq master ovs-system state UP group default qlen 1000
+    link/ether 00:50:56:95:e0:21 brd ff:ff:ff:ff:ff:ff
+    inet6 fe80::250:56ff:fe95:e021/64 scope link
+       valid_lft forever preferred_lft forever</span></pre>
+<p>Create physical and logical ports for eth3.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/07/logical-ports-eth3.png"><img loading="lazy" decoding="async" class="aligncenter wp-image-6387" src="http://www.opencontrail.org/wp-content/uploads/2015/07/logical-ports-eth3.png" alt="logical-ports-eth3" width="722" height="300" data-id="6387" /></a></p>
+<p>Check new ports in openvswitch.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~# ovs-vsctl show
+93d90385-f9c6-4cfc-b67d-4f64eec15479
+    Bridge "TOR1"
+        ...
+        Port "TOR1"
+            Interface "TOR1"type: internal
+        Port "0000-eth3-p"
+            Interface "0000-eth3-p"type: patch
+                options: {peer="0000-eth3-l"}
+        Port "eth3"
+            Interface "eth3"
+        ...
+    Bridge "vtep_ls1"
+        Port "vx17"
+            Interface "vx17"type: vxlan
+                options: {key="10", remote_ip="10.10.80.4"}
+        Port "vx4"
+            Interface "vx4"type: vxlan
+                options: {key="10", remote_ip="10.100.10.2"}
+        Port "vx2"
+            Interface "vx2"type: vxlan
+                options: {key="10", remote_ip="10.100.10.5"}
+        Port "0000-vnet0-l"
+            Interface "0000-vnet0-l"type: patch
+                options: {peer="0000-vnet0-p"}
+        Port "0000-tortap1-l"
+            Interface "0000-tortap1-l"type: patch
+                options: {peer="0000-tortap1-p"}
+        Port "vx5"
+            Interface "vx5"type: vxlan
+                options: {key="10", remote_ip="10.100.10.6"}
+        Port "vx3"
+            Interface "vx3"type: vxlan
+                options: {key="10", remote_ip="10.100.10.4"}
+        Port "vtep_ls1"
+            Interface "vtep_ls1"type: internal
+        Port "0000-eth3-l"
+            Interface "0000-eth3-l"type: patch
+                options: {peer="0000-eth3-p"}</span></pre>
+<p>As you can see it is possible to ping cloud instance from our bare metal server.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs2:~# ping 10.0.10.3
+PING 10.0.10.3 (10.0.10.3) 56(84) bytes of data.
+64 bytes from 10.0.10.3: icmp_seq=2 ttl=64 time=1.10 ms
+64 bytes from 10.0.10.3: icmp_seq=3 ttl=64 time=0.387 ms
+64 bytes from 10.0.10.3: icmp_seq=4 ttl=64 time=0.428 ms
+64 bytes from 10.0.10.3: icmp_seq=5 ttl=64 time=0.378 ms
+64 bytes from 10.0.10.3: icmp_seq=6 ttl=64 time=0.419 ms
+64 bytes from 10.0.10.3: icmp_seq=7 ttl=64 time=0.382 ms
+^C
+--- 10.0.10.3 ping statistics ---
+7 packets transmitted, 6 received, 14% packet loss, time 6005ms
+rtt min/avg/max/mdev = 0.378/0.516/1.102/0.262 ms</span></pre>
+<h3>Verification</h3>
+<p>OVS maintains network information in database. To list existing tables use:</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~# ovsdb-client list-tables unix:/var/run/openvswitch/db.sock hardware_vtep
+Table
+---------------------
+Physical_Port
+Physical_Locator_Set
+Physical_Locator
+Logical_Binding_Stats
+Arp_Sources_Remote
+Manager
+Mcast_Macs_Local
+Global
+Ucast_Macs_Local
+Logical_Switch
+Physical_Switch
+Ucast_Macs_Remote
+Tunnel
+Mcast_Macs_Remote
+Logical_Router
+Arp_Sources_Local</span></pre>
+<p>To view the content of these tables in readable format use vtep-ctl listcommand with table’s name at the end.The list of physical interfaces associated with ovs.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~# vtep-ctl list Physical_Port
+        _uuid               : ac4a8bb8-bd11-47d3-a5ac-9828c5f68ffc
+        description         : ""
+        name                : "eth3"
+        port_fault_status   : []
+        vlan_bindings       : {0=4f016591-56ce-496f-996e-a93203061e07}
+        vlan_stats          : {0=288fe0f7-d7b8-430a-beb4-0c0a2c536a9c}
+
+        _uuid               : 41f87dae-6568-4fc9-97fc-46ec3d2fbfdd
+        description         : ""
+        name                : "vnet0"
+        port_fault_status   : []
+        vlan_bindings       : {0=4f016591-56ce-496f-996e-a93203061e07}
+        vlan_stats          : {0=12d70df8-6448-4784-af0d-754f37847942}
+
+        _uuid               : 82afe753-25f8-4127-839b-2c5c8f7948b2
+        description         : ""
+        name                : "tortap1"
+        port_fault_status   : []
+        vlan_bindings       : {0=4f016591-56ce-496f-996e-a93203061e07}
+        vlan_stats          : {0=e68cc29d-72c3-4809-a013-32c91a119b11}</span></pre>
+<p>To see remote MAC addresses and their next hop VTEPs we have to first find out name of our logical switch.</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~# vtep-ctl list-ls
+Contrail-c68a622b-9248-4535-bf04-4859012d7a2a</span></pre>
+<p>Then list remote macs:</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~# vtep-ctl list-remote-macs Contrail-c68a622b-9248-4535-bf04-4859012d7a2a
+ucast-mac-remote
+  02:30:84:c3:d1:13 -&gt; vxlan_over_ipv4/10.100.10.2
+  02:e1:bb:af:65:11 -&gt; vxlan_over_ipv4/10.100.10.4
+  02:fc:94:91:42:f2 -&gt; vxlan_over_ipv4/10.100.10.5
+  40:a6:77:9a:b3:38 -&gt; vxlan_over_ipv4/10.10.80.4
+
+mcast-mac-remote
+  unknown-dst -&gt; vxlan_over_ipv4/10.100.10.6</span></pre>
+<p>As we can see, unknown traffic is handled by TOR agent.To list local MACs type:</p>
+<pre><span style="font-family: 'courier new', courier;">root@ovs:~# vtep-ctl list-local-macs Contrail-c68a622b-9248-4535-bf04-4859012d7a2a
+ucast-mac-local
+  1a:7f:6d:fb:0e:3d -&gt; vxlan_over_ipv4/10.100.10.7
+
+mcast-mac-local
+  unknown-dst -&gt; vxlan_over_ipv4/10.100.10.7
+
+</span></pre>
+<div id="conclusion" class="section">
+<h2>CONCLUSION</h2>
+<p>We tested almost all scenarios for bare-metal connection to overlay networks on different devices. We proved that OpenContrail is working open source, multi-vendor SDN solution, which moves OpenStack cloud to the next level suitable for large enterprises.</p>
+<p>In future parts of this blog we would like to look at High Availability setup of TOR agent, which has been added in Contrail 2.2. Our next post will focus on route gateways with functions like VxLAN to EVPN Stitching for L2 Extension, L3VPN, multi-vendor support and gateway redundancy.</p>
+<div class="line-block">
+<p class="line"><strong>Marek Celoud &amp; Jakub Pavlik</strong><br />
+tcp cloud engineers</p>
+</div>
+<div class="line-block">
+<p class="line"><strong>Rostislav Safar</strong><br />
+Arrow ECS network engineer</p>
+</div>
+</div>
+<div id="resources" class="section">
+<h2>RESOURCES</h2>
+<table id="contrailtor" class="docutils citation" frame="void" rules="none">
+<colgroup>
+<col class="label" />
+<col /></colgroup>
+<tbody valign="top">
+<tr>
+<td class="label">[ContrailToR]</td>
+<td><em>(<a class="fn-backref" href="http://tcpcloud.eu/en/blog/2015/07/13/opencontrail-sdn-lab-testing-1-tor-switches-ovsdb/#id1">1</a>, <a class="fn-backref" href="http://tcpcloud.eu/en/blog/2015/07/13/opencontrail-sdn-lab-testing-1-tor-switches-ovsdb/#id2">2</a>)</em> Using TOR Switches with OVSDB for Virtual Instance Support <a href="http://www.juniper.net/techpubs/en_US/contrail2.2/topics/concept/using-tor-ovsdb-contrail.html" target="_blank">http://www.juniper.net/techpubs/en_US/contrail2.2/topics/concept/using-tor-ovsdb-contrail.html</a></td>
+</tr>
+</tbody>
+</table>
+<table id="torha" class="docutils citation" frame="void" rules="none">
+<colgroup>
+<col class="label" />
+<col /></colgroup>
+<tbody valign="top">
+<tr>
+<td class="label">[TorHA]</td>
+<td>High Availability for Contrail TOR Agent <a href="http://www.juniper.net/techpubs/en_US/contrail2.2/topics/concept/ha-tor-agnt.html" target="_blank">http://www.juniper.net/techpubs/en_US/contrail2.2/topics/concept/ha-tor-agnt.html</a></td>
+</tr>
+</tbody>
+</table>
+<table id="site" class="docutils citation" frame="void" rules="none">
+<colgroup>
+<col class="label" />
+<col /></colgroup>
+<tbody valign="top">
+<tr>
+<td class="label"><a class="fn-backref" href="http://tcpcloud.eu/en/blog/2015/07/13/opencontrail-sdn-lab-testing-1-tor-switches-ovsdb/#id3">[site]</a></td>
+<td>Juniper Contrail documentation <a href="http://www.juniper.net/techpubs/en_US/contrail2.2/topics/task/installation/install-overview-vnc.html" target="_blank">http://www.juniper.net/techpubs/en_US/contrail2.2/topics/task/installation/install-overview-vnc.html</a></td>
+</tr>
+</tbody>
+</table>
+<table id="vtep" class="docutils citation" frame="void" rules="none">
+<colgroup>
+<col class="label" />
+<col /></colgroup>
+<tbody valign="top">
+<tr>
+<td class="label"><a class="fn-backref" href="http://tcpcloud.eu/en/blog/2015/07/13/opencontrail-sdn-lab-testing-1-tor-switches-ovsdb/#id4">[vtep]</a></td>
+<td>How to Use the VTEP Emulator <a class="reference external" href="https://github.com/openvswitch/ovs/blob/master/vtep/README.ovs-vtep.md">https://github.com/openvswitch/ovs/blob/master/vtep/README.ovs-vtep.md</a></td>
+</tr>
+</tbody>
+</table>
+<table id="ovscontrail" class="docutils citation" frame="void" rules="none">
+<colgroup>
+<col class="label" />
+<col /></colgroup>
+<tbody valign="top">
+<tr>
+<td class="label">[ovscontrail]</td>
+<td>Setting up openvswitch VM for Contrail Baremetal <a class="reference external" href="https://github.com/Juniper/contrail-test/wiki/Setting-up-an-openvswitch-VM-for-Contrail-Baremetal-tests">https://github.com/Juniper/contrail-test/wiki/Setting-up-an-openvswitch-VM-for-Contrail-Baremetal-tests</a></td>
+</tr>
+</tbody>
+</table>
+<table id="vxlanovsdb" class="docutils citation" frame="void" rules="none">
+<colgroup>
+<col class="label" />
+<col /></colgroup>
+<tbody valign="top">
+<tr>
+<td class="label">[vxlanovsdb]</td>
+<td>Enhancing VM mobility with VxLAN OVSDB <a class="reference external" href="http://mcleonard.blogspot.cz/2013/12/enhancing-vm-mobility-with-vxlan-ovsdb.html">http://mcleonard.blogspot.cz/2013/12/enhancing-vm-mobility-with-vxlan-ovsdb.html</a></td>
+</tr>
+</tbody>
+</table>
+<table id="ovslibvirt" class="docutils citation" frame="void" rules="none">
+<colgroup>
+<col class="label" />
+<col /></colgroup>
+<tbody valign="top">
+<tr>
+<td class="label">[ovslibvirt]</td>
+<td>Libvirt configuration with openvswitch <a class="reference external" href="https://github.com/openvswitch/ovs/blob/master/INSTALL.Libvirt.md">https://github.com/openvswitch/ovs/blob/master/INSTALL.Libvirt.md</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>

@@ -1,0 +1,726 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:atom="http://www.w3.org/2005/Atom"
+	xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+	xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+	>
+
+<channel>
+	<title>DataCenter Archives - Tungsten Fabric</title>
+	<atom:link href="https://tungsten.io/category/datacenter/feed/" rel="self" type="application/rss+xml" />
+	<link>https://tungsten.io/category/datacenter/</link>
+	<description>multicloud multistack SDN</description>
+	<lastBuildDate>Thu, 07 Apr 2016 23:50:42 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>
+	hourly	</sy:updatePeriod>
+	<sy:updateFrequency>
+	1	</sy:updateFrequency>
+	<generator>https://wordpress.org/?v=6.4.1</generator>
+
+<image>
+	<url>https://tungsten.io/wp-content/uploads/sites/73/2018/03/cropped-TungstenFabric_Stacked_Gradient_3000px-150x150.png</url>
+	<title>DataCenter Archives - Tungsten Fabric</title>
+	<link>https://tungsten.io/category/datacenter/</link>
+	<width>32</width>
+	<height>32</height>
+</image> 
+	<item>
+		<title>Getting to GIFEE with SDN: Demo</title>
+		<link>https://tungsten.io/getting-to-gifee-with-sdn-demo/</link>
+		
+		<dc:creator><![CDATA[James Kelly]]></dc:creator>
+		<pubDate>Thu, 07 Apr 2016 23:50:42 +0000</pubDate>
+				<category><![CDATA[Containers]]></category>
+		<category><![CDATA[DataCenter]]></category>
+		<category><![CDATA[Kubernetes]]></category>
+		<category><![CDATA[Orchestration]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6965</guid>
+
+					<description><![CDATA[A few short years ago, espousing for open source and cloud computing was even more difficult than touting the importance of clean energy and the realities of climate change. The...]]></description>
+										<content:encoded><![CDATA[<p>A few short years ago, espousing for open source and cloud computing was even more difficult than touting the importance of clean energy and the realities of climate change. The doubters and naysayers, vocal as they are, are full of reasons why things are (fine) as they are. Reasons, however, don’t get you results. We needed transformative action in IT, and today, as we’re right between the Google NEXT event and the OpenStack Summit in Austin, open source and cloud are the norm for the majority.</p>
+<p>After pausing for a moment of vindication – we told you so – we get back to work to improve further and look forward, and a good place to look is indeed at Google: a technology trailblazer by sheer necessity. We heard a lot about the GCP at NEXT, especially their open source project Kubernetes, powering GKE. What’s most exciting about such container-based computing with Docker is that we’ve finally hit the sweet spot in the stack with the right abstractions for developers and infrastructure &amp; ops pros. With this innovation now accessible to all in the Kubernetes project, Google’s infrastructure for everyone else (#GIFEE) and NoOps is within reach. Best of all, the change this time around is less transformative and more incremental…</p>
+<p>One thing you’ll like about a serverless architecture stack like Kubernetes, is that you can run it on bare-metal if you want the best performance possible, but you can easily run it on top of IaaS providing VMs in public or private cloud, and that benefits us with a great deal of flexibility in so many ways. Then of course if you just want to deploy workloads, and not worry about the stack, an aaS offering like GKE or ECS is a great way to get to NoOps faster. We have a level playing field across public and private and a variety of underpinnings.</p>
+<p>For those that are not only using a public micro-service stack aaS offering like GKE, but supplementing or fully building one internally with Kubernetes or a PaaS on top of it like OpenShift, you’ll need some support. Just like you didn’t build an OpenStack IaaS by yourself (I hope), there’s no reason to go it alone for your serverless architecture micro-services stack. There’s many parts under the hood, and one of them you need baked into your stack from the get go is software-defined<em>secure</em> networking. It was a pleasure to get back in touch with my developer roots and put together a demo of how you can solve your networking and security microsegmentation challenges using OpenContrail.</p>
+<p>I’ve taken the test setup for OpenContrail with OpenShift, and forked and modified it to create a pure demo cluster of OpenContrail + OpenShift (thus including Kubernetes) showing off the OpenContrail features with Kubernetes and OpenShift. If you learn by doing like me, then maybe best of all, this demo cluster is also open source and Ansible-automated to easily stand up or tear down on AWS with just a few commands to go from nada to a running OpenShift and OpenContrail consoles with a running sample app. Enjoy getting your hands dirty, or sit back and watch demo video.</p>
+<p>If you are looking to setup and run this demo yourself, please see: <a href="https://github.com/jameskellynet/container-networking-ansible" target="_blank">https://github.com/jameskellynet/container-networking-ansible</a><br />
+<iframe src="https://www.youtube.com/embed/iMo54WUg6Kk" width="560" height="315" frameborder="0" allowfullscreen="allowfullscreen"></iframe></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>OpenStack Neutron IPv6 support in OpenContrail SDN</title>
+		<link>https://tungsten.io/openstack-neutron-ipv6-support-in-opencontrail-sdn/</link>
+		
+		<dc:creator><![CDATA[Jakub Pavlik]]></dc:creator>
+		<pubDate>Fri, 25 Mar 2016 05:20:06 +0000</pubDate>
+				<category><![CDATA[DataCenter]]></category>
+		<category><![CDATA[ipv6]]></category>
+		<category><![CDATA[Routing/Switching]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6950</guid>
+
+					<description><![CDATA[This is a guest blog from tcpCloud, authored by Marek Celoud &#38; Jakub Pavlik (tcp cloud engineers). To see the original post,click here. As private cloud (primary based on OpenStack)...]]></description>
+										<content:encoded><![CDATA[<p><em>This is a guest blog from tcpCloud, authored by Marek Celoud &amp; Jakub Pavlik (tcp cloud engineers). To see the original post,<a href="http://www.tcpcloud.eu/en/blog/2016/03/23/openstack-neutron-ipv6-support-opencontrail-sdn/" target="_blank">click here</a>.</em></p>
+<p>As private cloud (primary based on OpenStack) deployers and integrators lots of customer ask as about support of IPv6. Most of our deployments run on OpenContrail SDN&amp;NFV. Reasons are described in our previous blogs (<a class="reference external" href="http://www.tcpcloud.eu/en/blog/2015/07/13/opencontrail-sdn-lab-testing-1-tor-switches-ovsdb/">http://www.tcpcloud.eu/en/blog/2015/07/13/opencontrail-sdn-lab-testing-1-tor-switches-ovsdb/</a>) . OpenContrail SDN supports IPv6 for quite long, but there is not so many real tests. Therefore we decided to share procedure how we configured and used IPv6 in OpenStack.</p>
+<p>This short blog desribes support of IPv6 in OpenStack using Neutron plugin for SDN/NFV &#8211; OpenContrail.</p>
+<p>With cloud deployments there is significant growth of need for public IP addresses. These deployments are facing problems due to lack of IPv4 addresses. One of the solutions is to migrate to public IPv6.</p>
+<p>We start with capability of IPv6 for internal communication between virtual machines within same virtal network and across different virtual network. Then we show how to expand IPv6 public addresses to external world. In our case we use Juniper MX routers as cloud gateway.</p>
+<h2>Creating IPv6 network</h2>
+<p>We need to consider few things when creating IPv6 virtual network. First one is adding also IPv4 subnet, because without IPv4 address instance can not connect to nova metadata api. Cloud images are built to use cloud-init to connect to API on 169.254.169.254:80 address. So if you create network without IPv4 subnet, you will not receive metadata to your instance. Second consideration is whether to you want to go to internet with your IPv6 capable instances. There is currently problem with IPv6 floating IP pool, so if you want to expand to external world, you need to boot to network with associated route target.</p>
+<p>We first create private IPv6 network for demonstation.</p>
+<p><img fetchpriority="high" decoding="async" class="size-full wp-image-6951 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv61.png" alt="ipv61" width="967" height="514" data-id="6951" /></p>
+<p>When the network is created we can boot instances. We will boot 2 of them to demonstrate functional communication. You will probably need to modify network interface configuration, because there is not enabled dhcp for IPv6. For nonpreemptive recieve you can use:</p>
+<pre><span style="font-family: 'courier new', courier;">#dhclient -6</span></pre>
+<p><img decoding="async" class="size-full wp-image-6953 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv63.png" alt="ipv63" width="559" height="176" data-id="6953" /></p>
+<p>As you can see, you have both IPv4 and IPv6 address associated with interface of instance.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6954" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv64.png" alt="ipv64" width="815" height="241" data-id="6954" /></p>
+<p>Before testing communication, we need to modify security groups to enable traffic. For testing purposes we will enable everything.</p>
+<p><img loading="lazy" decoding="async" class="alignleft size-full wp-image-6952" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv62.png" alt="ipv62" width="1855" height="92" data-id="6952" /></p>
+<p>We choose ubuntu-ipv6-1 from instance list and try to ping instance ubuntu-ipv6-2 with fd00::3 IPv6 address.</p>
+<p><img loading="lazy" decoding="async" class="size-full wp-image-6955 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv65.png" alt="ipv65" width="691" height="149" data-id="6955" /></p>
+<p>As you can see, we are now able to ping other instance.</p>
+<p><img loading="lazy" decoding="async" class="size-full wp-image-6957 aligncenter" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv66.png" alt="ipv66" width="514" height="203" data-id="6957" /></p>
+<p>This capability is nice, but not very useful without connecting to external world. We will create route with associated route target to expand routes to Juniper MX routers via BGP. In the picture below is sample architecture. There is one VRF CLOUD-INET created on each of MX routers. The route target associated with this VRF matches route target added to virtual network in Contrail. In the picture is demonstrated both IPv4 and IPv6 addresses propagated to same VRF. There is also INET virtual-router, that is connected to VRF via lt tunnel interfaces running ospf and ospf3. From this virtual-router is aggregated default route ::/0 from all internet routes from upstream EBGP.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6956" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv66-expanded.png" alt="ipv66 expanded" width="617" height="883" data-id="6956" /></p>
+<p>There are few things to configure on MX routers to enable IPv6 traffic from cloud. First is enabling ipv6 tunneling through mpls tunnels.</p>
+<pre><span style="font-family: 'courier new', courier;">protocols {
+    mpls {
+        ipv6-tunneling;
+        interface all;
+        }</span></pre>
+<p>It is also good practice to filter what routes you export and import to and from cloud. We only need default route present in cloud. And we also want to filter only IPv6 addresses to be imported from Contrail, because of IPv4 pool created with IPv6 virtual network.</p>
+<pre><span style="font-family: 'courier new', courier;">
+policy-statement CLOUD-INET-EXPORT {
+    term FROM-MX-IPV6 {
+        from {
+            protocol ospf3;
+            route-filter ::/0 exact;
+        }
+        then {
+            community add CLOUD-INET-EXPORT-COMMUNITY;
+            accept;
+        }
+    }
+    term LAST {
+        then reject;
+    }
+}
+policy-statement CLOUD-INET-IMPORT {
+    term FROM-CONTRAIL-IPV6 {
+        from {
+            family inet6;
+            community CLOUD-INET-IMPORT-COMMUNITY;
+            route-filter 2a06:f6c0::/64 orlonger;
+        }
+        then accept;
+    }
+    term LAST {
+        then reject;
+    }
+}
+community CLOUD-INET-EXPORT-COMMUNITY members target:64513:10;
+community CLOUD-INET-IMPORT-COMMUNITY members target:64513:10;
+</span></pre>
+<p>So now we create network 2a06:f6c0::/64 and we associate route target 64513:10 to this network. We can also make it shared so all tenants can boot in this network. Once we create instance to this network, there is already routing information in MX routing table.</p>
+<pre><span style="font-family: 'courier new', courier;">
+# run show route table CLOUD-INET.inet6.0
+
+CLOUD-INET.inet6.0: 8 destinations, 9 routes (8 active, 0 holddown, 0 hidden)
++ = Active Route, - = Last Active, * = Both
+
+::/0               *[OSPF3/150] 20:37:13, metric 0, tag 0
+                    &gt; to fe80::6687:8800:0:2f7 via lt-0/0/0.3
+2a06:f6c0::3/128   *[BGP/170] 00:00:15, localpref 100, from 10.0.106.84
+                      AS path: ?, validation-state: unverified
+                    &gt; via gr-0/0/0.32789, Push 1046
+                    [BGP/170] 00:00:15, localpref 100, from 10.0.106.85
+                      AS path: ?, validation-state: unverified
+                    &gt; via gr-0/0/0.32789, Push 1046</span></pre>
+<p>We can also verify that default route is propagated by ispecting routing tables in Contrail.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6959" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv610.png" alt="ipv610" width="1728" height="696" data-id="6959" /></p>
+<p>When we verify that instance have public IPv6 address, we can try to access internet.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter size-full wp-image-6958" src="http://www.opencontrail.org/wp-content/uploads/2016/03/ipv67.png" alt="ipv67" width="810" height="240" data-id="6958" /></p>
+<div id="creating-ipv6-network" class="section">
+<p>ping google</p>
+</div>
+<div id="conclusion" class="section">
+<h2>Conclusion</h2>
+<p>We proved that OpenContrail SDN solution is fully IPv6 capable with cloud platform OpenStack for private and public communication and communicate directly with edge routers as Juniper MX, Cisco ASR, etc.</p>
+</div>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Hybrid service chaining across multiple Hypervisors</title>
+		<link>https://tungsten.io/hybrid-service-chaining-across-multiple-hypervisors/</link>
+		
+		<dc:creator><![CDATA[Antonio Sanchez-Monge]]></dc:creator>
+		<pubDate>Sat, 30 Jan 2016 01:38:06 +0000</pubDate>
+				<category><![CDATA[DataCenter]]></category>
+		<category><![CDATA[Service Chaining]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6907</guid>
+
+					<description><![CDATA[OpenContrail supports multiple types of hypervisors and containers. These can spawn simple tenant VMs and also more complex service instances implementing a Virtualized Network Function (NFV). [video_lightbox_youtube video_id=&#8221;baUfXmiA5Qs&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243;...]]></description>
+										<content:encoded><![CDATA[<p>OpenContrail supports multiple types of hypervisors and containers. These can spawn simple tenant VMs and also more complex service instances implementing a Virtualized Network Function (NFV).</p>
+[video_lightbox_youtube video_id=&#8221;baUfXmiA5Qs&#8221; width=&#8221;720&#8243; height=&#8221;540&#8243; auto_thumb=&#8221;1&#8243;]
+<p>This video demonstrates a service chain composed of two service instances. One is running on a KVM host, and the other on an ESXi host.</p>
+<p>This hybrid service chain enables value-added services for tenant VMs which are also spread across KVM and ESXi hypervisors.</p>
+<p>Also, check out how to <a href="http://www.opencontrail.org/integrating-opencontrail-with-vcenteresxi-virtualization-platform/">introduce secure multi-tenancy</a> to VMware/vCenter clusters via open source network virtualization.</p>
+<p>&nbsp;</p>
+<p><em>Acknowledgements: Thanks to Sachchidanand Vaidya from Juniper Networks for building, sharing and explaining the Contrail-vCenter scenario.</em></p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>Data Center Micro Segmentation in Contrail Virtual Networks</title>
+		<link>https://tungsten.io/data-center-micro-segmentation-in-contrail-virtual-networks/</link>
+		
+		<dc:creator><![CDATA[Vivekananda Shenoy]]></dc:creator>
+		<pubDate>Wed, 16 Dec 2015 22:34:46 +0000</pubDate>
+				<category><![CDATA[DataCenter]]></category>
+		<category><![CDATA[Security]]></category>
+		<guid isPermaLink="false">http://www.opencontrail.org/?p=6880</guid>
+
+					<description><![CDATA[Micro segmentation divides the data center into smaller, more-protected zones.  The servers can be added to multiple application tiers and depending on the type of application, traffic flow is controlled...]]></description>
+										<content:encoded><![CDATA[<p>Micro segmentation divides the data center into smaller, more-protected zones.  The servers can be added to multiple application tiers and depending on the type of application, traffic flow is controlled when it flows from one tier to another tier rather than individual server ports. In a real world scenario an application tier may not have a 1:1 mapping to a Layer 3 subnet.  So applying firewall rules on the physical or virtual firewall appliance based on the IP address of the server becomes highly un-manageable and not scalable.</p>
+<p>With Contrail security groups feature one can follow a declarative model to label the servers based on the application it is catering to and then constructing security rules to define the traffic flow between these different applications rather than referring to IP addresses.</p>
+<h4>Use case example:</h4>
+<p>As shown in the below figure the subnet 172.16.0.0/16 is hosting all the servers and these servers may be any of web, application or database servers depending on the end-application requirement. In this specific example we have 2 servers in each tier.</p>
+<p>As shown by the arrows at the bottom of the figure the idea is to make sure that the web tier can talk to the app tier and the app tier can access the db tier , but the web tier cannot access the db tier directly.</p>
+<p>For the simplicity purpose the use case in this example is demonstrated using ssh.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter wp-image-6881 size-full" src="http://www.opencontrail.org/wp-content/uploads/2015/12/opencontrail_DC_microsegmentation_blogpost_image1.png" alt="opencontrail_DC_microsegmentation_blogpost_image1" width="596" height="554" data-id="6881" /></p>
+<h4>Configuration steps:</h4>
+<p>The idea here is to create security groups one for each tier. And under the security group match condition we will match the traffic flow between different application tiers by matching the security group names we have created for each of the application tier and the traffic direction instead of matching individual server IP address or subnets. And then launch the VMs by associating them with the respective security groups based on the tier they were launched.</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/12/opencontrail_DC_microsegmentation_blogpost_image2.png"><img loading="lazy" decoding="async" class="wp-image-6882 alignleft" src="http://www.opencontrail.org/wp-content/uploads/2015/12/opencontrail_DC_microsegmentation_blogpost_image2.png" alt="opencontrail_DC_microsegmentation_blogpost_image2" width="800" height="619" data-id="6882" /></a></p>
+<p>&nbsp;</p>
+<p><a href="http://www.opencontrail.org/wp-content/uploads/2015/12/opencontrail_DC_microsegmentation_blogpost_image3.png"><img loading="lazy" decoding="async" class="alignleft wp-image-6883" src="http://www.opencontrail.org/wp-content/uploads/2015/12/opencontrail_DC_microsegmentation_blogpost_image3.png" alt="opencontrail_DC_microsegmentation_blogpost_image3" width="800" height="155" data-id="6883" /></a></p>
+<h4>Verification:</h4>
+<p>Check 1: Login to a machine in web tier and ssh to VMs in app tier. Ssh should be allowed to pass through.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter wp-image-6884" src="http://www.opencontrail.org/wp-content/uploads/2015/12/opencontrail_DC_microsegmentation_blogpost_image4.png" alt="opencontrail_DC_microsegmentation_blogpost_image4" width="800" height="460" data-id="6884" /></p>
+<p>Check 2: Login to a machine in web tier and ssh to a VM in database tier. Ssh should be blocked.</p>
+<p><img loading="lazy" decoding="async" class="aligncenter wp-image-6885" src="http://www.opencontrail.org/wp-content/uploads/2015/12/opencontrail_DC_microsegmentation_blogpost_image5.png" alt="opencontrail_DC_microsegmentation_blogpost_image5" width="800" height="462" data-id="6885" /></p>
+<p>&nbsp;</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+		<item>
+		<title>How to setup OpenContrail Gateway &#8211; Juniper MX, Cisco ASR and Software GW</title>
+		<link>https://tungsten.io/how-to-setup-opencontrail-gateway-juniper-mx-cisco-asr-and-software-gw/</link>
+		
+		<dc:creator><![CDATA[Sreelakshmi Sarva]]></dc:creator>
+		<pubDate>Sun, 25 May 2014 20:09:56 +0000</pubDate>
+				<category><![CDATA[DataCenter]]></category>
+		<category><![CDATA[Gateway]]></category>
+		<category><![CDATA[Network Services]]></category>
+		<category><![CDATA[Routing/Switching]]></category>
+		<guid isPermaLink="false">http://opencontrail.org/?p=1518</guid>
+
+					<description><![CDATA[Note: This blog is done with user’s own lab environment and all third party references/performance characterization needs to be verified with third party vendor in question. OPENCONTRAIL GATEWAYS &#8211; Use Cases...]]></description>
+										<content:encoded><![CDATA[<p><em><strong>Note: This blog is done with user’s own lab environment and all third party references/performance characterization needs to be verified with third party vendor in question.</strong></em></p>
+<p><span style="text-decoration: underline;"><em><strong>OPENCONTRAIL GATEWAYS &#8211; Use Cases and Setup Guide </strong></em></span></p>
+<h5><strong>1 INTRODUCTION</strong></h5>
+<p>Gateway in a virtualized network refers to an entity that allows network traffic to move back and forth between the virtual and the physical networks or between virtual networks operating on different set of technologies. In many cases, the virtual network is created using overlay (i.e. tunneling) technologies and, therefore, a gateway needs to understand the protocols of the overlay network traffic in order to allow traffic to pass back and forth through it.<br />
+<span id="more-1518"></span></p>
+<p>OpenContrail is based on a standard-based control plane protocols and encapsulation mechanisms to operate. As a result of this approach, industry standard routing platforms can be used as gateways to the virtual networks differentiating OpenContrail from some of the available solutions. In this blog, we will see various approaches in setting up and using a Gateway to a OpenContrail Cloud. In particular, we will focus on three different gateways options which will also cover a vendor agnostic solution and a virtualized gateway as an option. Following gateway options will be covered &#8211;</p>
+<ol>
+<li>Juniper MX</li>
+<li>Cisco ASR 903</li>
+<li>Software Gateway</li>
+</ol>
+<h5><strong>2 Use Cases that require a Gateway to a Cloud Environment</strong></h5>
+<h6><strong>2.1 Hybrid Cloud Use Case</strong></h6>
+<p>In this use case, a gateway is required to have an enterprise private cloud connect to a public cloud environment (like AWS)  VPC gateway</p>
+<p><a href="http://opencontrail.org/wp-content/uploads/2014/05/OpenContrail-Hybrid-Cloud-Use-Case-Picture-GW-Blog.png"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5718" src="http://www.opencontrail.org/wp-content/uploads/2014/05/OpenContrail-Hybrid-Cloud-Use-Case-Picture-GW-Blog.png" alt="OpenContrail-Hybrid-Cloud-Use-Case-Picture-GW-Blog" width="983" height="426" data-id="5718" /></a></p>
+<h6><strong>2.2 Data Center Interconnect &#8211; A Distributed Cloud Scenario</strong></h6>
+<p>In this use case, multi-site Data Centers are interconnected to create a distributed cloud environment by constructing a L3VPN domain over EBGP across the gateways</p>
+<p><a href="http://opencontrail.org/wp-content/uploads/2014/05/OpenContrail-Data-Center-Interconnect-Use-Case-Picture-GW-Blog.png"><img loading="lazy" decoding="async" class="alignnone wp-image-5720" src="http://www.opencontrail.org/wp-content/uploads/2014/05/OpenContrail-Data-Center-Interconnect-Use-Case-Picture-GW-Blog.png" alt="OpenContrail-Data-Center-Interconnect-Use-Case-Picture-GW-Blog" width="1000" height="479" data-id="5720" /></a></p>
+<h6><strong>2.3 Cloud Interconnect + NFV Security Service via L3 VPN Gateway</strong></h6>
+<p>BGP MPLS VPN capable Data Center Gateway Router device allows for providing connectivity between the Enterprise customer’s virtual network assets residing in the Data Center and the existing physical PIP L3 VPN network using a standard Inter-AS VPN connectivity methodology. The Data Center edge router will act in an Inter-AS VPN ASBR role bridging the ASN used in the Contrail virtual-network overlay topology to the ASN used in the service provider L3 VPN core.</p>
+<p><a href="http://opencontrail.org/wp-content/uploads/2014/05/OpenContrail-Cloud-Interconnect-Security-NFV-Picture-BLOG.bmp"><img loading="lazy" decoding="async" class="alignnone size-medium wp-image-1522" src="http://opencontrail.org/wp-content/uploads/2014/05/OpenContrail-Cloud-Interconnect-Security-NFV-Picture-BLOG.bmp" alt="OpenContrail Cloud Interconnect Security NFV Picture BLOG" width="1" height="1" data-id="1522" /></a><a href="http://opencontrail.org/wp-content/uploads/2014/05/OpenContrail-Cloud-Interconnect-Security-NFV-Picture-BLOG.bmp"><img loading="lazy" decoding="async" class="alignnone size-medium wp-image-1522" src="http://opencontrail.org/wp-content/uploads/2014/05/OpenContrail-Cloud-Interconnect-Security-NFV-Picture-BLOG.bmp" alt="OpenContrail Cloud Interconnect Security NFV Picture BLOG" width="1" height="1" data-id="1522" /></a><a href="http://opencontrail.org/wp-content/uploads/2014/05/OpenContrail-Cloud-Interconnect-Security-NFV-Picture-BLOG.bmp"><img loading="lazy" decoding="async" class="alignnone size-medium wp-image-1522" src="http://opencontrail.org/wp-content/uploads/2014/05/OpenContrail-Cloud-Interconnect-Security-NFV-Picture-BLOG.bmp" alt="OpenContrail Cloud Interconnect Security NFV Picture BLOG" width="1" height="1" data-id="1522" /></a><a href="http://opencontrail.org/wp-content/uploads/2014/05/OpenContrail-Cloud-Interconnect-Security-NFV-Picture-for-Blog.png"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5721" src="http://www.opencontrail.org/wp-content/uploads/2014/05/OpenContrail-Cloud-Interconnect-Security-NFV-Picture-for-Blog.png" alt="OpenContrail-Cloud-Interconnect-Security-NFV-Picture-for-Blog" width="687" height="380" data-id="5721" /></a></p>
+<h6><strong>2.4 Software Gateway to a Virtualized Cloud</strong></h6>
+<p><a href="http://opencontrail.org/wp-content/uploads/2014/05/OpenContrail-Software-as-a-GW-Picture-BLOG.png"><img loading="lazy" decoding="async" class="alignnone size-full wp-image-5722" src="http://www.opencontrail.org/wp-content/uploads/2014/05/OpenContrail-Software-as-a-GW-Picture-BLOG.png" alt="OpenContrail-Software-as-a-GW-Picture-BLOG" width="476" height="360" data-id="5722" /></a></p>
+<h5><strong>3 What does a Gateway need?            </strong></h5>
+<p>A L3 gateway to OpenContrail virtual cloud environment requires standard feature to be supported for control plane signaling</p>
+<ol>
+<li>L3VPN</li>
+<li>MBGP</li>
+</ol>
+<p>And the following for Data plane functionality</p>
+<p>3. Dynamic GRE tunnels</p>
+<h5><strong>4 Juniper MX as a Gateway</strong></h5>
+<p>In this section, we will cover Junos configuration elements required to enable MX as a gateway router to a OpenContrail cloud environment.</p>
+<ol>
+<li>Routing instance for the virtual network’s prefixes to show up</li>
+<li>Logical tunnels or Rib groups to leak route between routing instances or inet.0</li>
+<li>Dynamic tunnel to enable GRE tunnels to</li>
+</ol>
+<p>Here are the MX configuration snippets:</p>
+<pre><span style="font-family: 'courier new', courier;"><code> sroot&gt; show configuration
+ ##Enables Dynamic Tunnels on the chassis
+ chassis {
+ fpc 0 {
+ pic 0 {
+ tunnel-services;
+ }
+ }
+ }
+ interfaces {
+ ## For Route leaking between Contrail VRF for Public access and  Global Routing Table
+ lt-0/0/0 {
+ unit 0 {
+ encapsulation frame-relay;
+ dlci 1;
+ peer-unit 1;
+ family inet;
+ }
+ unit 1 {
+ encapsulation frame-relay;
+ dlci 1;
+ peer-unit 0;
+ family inet;
+ }
+ }
+ routing-options {
+ static {
+ route 0.0.0.0/0 next-hop 10.84.18.254;
+ route 10.84.53.80/28 next-hop lt-0/0/0.0;
+ }
+ route-distinguisher-id 10.84.18.253;
+ autonomous-system 64512;
+ ## Dynamic Tunnel config with source and destination networks. For each destination network learnt over BGP, there is a dynamic GRE tunnel automatically established to the Compute node.
+ dynamic-tunnels {
+ dynamic_overlay_tunnels {
+ source-address 10.84.18.253;
+ gre;
+ destination-networks {
+ 10.84.18.0/24;
+ }
+ }
+ }
+ }
+ protocols {
+ mpls {
+ interface all;
+ }
+ ## Control path , BGP peering to each control node
+ bgp {
+ group Contrail_Controller {
+ type internal;
+ local-address 10.84.18.253;
+ keep all;
+ family inet-vpn {
+ unicast;
+ }
+ neighbor 10.84.18.12; #Contrail Control node 1
+ neighbor 10.84.18.13; #Contrail Control node 2
+ }
+ }
+ }
+ routing-instances {
+ ## Usually, one VRF per Cluster
+ public {
+ instance-type vrf;
+ interface lt-0/0/0.1;
+ vrf-target target:64512:10000;
+ routing-options {
+ static {
+ route 0.0.0.0/0 next-hop lt-0/0/0.1; #Default route
+ }
+ }
+ }
+ }
+ Some CLI/Operation commands to verify Control and Data path:
+ ##Upon  Configuring the BGP peering on Contrail Web UI
+ root&gt; show bgp summary
+ Groups: 1 Peers: 2 Down peers: 0
+ Table          Tot Paths  Act Paths Suppressed    History Damp State    Pending
+ bgp.l3vpn.0
+ 78         69          0          0          0          0
+ Peer                     AS      InPkt     OutPkt    OutQ   Flaps Last Up/Dwn State|#Active/Received/Accepted/Damped...
+ 10.84.18.12           64512      22019      23624       0       1     1w0d12h Establ
+ bgp.l3vpn.0: 9/9/9/0
+ public.inet.0: 1/1/1/0
+ 10.84.18.13           64512      22023      23624       0       1     1w0d12h Establ
+ bgp.l3vpn.0: 0/9/9/0
+ public.inet.0: 0/1/1/0</code><code>
+ ## Routes being advertised by 18.13 control node
+ root&gt; show route receive-protocol bgp 10.84.18.13
+ ..
+ public.inet.0: 4 destinations, 6 routes (4 active, 0 holddown, 0 hidden)
+ Prefix                  Nexthop              MED     Lclpref    AS path
+ 10.84.53.93/32          10.84.18.13                  100        ?
+ bgp.l3vpn.0: 69 destinations, 78 routes (69 active, 0 holddown, 0 hidden)
+ Prefix                  Nexthop              MED     Lclpref    AS path
+ 10.84.18.13:1:0.0.0.0/0
+ 10.84.18.13                  100        ?
+ 10.84.18.13:1:1.0.2.253/32
+ 10.84.18.13                  100        ?
+ 10.84.18.13:1:10.84.53.93/32
+ 10.84.18.13                  100        ?
+ 10.84.18.13:1:192.168.10.252/32
+ 10.84.18.13                  100        ?
+ 10.84.18.13:1:192.168.10.253/32
+ 10.84.18.13                  100        ?
+ 10.84.18.13:2:10.84.53.93/32
+ 10.84.18.13                  100        ?
+ 10.84.18.13:3:250.250.1.253/32
+ 10.84.18.13                  100        ?
+ 10.84.18.14:1:192.168.20.253/32
+ 10.84.18.14                  100        ?
+ 10.84.18.14:2:250.250.2.253/32
+ 10.84.18.14                  100        ?
+ ## To reach 10.84.53.93 VM, dynamic GRE tunnel path from Gateway to the compute node hosting the VM
+ root&gt; show route 10.84.53.93/32
+ public.inet.0: 4 destinations, 6 routes (4 active, 0 holddown, 0 hidden)
+ + = Active Route, - = Last Active, * = Both
+ 10.84.53.93/32     *[BGP/170] 20:40:33, localpref 100, from 10.84.18.12
+ AS path: ?, validation-state: unverified
+ &gt; via gr-0/0/0.32772, Push 22
+ [BGP/170] 20:40:33, localpref 100, from 10.84.18.13
+ AS path: ?, validation-state: unverified
+ &gt; via gr-0/0/0.32772, Push 22</code></span></pre>
+<h5><strong>5 ASR 903 as a Gateway</strong></h5>
+<p>Configuration below covers leveraging Cisco ASR1k as a Gateway</p>
+<pre><code><span style="font-family: 'courier new', courier;"> 
+asr903#show running-config 
+Building configuration...
+
+Current configuration : 4347 bytes
+!
+! Last configuration change at 14:20:21 UTC Tue Aug 25 2015
+!
+version 15.2
+no service pad
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no platform punt-keepalive disable-kernel-core
+!
+hostname asr903
+!
+boot-start-marker
+boot system bootflash:Image/packages.conf
+boot-end-marker
+!
+!
+vrf definition Contrail
+ rd 64512:10000
+ route-target export 64512:10000
+ route-target import 64512:10000
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+vrf definition Mgmt-intf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+enable secret 5 $1$RAyL$SjMKm.r.vzr3sXehjMYNv1
+!
+no aaa new-model
+!
+ip vrf mgre
+ rd 1:1
+!
+ip domain name englab.juniper.net
+!
+!         
+!
+ipv6 multicast rpf use-bgp
+!
+!
+multilink bundle-name authenticated
+!
+!
+redundancy
+ mode sso
+!
+controller wanphy 0/0/0
+!
+controller wanphy 0/1/0
+!
+controller wanphy 0/2/0
+!
+controller wanphy 0/3/0
+!
+!
+!
+ip tftp source-interface GigabitEthernet0
+lldp run
+!         
+!
+!
+!
+!
+interface Loopback10
+ no ip address
+!
+interface Loopback30
+ vrf forwarding Contrail
+ ip address 30.30.40.253 255.255.255.255
+!
+interface Loopback100
+ vrf forwarding Contrail
+ ip address 10.250.250.10 255.255.255.255
+!
+interface Loopback102
+ ip address 192.0.2.1 255.255.255.255
+!
+interface Loopback103
+ ip address 192.0.2.2 255.255.255.255
+!
+interface Tunnel102
+ ip address 192.168.0.129 255.255.255.252
+ tunnel source Loopback102
+ tunnel destination 192.0.2.2
+!
+interface Tunnel103
+ vrf forwarding Contrail
+ ip address 192.168.0.130 255.255.255.252
+ tunnel source Loopback103
+ tunnel destination 192.0.2.1
+!
+interface TenGigabitEthernet0/0/0
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet0/1/0
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet0/2/0
+ no ip address
+ shutdown
+!
+interface TenGigabitEthernet0/3/0
+ no ip address
+ shutdown
+!
+interface GigabitEthernet0/4/0
+ ip address 10.84.40.190 255.255.255.224
+ negotiation auto
+!
+interface GigabitEthernet0/4/1
+ vrf forwarding Contrail
+ ip address 30.30.0.3 255.255.255.0
+ no ip redirects
+ ip local-proxy-arp
+ ip route-cache same-interface
+ negotiation auto
+!
+interface GigabitEthernet0/4/2
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/4/3
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/4/4
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/4/5
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/4/6
+ no ip address
+ shutdown
+ negotiation auto
+!
+interface GigabitEthernet0/4/7
+ ip address 10.84.40.253 255.255.255.192
+ negotiation auto
+ cdp enable
+!
+interface GigabitEthernet0
+ vrf forwarding Mgmt-intf
+ ip address 10.84.61.201 255.255.254.0
+ negotiation auto
+!
+l3vpn encapsulation ip MGRE
+ transport ipv4 source GigabitEthernet0/4/7
+ !
+router ospf 101 vrf Contrail
+ redistribute connected
+ redistribute static
+ network 192.0.2.130 0.0.0.0 area 0
+!
+router ospf 100
+ redistribute connected
+ redistribute static
+ network 192.0.2.129 0.0.0.0 area 0
+!
+router bgp 64512
+ bgp router-id 10.84.40.253
+ bgp log-neighbor-changes
+ neighbor 10.84.30.39 remote-as 64512
+ neighbor 10.84.30.39 update-source GigabitEthernet0/4/7
+ !
+ address-family ipv4
+  no neighbor 10.84.30.39 activate
+  default-information originate
+ exit-address-family
+ !
+ address-family vpnv4
+  neighbor 10.84.30.39 activate
+  neighbor 10.84.30.39 send-community extended
+  neighbor 10.84.30.39 route-map SELECT_UPDATE_FOR_L3VPN in
+ exit-address-family
+ !
+ address-family ipv4 vrf Contrail
+  redistribute connected
+  redistribute static
+  default-information originate
+ exit-address-family
+!
+no ip forward-protocol nd
+!
+no ip http server
+ip route 0.0.0.0 0.0.0.0 10.84.40.254
+ip route 10.84.40.0 255.255.255.192 10.84.40.189
+ip route 10.84.40.64 255.255.255.192 10.84.40.189
+ip route 10.84.40.128 255.255.255.224 192.168.0.130
+ip route vrf Contrail 0.0.0.0 0.0.0.0 192.168.0.129
+ip route vrf Contrail 5.5.5.0 255.255.255.0 Null0
+!
+cdp run
+!
+route-map setnh-out permit 10
+!
+route-map SELECT_UPDATE_FOR_L3VPN permit 10
+  set ip next-hop encapsulate l3vpn MGRE
+!
+route-map set-nh permit 10
+!
+route-map set-nh permit 20
+!
+route-map set-nh-contrail permit 10
+!
+route-map set-nh-ip permit 200
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ stopbits 1
+line aux 0
+ stopbits 1
+line vty 0 4
+ exec-timeout 0 0
+ no login
+line vty 5 16
+ exec-timeout 0 0
+ login
+!
+!
+!
+end
+
+asr903#                                                 
+asr903#show ip route vrf Contrail 
+
+Routing Table: Contrail
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area 
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP
+       + - replicated route, % - next hop override
+
+Gateway of last resort is 192.168.0.129 to network 0.0.0.0
+
+S*    0.0.0.0/0 [1/0] via 192.168.0.129
+      5.0.0.0/24 is subnetted, 1 subnets
+S        5.5.5.0 is directly connected, Null0
+      10.0.0.0/32 is subnetted, 2 subnets
+B        10.84.40.131 [200/0] via 10.84.30.39, 00:22:56, Tunnel0
+C        10.250.250.10 is directly connected, Loopback100
+      30.0.0.0/8 is variably subnetted, 3 subnets, 2 masks
+C        30.30.0.0/24 is directly connected, GigabitEthernet0/4/1
+L        30.30.0.3/32 is directly connected, GigabitEthernet0/4/1
+C        30.30.40.253/32 is directly connected, Loopback30
+      192.168.0.0/24 is variably subnetted, 2 subnets, 2 masks
+C        192.168.0.128/30 is directly connected, Tunnel103
+L        192.168.0.130/32 is directly connected, Tunnel103
+asr903# 
+asr903#
+asr903#sh
+asr903#show ip route vrf Contrail 10.84.40.131
+
+Routing Table: Contrail
+Routing entry for 10.84.40.131/32
+  Known via "bgp 64512", distance 200, metric 0, type internal
+  Last update from 10.84.30.39 on Tunnel0, 00:23:08 ago
+  Routing Descriptor Blocks:
+  * 10.84.30.39 (default), from 10.84.30.39, 00:23:08 ago, via Tunnel0
+      Route metric is 0, traffic share count is 1
+      AS Hops 0
+      MPLS label: 20
+      MPLS Flags: MPLS Required
+asr903#
+asr903#
+
+asr903#show ip cef vrf Contrail 10.84.40.131 detail 
+10.84.40.131/32, epoch 2, flags rib defined all labels
+  nexthop 10.84.30.39 Tunnel0 label 20
+asr903#
+
+asr903#show tunnel endpoints 
+ Tunnel0 running in multi-GRE/IP mode
+
+ Endpoint transport 10.84.30.39 Refcount 3 Base 0x3067EEF8 Create Time 00:23:56
+   overlay 10.84.30.39 Refcount 2 Parent 0x3067EEF8 Create Time 00:23:56
+asr903#
+
+asr903#show l3vpn encapsulation ip MGRE 
+
+ Profile: MGRE
+  transport ipv4 source GigabitEthernet0/4/7
+  protocol gre
+  payload mpls
+   mtu default
+  Tunnel Tunnel0 Created [OK]
+  Tunnel Linestate [OK]
+  Tunnel Transport Source GigabitEthernet0/4/7 [OK]
+asr903#
+asr903#
+ </span></code></pre>
+<p><strong><br />
+6 Software Gateway</strong><br />
+In this section, we will see configuration snippets for using Juniper a virtual SRX (firefly perimeter) as a Software gateway to OpenContrail Cloud. Additional details including configuration is published in the link below and is very similar to the Junos MX gateway configuration</p>
+<p><a href="http://www.juniper.net/techpubs/en_US/contrail2.21/topics/task/configuration/simple-gateway-support-vnc.html">http://www.juniper.net/techpubs/en_US/contrail2.21/topics/task/configuration/simple-gateway-support-vnc.html</a></p>
+<p><strong>7 CONCLUSION</strong></p>
+<p>OpenContrail uses truly open standard based control and data plane signaling and hence can interoperate with any standard gateway to realize real complex use cases.</p>
+]]></content:encoded>
+					
+		
+		
+			</item>
+	</channel>
+</rss>
